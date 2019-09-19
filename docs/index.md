@@ -8,9 +8,12 @@
 
 ----
 
-- Automatically generate pcap files for each test.
+- Dynamically creates networking interfaces where SIPp instances will be binded.
+- Each test execution will generate a pcap file if desired.
 - Ability to provision and/or clean-up the device under test using BASH scripts.
-- sipplauncher uses HP SIPp.
+
+---
+
 - sipplauncher accepts a path to a folder. If the folder contains at least one
 SIPp scenario file, will try to run such scenario only. If folder does not
 contain scenario files, all subfolders containing scenario files will be
