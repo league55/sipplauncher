@@ -4,10 +4,11 @@
 
 - Execute your [SIPp](http://sipp.sourceforge.net) testsuite with just **one command** in one VM/container.
 - Easily add SIP traffic testing to your **continuos integration pipeline**.
-- Run **multiple test scenarios** at the same time. Highly-configurable test execution.
+- Run **multiple test scenarios** at the same time. Highly-configurable.
 
 ----
 
+- Automatically generate pcap files for each test.
 - Ability to provision and/or clean-up the device under test using BASH scripts.
 - sipplauncher uses HP SIPp.
 - sipplauncher accepts a path to a folder. If the folder contains at least one
