@@ -1,12 +1,12 @@
 ![Logo](assets/images/logo.png)
 
-Automate your SIPp testing execution in your continuos integration pipeline.
+Automate your SIP testing in your continuos integration pipeline.
 
-sipplauncher accepts a path to a folder. If the folder contains at least one
+- sipplauncher uses HP SIPp.
+- sipplauncher accepts a path to a folder. If the folder contains at least one
 SIPp scenario file, will try to run such scenario only. If folder does not
 contain scenario files, all subfolders containing scenario files will be
-processed. 
-
+processed.
 - Scenario's parent folder will be used as scenario name.
 - Accepted scenario file names are "(uas|uac)_role.xml".
 - User Agents whose file name contains "uas" prefix will be launched first.
