@@ -14,7 +14,7 @@ copyright: 'Copyright &copy; 2019 Zaleos SL'
 # Configuration
 theme:
   name: 'material'
-  custom_dir: 'custom_material/'
+  custom_dir: 'docs/custom_material/'
   language: 'en'
   logo:
     icon: 'code'
