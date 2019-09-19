@@ -4,7 +4,7 @@
 
 - Execute your [SIPp](http://sipp.sourceforge.net) testsuite with just **one command** in one VM/container.
 - Easily add SIP traffic testing to your **continuos integration pipeline**.
-- Run **multiple SIP User Agents** at the same time. Highly-configurable.
+- Run **multiple SIPp scenarios** at the same time. Highly-configurable.
 
 ----
 
