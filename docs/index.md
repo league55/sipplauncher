@@ -1,4 +1,4 @@
-![Screenshot](img/logo.png)
+![Logo](assets/images/logo.png)
 
 # Introduction
 
