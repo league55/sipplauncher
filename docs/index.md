@@ -8,9 +8,10 @@
 
 ----
 
-- Dynamically creates networking interfaces where SIPp instances will be binded.
-- Each test execution will generate a pcap file if desired.
-- Ability to provision and/or clean-up the device under test using BASH scripts.
+- Creates networking interfaces and assigns IPs dynamically where SIPp instances will be binded.
+- Each test execution has its own networking interface.
+- Each test execution will generate a pcap file - if desired.
+- Use BASH scripts to launch provisioning and/or clean-up commands against the device under test - or other desired stuff.
 
 ---
 
