@@ -1,8 +1,8 @@
 ![Screenshot](img/logo.png)
 
-# Welcome to MkDocs
+# Introduction
 
-For full documentation visit [mkdocs.org](https://mkdocs.org).
+Automate your SIPp testsuite execution against a given Device Under Test.
 
 ## Commands
 
