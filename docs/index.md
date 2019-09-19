@@ -2,7 +2,7 @@
 
 # Introduction
 
-Automate your SIPp testsuite execution against a given Device Under Test.
+Automate your SIPp testing execution in your continuos integration pipeline.
 
 ## Commands
 
