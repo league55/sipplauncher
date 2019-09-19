@@ -1,6 +1,6 @@
 # Project information
 site_name: 'sipplauncher'
-site_description: 'Running SIPp made easy'
+site_description: 'Automate your VoIP testing'
 site_author: 'Zaleos'
 site_url: 'https://sipplauncher.zaleos.net'
 
@@ -47,3 +47,6 @@ markdown_extensions:
 plugins:
   - search
   - git-revision-date
+
+nav:
+    - Intro: index.md
