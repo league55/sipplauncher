@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario name="">
+
+{% import 'options.jinja2' as options %}
+{{ options.send(custom_transport) }}
+
+    <recv response="100" rtd="true" />
+    <recv response="180" rtd="true" optional="true"/>
+    <recv response="183" rtd="true" optional="true"/>
+    <recv response="503" rtd="true" />
+    <recv response="200" rtd="true" rrs="true">
+        <action>
+            <ereg regexp="&lt;(.*)&gt;"
+                  search_in="hdr"
+                  header="Contact:"
+                  check_it="true"
+                  assign_to="13,14"/>
+            <log message="Found header Contact: [$13]"/>
+            <log message="Contact value: [$14]"/>
+            <log message="Vars {{ua0.host}} {{ua1.host}} {{dut.host}}"/>
+        </action>
+    </recv>
+
+
+    <!-- definition of the response time repartition table (unit is ms)   -->
+    <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
+
+    <!-- definition of the call length repartition table (unit is ms)     -->
+    <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
+
+</scenario>

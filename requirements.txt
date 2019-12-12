@@ -1,0 +1,8 @@
+wheel>=0.22
+ipaddress
+pyroute2
+scapy
+git+http://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
+git+git://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
+jinja2
+PyOpenSSL

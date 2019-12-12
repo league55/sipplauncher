@@ -1,0 +1,55 @@
+# Project information
+site_name: 'sipplauncher'
+site_description: 'Automate your VoIP testing'
+site_author: 'Zaleos'
+site_url: 'https://sipplauncher.zaleos.net'
+
+# Repository
+repo_name: 'zaleos/sipplauncher'
+repo_url: 'https://github.com/zaleos/sipplauncher'
+
+# Copyright
+copyright: 'Copyright &copy; 2019 Zaleos SL'
+
+# Configuration
+theme:
+  name: 'material'
+  custom_dir: 'docs/custom_material/'
+  language: 'en'
+  logo:
+    icon: 'code'
+  palette:
+    primary: 'blue'
+    accent: 'cyan'
+  font:
+    text: 'Ubuntu'
+    code: 'Ubuntu Mono'
+  favicon: assets/images/favicon.ico
+
+# Customization
+extra:
+  social:
+    - type: 'globe'
+      link: 'https://zaleos.net'
+    - type: 'github'
+      link: 'https://github.com/zaleos'
+    - type: 'linkedin'
+      link: 'http://linkedin.com/company/zaleos'
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - codehilite:
+      guess_lang: false
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - git-revision-date
+
+nav:
+    - Intro: index.md
+    - User Guide: user_guide.md
+    - Developer Guide: developer_guide.md
+    - Contribution Guide: contribution_guide.md
