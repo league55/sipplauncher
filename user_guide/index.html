@@ -1,0 +1,1208 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Automate your VoIP testing">
+      
+      
+        <link rel="canonical" href="https://sipplauncher.zaleos.net/user_guide/">
+      
+      
+        <meta name="author" content="Zaleos">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>User Guide - sipplauncher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700|Ubuntu+Mono&display=fallback">
+        <style>body,input{font-family:"Ubuntu","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#overview" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://sipplauncher.zaleos.net" title="sipplauncher" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon">code</i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              sipplauncher
+            </span>
+            <span class="md-header-nav__topic">
+              
+                User Guide
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/zaleos/sipplauncher/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    zaleos/sipplauncher
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://sipplauncher.zaleos.net" title="sipplauncher" class="md-nav__button md-logo">
+      
+        <i class="md-icon">code</i>
+      
+    </a>
+    sipplauncher
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/zaleos/sipplauncher/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    zaleos/sipplauncher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Intro" class="md-nav__link">
+      Intro
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        User Guide
+      </label>
+    
+    <a href="./" title="User Guide" class="md-nav__link md-nav__link--active">
+      User Guide
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-suite-folder-layout" class="md-nav__link">
+    Test suite folder layout
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sipp-scenarios" class="md-nav__link">
+    SIPp scenarios
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scripts" class="md-nav__link">
+    Scripts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injection-file" class="md-nav__link">
+    Injection file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    Templates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-arguments" class="md-nav__link">
+    Command-line arguments
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-arguments" class="md-nav__link">
+    Mandatory arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-arguments" class="md-nav__link">
+    Optional arguments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-usage-examples" class="md-nav__link">
+    Common usage examples
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests-consecutively" class="md-nav__link">
+    Run all tests consecutively
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests-with-concurrent-grouping-by-3-tests" class="md-nav__link">
+    Run all tests with concurrent grouping by 3 tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-a-single-test" class="md-nav__link">
+    Run a single test
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-run-folder" class="md-nav__link">
+    Test run folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-engine" class="md-nav__link">
+    Template engine
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keyword-replacement" class="md-nav__link">
+    Keyword replacement
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-keywords" class="md-nav__link">
+    Internal keywords
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamic-ip-address-assignment" class="md-nav__link">
+    Dynamic IP address assignment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tls" class="md-nav__link">
+    TLS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcap-capturing" class="md-nav__link">
+    Pcap capturing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decrypting-tls-traffic" class="md-nav__link">
+    Decrypting TLS traffic
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-files" class="md-nav__link">
+    Log files
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../developer_guide/" title="Developer Guide" class="md-nav__link">
+      Developer Guide
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../contribution_guide/" title="Contribution Guide" class="md-nav__link">
+      Contribution Guide
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-suite-folder-layout" class="md-nav__link">
+    Test suite folder layout
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sipp-scenarios" class="md-nav__link">
+    SIPp scenarios
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scripts" class="md-nav__link">
+    Scripts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#injection-file" class="md-nav__link">
+    Injection file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    Templates
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-arguments" class="md-nav__link">
+    Command-line arguments
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandatory-arguments" class="md-nav__link">
+    Mandatory arguments
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optional-arguments" class="md-nav__link">
+    Optional arguments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-usage-examples" class="md-nav__link">
+    Common usage examples
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests-consecutively" class="md-nav__link">
+    Run all tests consecutively
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-all-tests-with-concurrent-grouping-by-3-tests" class="md-nav__link">
+    Run all tests with concurrent grouping by 3 tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-a-single-test" class="md-nav__link">
+    Run a single test
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-run-folder" class="md-nav__link">
+    Test run folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#template-engine" class="md-nav__link">
+    Template engine
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keyword-replacement" class="md-nav__link">
+    Keyword replacement
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-keywords" class="md-nav__link">
+    Internal keywords
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dynamic-ip-address-assignment" class="md-nav__link">
+    Dynamic IP address assignment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tls" class="md-nav__link">
+    TLS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pcap-capturing" class="md-nav__link">
+    Pcap capturing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decrypting-tls-traffic" class="md-nav__link">
+    Decrypting TLS traffic
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-files" class="md-nav__link">
+    Log files
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/zaleos/sipplauncher/edit/master/docs/user_guide.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>User Guide</h1>
+                
+                <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Sipplauncher accepts a path to a <a href="#test-suite-folder-layout">test suite</a>, which contains a set of subfolders - <a href="#tests">tests</a>.</li>
+<li>The <a href="#tests">Test</a> subfolder should contain at least one <a href="#sipp-scenarios">SIPp scenario</a>.</li>
+<li>The <a href="#tests">Test</a> subfolder may contain <a href="#scripts">scripts</a> and other files.</li>
+<li><a href="#scripts">Scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a> may contain references to other UA instance's address in the form <code>ua[0-9].host</code>.</li>
+<li><a href="#tests">Tests</a> may be templated using the <a href="#template engine">Template engine</a>.</li>
+</ul>
+<hr />
+<h2 id="test-suite-folder-layout">Test suite folder layout<a class="headerlink" href="#test-suite-folder-layout" title="Permanent link">&para;</a></h2>
+<p><strong>Sipplauncher</strong> needs a test suite to run.
+Test suite location is passed to Sipplauncher with <code>--testsuite</code> command-line option.
+In case if this option is omitted, Sipplauncher uses a test suite, which is located at <code>&lt;current_working_directory&gt;/tmp-testsuite</code>.</p>
+<p>In order to understand the layout required by Sipplauncher, we advice to look at the layout of the embedded mock test suite <code>sipplauncher/tmp-testsuite</code>.
+The embedded mock test suite is present for the following purposes:</p>
+<ul>
+<li>demonstrate <strong>Sipplauncher</strong> test suite layout and features</li>
+<li>test if <strong>Sipplauncher</strong> works in your environment</li>
+<li>ease development and testing of <strong>Sipplauncher</strong></li>
+</ul>
+<p>Here is the layout of the embedded mock test suite:</p>
+<div class="codehilite"><pre><span></span>sipplauncher/tmp-testsuite/
+├── normal-0000
+│   ├── before.sh
+│   ├── uac_ua2.xml
+│   ├── uas_ua0.xml
+│   └── uas_ua1.xml
+├── normal-0001
+│   ├── after.sh
+│   ├── before.sh
+│   ├── uac_ua1.xml
+│   └── uas_ua0.xml
+├── options-0000
+│   └── uac_ua0.xml
+├── options-0001
+│   ├── uac_ua0.xml
+│   ├── uac_ua1.xml
+│   └── uac_ua2.xml
+├── TEMPLATES
+│   └── options.jinja2
+└── users.csv
+</pre></div>
+
+
+<p>Therefore, a test suite should contain:</p>
+<h3 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h3>
+<p>A test's name is a subfolder name: <code>normal-0000</code>, <code>normal-0001</code>, etc.</p>
+<p>Each test folder contains all the information needed for a test to run:</p>
+<h4 id="sipp-scenarios">SIPp scenarios<a class="headerlink" href="#sipp-scenarios" title="Permanent link">&para;</a></h4>
+<p>These are files named <code>uac_ua2.xml</code>, <code>uas_ua0.xml</code>, etc.
+All these files form a SIPp instance group, which is run concurrently.</p>
+<p>The scenario file name should match the regex pattern <code>^(ua[cs]+)_(ua[0-9]+).xml$</code>.
+The scenario file name defines test launch order and role.</p>
+<p>Here, <code>uac</code> or <code>uas</code> prefix affects the order of launching SIPp instances: <code>uas</code> scenarios are launched before <code>uac</code> scenarios.</p>
+<p><code>ua[0-9]</code> suffix defines an <code>instance name</code> inside a SIPp instance group.
+A SIPp instance in a group can refer to other SIPp instances in the same group using <code>ua[0-9].host</code> keywords in its scenario file.</p>
+<p>For example, we have files named <code>uac_ua2.xml</code> and <code>uas_ua0.xml</code> in a test folder.
+<code>uac_ua2.xml</code> may refer to SIPp instance, which runs<code>uas_ua0.xml</code>, using <code>ua0.host</code> keyword.</p>
+<p>This is possible due to <a href="#dynamic-ip-address-assignment">Dynamic IP address assignment</a> and <a href="#keyword-replacement">Keyword replacement</a>.
+First, dynamic IP addresses are allocated and assigned.
+Then, <a href="#template-engine">Template engine</a> replaces <code>ua[0-9].host</code> keywords with real IP addresses of SIPp instances.</p>
+<h4 id="scripts">Scripts<a class="headerlink" href="#scripts" title="Permanent link">&para;</a></h4>
+<p>Files, which have <code>.sh</code> extension, are considered the scripts.</p>
+<p>There are 2 predefined script names, which are automatically run by <strong>Sipplauncher</strong>, if present:</p>
+<ol>
+<li><code>before.sh</code> is run before running the SIPp instance group.</li>
+<li><code>after.sh</code> is run after running the SIPp instance group.</li>
+</ol>
+<p>These scripts could be used to provision a DUT with some configuration, which is needed for a test to pass.</p>
+<p>All other scripts aren't run automatically by <strong>Sipplauncher</strong>, but could be run from elsewhere.
+For example, from <a href="#sipp-scenarios">SIPp scenario</a>.</p>
+<p>When preparing a test to run, the keywords inside all test's scripts are <a href="#keyword-replacement">replaced</a>.</p>
+<p>If <code>before.sh</code> exits with non-zero exit code, a test execution stops.
+If either <code>before.sh</code> or <code>after.sh</code> exits with non-zero exit code, the test is considered failed.</p>
+<h3 id="injection-file">Injection file<a class="headerlink" href="#injection-file" title="Permanent link">&para;</a></h3>
+<p>Injection file is passed to Sipplauncher with <code>--sipp-info-file</code> command-line option.
+Sippluncher, in turn, passes this file to SIPp with <code>-inf</code> option.
+SIPp reads a line from this file per each new call and replaces keywords in a scenario.</p>
+<p>In case if this option is omitted, Sipplauncher uses pre-defined location <code>&lt;testsuite_folder&gt;/users.csv</code>.
+If there is no file at this location, an injection file isn't used.</p>
+<p>In the <a href="#test-suite-folder-layout">embedded mock test suite</a>, the injection file is <code>sipplauncher/tmp-testsuite/users.csv</code>.</p>
+<h3 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">&para;</a></h3>
+<p>A template folder contains templates, which could be re-used by <a href="#tests">Tests</a> to avoid code duplication.
+A good design pattern is to extract an often-used code of a test into a template and then re-use that template.
+Template expansion is performed by the <a href="#template engine">Template engine</a>.</p>
+<p>A template folder is passed to Sipplauncher with <code>--template-folder</code> command-line option.
+In case if this option is omitted, Sipplauncher uses pre-defined location <code>&lt;testsuite_folder&gt;/TEMPLATES</code>.
+If there is no folder at this location, templates aren't used.</p>
+<p>In the <a href="#test-suite-folder-layout">embedded mock test suite</a>, the template folder is <code>sipplauncher/tmp-testsuite/TEMPLATES</code>.</p>
+<hr />
+<h2 id="command-line-arguments">Command-line arguments<a class="headerlink" href="#command-line-arguments" title="Permanent link">&para;</a></h2>
+<p>Run this to see all available arguments:</p>
+<div class="codehilite"><pre><span></span>sipplauncher -h
+</pre></div>
+
+
+<h3 id="mandatory-arguments">Mandatory arguments<a class="headerlink" href="#mandatory-arguments" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>argument name</th>
+<th>argument value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>--dut</td>
+<td>DUT</td>
+<td>Device under test IP address</td>
+</tr>
+<tr>
+<td>--testsuite</td>
+<td>TESTSUITE</td>
+<td>Path to a <a href="#test-suite-folder-layout">Test suite</a>.<br>Default: <code>&lt;current_working_directory&gt;/tmp-testsuite</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optional-arguments">Optional arguments<a class="headerlink" href="#optional-arguments" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>argument name</th>
+<th>argument value</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-h, --help</td>
+<td></td>
+<td>Show help message and exit</td>
+</tr>
+<tr>
+<td>--template-folder</td>
+<td>TEMPLATE_FOLDER</td>
+<td>Path to folder with <a href="#templates">templates</a>.<br>Default: <code>&lt;testsuite&gt;/TEMPLATES</code>.</td>
+</tr>
+<tr>
+<td>--pattern-exclude</td>
+<td>PATTERN_EXCLUDE</td>
+<td>Regular expression to exclude tests.<br>If used with <code>--pattern-only</code> arg, and a test name matches both, the test is excluded.<br><br>Example: <code>--pattern-exclude options --pattern-exclude '.*_dns' --pattern-exclude '.*_tls'</code>.</td>
+</tr>
+<tr>
+<td>--pattern-only</td>
+<td>PATTERN_ONLY</td>
+<td>Regular expression to specify the only tests which should be run.<br>If used with <code>--pattern-exclude</code> arg, and a test name matches both, the test is excluded.<br><br>Example: <code>--pattern-only options --pattern-only '.*_dns' --pattern-only '.*_tls'</code>.</td>
+</tr>
+<tr>
+<td>--network-mask</td>
+<td>NETWORK_MASK</td>
+<td>Network mask, which is used for <a href="#dynamic-ip-address-assignment">Dynamic IP address assignment</a>.<br>Default: <code>24</code>.</td>
+</tr>
+<tr>
+<td>--group</td>
+<td>GROUP</td>
+<td>Number of SIPp tests to be run at the same time.<br>Default: <code>1</code>.<br>Please see <a href="#run-all-tests-with-concurrent-grouping-by-3-tests">example</a>.</td>
+</tr>
+<tr>
+<td>--group-pause</td>
+<td>GROUP_PAUSE</td>
+<td>Pause between group executions.<br>Default: <code>0.8</code>.</td>
+</tr>
+<tr>
+<td>--group-stop-first-fail</td>
+<td></td>
+<td>Stops after any test of the group fails.</td>
+</tr>
+<tr>
+<td>--random</td>
+<td></td>
+<td>Selects randomly tests from the test pool (instead of alphabetical consecutive ordering).</td>
+</tr>
+<tr>
+<td>--dry-run</td>
+<td></td>
+<td>Dry run, simulates an execution without actual <a href="#sipp-scenarios">SIPp scenarios</a> launch.</td>
+</tr>
+<tr>
+<td>--fail-expected</td>
+<td></td>
+<td>OK if the execution fails.</td>
+</tr>
+<tr>
+<td>--leave-temp</td>
+<td></td>
+<td>Don't remove <a href="#test-run-folder">test run folder</a> after the test has finished.<br>By default, <a href="#test-run-folder">test run folder</a> is removed after the test has finished.</td>
+</tr>
+<tr>
+<td>--keyword-replacement-values</td>
+<td>KEYWORD_REPLACEMENT_VALUES</td>
+<td>Custom <a href="#keyword-replacement">keyword values</a> in JSON object format to be used by the <a href="#template-engine">Template engine</a> to replace values in <a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>.<br><br>Example: <code>--keyword-replacement-values '{ "ua1_username": "test1", "ua2_username": "test2", "some_url": "http://10.22.22.24:8080" }'</code>.</td>
+</tr>
+<tr>
+<td>--no-pcap</td>
+<td></td>
+<td>Disable <a href="#pcap-capturing">capturing to pcap</a> files.</td>
+</tr>
+<tr>
+<td>--tls-ca-root-cert</td>
+<td>TLS_CA_ROOT_CERT</td>
+<td><a href="#tls">TLS CA root certificate</a> file (.pem format).<br>It must be used together with <code>tls-ca-root-key</code> arg.</td>
+</tr>
+<tr>
+<td>--tls-ca-root-key</td>
+<td>TLS_CA_ROOT_KEY</td>
+<td><a href="#tls">TLS CA root key</a> file (.pem format).<br>It must be used together with <code>tls-ca-root-key</code> arg.</td>
+</tr>
+<tr>
+<td>--sipp-transport</td>
+<td>One of: u1, un, ui, t1, tn, l1, ln</td>
+<td>SIPp -t param.<br>The default is <code>l1</code>, if <a href="#tls">TLS</a> usage is auto-detected. Oherwise, it's <code>u1</code>.<br><a href="#tls">TLS</a> usage is auto-detected if any tls-related option is used.</td>
+</tr>
+<tr>
+<td>--sipp-info-file</td>
+<td>SIPP_INFO_FILE</td>
+<td>SIPp <code>-inf</code> argument.<br>Used to specify an <a href="#injection-file">Injection file</a>.</td>
+</tr>
+<tr>
+<td>--sipp-call-rate</td>
+<td>SIPP_CALL_RATE</td>
+<td>SIPp <code>-r</code> argument.</td>
+</tr>
+<tr>
+<td>--sipp-max-calls</td>
+<td>SIPP_MAX_CALLS</td>
+<td>SIPp <code>-m</code> argument.</td>
+</tr>
+<tr>
+<td>--sipp-recv-timeout</td>
+<td>SIPP_RECV_TIMEOUT</td>
+<td>SIPp <code>-recv_timeout</code> argument.</td>
+</tr>
+<tr>
+<td>--sipp-tls-version</td>
+<td>One of:  1.0, 1.1, 1.2</td>
+<td>SIPp <code>-tls_version</code> argument.<br>Please see <a href="#tls">TLS</a>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="common-usage-examples">Common usage examples<a class="headerlink" href="#common-usage-examples" title="Permanent link">&para;</a></h2>
+<h3 id="run-all-tests-consecutively">Run all tests consecutively<a class="headerlink" href="#run-all-tests-consecutively" title="Permanent link">&para;</a></h3>
+<div class="codehilite"><pre><span></span>sipplauncher --dut <span class="m">10</span>.22.22.24 --testsuite &lt;path_to_testsuite&gt;
+</pre></div>
+
+
+<h3 id="run-all-tests-with-concurrent-grouping-by-3-tests">Run all tests with concurrent grouping by 3 tests<a class="headerlink" href="#run-all-tests-with-concurrent-grouping-by-3-tests" title="Permanent link">&para;</a></h3>
+<p>Split all tests into concurrent groups of 3 tests in each group.
+Next, run all groups consecutively.
+3 tests inside a group are run concurrently.</p>
+<div class="codehilite"><pre><span></span>sipplauncher --dut <span class="m">10</span>.22.22.24 --testsuite &lt;path_to_testsuite&gt; --group <span class="m">3</span>
+</pre></div>
+
+
+<h3 id="run-a-single-test">Run a single test<a class="headerlink" href="#run-a-single-test" title="Permanent link">&para;</a></h3>
+<p>Let's assume, test suite contains a test named <code>normal-0000</code>.
+To run only this test:</p>
+<div class="codehilite"><pre><span></span>sipplauncher --dut <span class="m">10</span>.22.22.24 --testsuite &lt;path_to_testsuite&gt; --pattern-only normal-0000
+</pre></div>
+
+
+<hr />
+<h2 id="test-run-folder">Test run folder<a class="headerlink" href="#test-run-folder" title="Permanent link">&para;</a></h2>
+<p>Before executing a test, Sipplauncher copies its content to a temporary test folder.
+Default location of test run folder is <code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;</code>.
+<code>test_name</code> matches test folder name from <a href="#test-suite-folder-layout">Test suite folder layout</a>.
+<code>test_run_id</code> is assigned dynamically for each test run and is seen in <a href="..#getting-started">test result output</a>.</p>
+<p>Then Sipplauncher <a href="#keyword-replacement">replaces keywords</a> in:</p>
+<ol>
+<li><a href="#scripts">scripts</a></li>
+<li><a href="#sipp-scenarios">SIPp scenarios</a></li>
+</ol>
+<p>Then Sipplauncher launches SIPp instances in the working directory of a <a href="#test-run-folder">Test run folder</a>.</p>
+<p>After the test has finished, <a href="#test-run-folder">Test run folder</a> contains:</p>
+<ul>
+<li><a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>, which were run during the test</li>
+<li>all <a href="#log-files">log files</a></li>
+<li>generated <a href="#tls">TLS</a> certificates, private keys and <a href="#decrypting-tls-traffic">session keys</a></li>
+<li><a href="#pcap-capturing">pcap</a> file</li>
+</ul>
+<p>By default, the <a href="#test-run-folder">Test run folder</a> is deleted after the test has finished.
+To change this behavior, please use <code>--leave-temp</code> command-line argument.</p>
+<hr />
+<h2 id="template-engine">Template engine<a class="headerlink" href="#template-engine" title="Permanent link">&para;</a></h2>
+<p>Sipplauncher uses <a href="https://en.wikipedia.org/wiki/Jinja_(template_engine)">Jinja2</a> as a template engine.
+Therefore, you can use Jinja2 syntax when defining <a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>.
+A good example of the approach can be found in the <a href="#test-suite-folder-layout">embedded mock test suite</a>.</p>
+<p>Templates could be placed either into a <a href="#tests">Test</a> folder or in the <a href="#templates">Templates</a> folder.
+Both these locations are searched when Jinja2 imports a template into a test.</p>
+<h3 id="keyword-replacement">Keyword replacement<a class="headerlink" href="#keyword-replacement" title="Permanent link">&para;</a></h3>
+<p><a href="#template-engine">Template engine</a> is also responsible for replacing keywords in <a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>.
+Keywords could be either internal or supplied using <code>--keyword-replacement-values</code> command-line argument.</p>
+<p>To define a keyword in <a href="#scripts">script</a> or <a href="#sipp-scenarios">SIPp scenario</a>, you should use</p>
+<blockquote>
+<p>{ { keyword } }</p>
+</blockquote>
+<p>syntax.</p>
+<h4 id="internal-keywords">Internal keywords<a class="headerlink" href="#internal-keywords" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>keyword</th>
+<th>desription</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dut.host</td>
+<td>the value, passed via <code>--dut</code> command-line argument.</td>
+</tr>
+<tr>
+<td>test.name</td>
+<td>the <a href="#tests">Test</a> subfolder name.</td>
+</tr>
+<tr>
+<td>test.run_id</td>
+<td>the <a href="#tests">Test</a> random run ID.</td>
+</tr>
+<tr>
+<td>ua[0-9].host</td>
+<td><a href="#dynamic-ip-address-assignment">Dynamically assigned IP address</a> for the <a href="#tests">test's</a> SIPp instance <code>ua[0-9]</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dynamic-ip-address-assignment">Dynamic IP address assignment<a class="headerlink" href="#dynamic-ip-address-assignment" title="Permanent link">&para;</a></h2>
+<p>Sipplauncher assigns random IP addresses from a DUT IP network before running each test.</p>
+<p>Sipplauncher takes a DUT IP address, which is supplied via <code>--dut</code> command-line argument.
+Then it applies a network mask, which is supplied via <code>--network-mask</code> command-line argument, to the DUT IP address.
+The result is considered the DUT network.</p>
+<p>Then Sipplauncher randomly allocates IP addresses from the DUT network.
+The allocated address is then checked to be not yet assigned to another machine in the same LAN.
+Then the address is assigned to a machine, which runs Sipplauncher.</p>
+<p>The number of assigned IP addresses corresponds to the number of <a href="#sipp-scenarios">SIPp scenarios</a> in a <a href="#tests">test</a>.</p>
+<p>After the test has finished, the allocated IP addresses are deleted.</p>
+<h2 id="tls">TLS<a class="headerlink" href="#tls" title="Permanent link">&para;</a></h2>
+<p>Sipplauncher supports SIP TLS endpoints.
+For TLS to work on a UAS SIP endpoint, SSL certificate and private key should be provided to a UAS instance.
+Sipplauncher by default generates ephemeral SSL certificate and private key for each UAS.
+And launches UAS using this SSL certificate and private key.</p>
+<p>However, in this case, security issues regarding using certificates, issued by not-trusted CA, are likely to arise on a DUT UAC side,
+when the DUT as UAC tries to connect to such a UAS.</p>
+<p>To overcome this issue, <code>--tls-ca-root-cert</code> and <code>--tls-ca-root-key</code> Sipplauncher arguments could be handy.
+If these arguments were provided, Sipplauncher signs a generated SSL certificate and private key with supplied CA root certificate and private key.
+A DUT should be configured to trust this CA.
+Then a connection is established without security issues.</p>
+<p>The generated SSL certificates and private keys are saved to a <a href="#test-run-folder">Test run folder</a>.</p>
+<p>TLS packet exchange is stored in a .pcap file and could be <a href="#decrypting-tls-traffic">decrypted</a>.</p>
+<h2 id="pcap-capturing">Pcap capturing<a class="headerlink" href="#pcap-capturing" title="Permanent link">&para;</a></h2>
+<p>By default, Sipplauncher captures all packets, which have <a href="#dynamic-ip-address-assignment">dynamically assigned IP addresses</a> as either <code>src</code> or <code>dst</code>.
+Packet exchange is captured into a .pcap file, which could be opened with Wireshark application.
+Pcap file is named <code>sipp-&lt;test_run_id&gt;.pcap</code> and is stored in <a href="#test-run_folder">Test run folder</a>.</p>
+<p>You can disable <a href="#pcap-capturing">Pcap capturing</a> with <code>--no-pcap</code> command-line argument.</p>
+<h3 id="decrypting-tls-traffic">Decrypting TLS traffic<a class="headerlink" href="#decrypting-tls-traffic" title="Permanent link">&para;</a></h3>
+<p>Usually, it's easy to decrypt SSL packet exchange, if you have SSL private key.
+However, this is not the case for the <a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">Diffie-Hellman</a> encryption algorithm.
+This algorithm uses per-session dynamic keys.</p>
+<p>Sipplauncher helps to decrypt even Diffie-Hellman-encoded packet exchange.
+For this, Sipplauncher logs per-session dynamic keys into <code>tls_premaster_keys.txt</code> file in a <a href="#test-run-folder">Test run folder</a>.
+Then this file could be used to decrypt the packet exchange in Wireshark.</p>
+<p>You can go to <code>Edit</code> → <code>Preferences</code> → <code>Protocols</code> → <code>SSL</code> and choose <code>tls_premaster_keys.txt</code> in <code>(Pre)-Master-Secret log filename</code> field:</p>
+<p>Wireshark SSL preferences <img alt="" src="../assets/images/wireshark_tls_premaster_keys.png" /></p>
+<hr />
+<h2 id="log-files">Log files<a class="headerlink" href="#log-files" title="Permanent link">&para;</a></h2>
+<p>Logging facility is controlled via <code>/usr/local/etc/sipplauncher/sipplauncher.configlog.conf</code>.</p>
+<p>By default, Sipplauncher logs to following files:</p>
+<ul>
+<li><code>/tmp/sipplauncher.log</code> - general log file.</li>
+<li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/sipplauncher.log</code> - log, that contains information regarding execution of test <code>test_name</code>.</li>
+<li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/pysipp.launch.log</code> - log, that contains information regarding running SIPp instances of test <code>test_name</code>.</li>
+<li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/tls_premaster_keys.txt</code> - log of captured <a href="#decrypting-tls-traffic">TLS Pre-master keys</a>.</li>
+<li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/ua[0-9]..</code> - varios <a href="#sipp-scenario">SIPp scenario</a> <code>ua[0-9]</code> logs, which were produced by SIPp.</li>
+</ul>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href=".." title="Intro" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Intro
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../developer_guide/" title="Developer Guide" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Developer Guide
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 Zaleos SL
+          </div>
+
+
+Updated 2019-12-12
+
+
+        
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../assets/fonts/font-awesome.css">
+    
+      <a href="https://zaleos.net" class="md-footer-social__link fa fa-globe"></a>
+    
+      <a href="https://github.com/zaleos" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="http://linkedin.com/company/zaleos" class="md-footer-social__link fa fa-linkedin"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,753 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Automate your VoIP testing">
+      
+      
+        <link rel="canonical" href="https://sipplauncher.zaleos.net/developer_guide/">
+      
+      
+        <meta name="author" content="Zaleos">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.ico">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+    
+    
+      
+        <title>Developer Guide - sipplauncher</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.1b62728e.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.a8b3c06d.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#2196f3">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.268332fc.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700|Ubuntu+Mono&display=fallback">
+        <style>body,input{font-family:"Ubuntu","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="blue" data-md-color-accent="cyan">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#1-initialization" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://sipplauncher.zaleos.net" title="sipplauncher" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon">code</i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              sipplauncher
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Developer Guide
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/zaleos/sipplauncher/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    zaleos/sipplauncher
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main" role="main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="https://sipplauncher.zaleos.net" title="sipplauncher" class="md-nav__button md-logo">
+      
+        <i class="md-icon">code</i>
+      
+    </a>
+    sipplauncher
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/zaleos/sipplauncher/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    zaleos/sipplauncher
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Intro" class="md-nav__link">
+      Intro
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../user_guide/" title="User Guide" class="md-nav__link">
+      User Guide
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Developer Guide
+      </label>
+    
+    <a href="./" title="Developer Guide" class="md-nav__link md-nav__link--active">
+      Developer Guide
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-initialization" class="md-nav__link">
+    1. Initialization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-sipptest-list-collection" class="md-nav__link">
+    2. SIPpTest list collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-sipptest-list-processing" class="md-nav__link">
+    3. SIPpTest list processing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-sipptest-run-group-processing" class="md-nav__link">
+    4. SIPpTest run group processing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pre-run" class="md-nav__link">
+    1. Pre-run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-run" class="md-nav__link">
+    2. Run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-post-run" class="md-nav__link">
+    3. Post-run
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../contribution_guide/" title="Contribution Guide" class="md-nav__link">
+      Contribution Guide
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+  
+    <label class="md-nav__title" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-initialization" class="md-nav__link">
+    1. Initialization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-sipptest-list-collection" class="md-nav__link">
+    2. SIPpTest list collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-sipptest-list-processing" class="md-nav__link">
+    3. SIPpTest list processing
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-sipptest-run-group-processing" class="md-nav__link">
+    4. SIPpTest run group processing
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-pre-run" class="md-nav__link">
+    1. Pre-run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-run" class="md-nav__link">
+    2. Run
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-post-run" class="md-nav__link">
+    3. Post-run
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/zaleos/sipplauncher/edit/master/docs/developer_guide.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                  <h1>Developer Guide</h1>
+                
+                <p>Developer Guide extends <a href="../user_guide/">User Guide</a> with some information, which is relevant for:</p>
+<ul>
+<li>Sipplauncher developers and contributors</li>
+<li>Users, who wish to understand how Sipplauncher works under the hood</li>
+</ul>
+<h2 id="1-initialization">1. Initialization<a class="headerlink" href="#1-initialization" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Set up signal handler</strong></p>
+<p>We need to perform proper cleanup in case if:</p>
+<ul>
+<li>a user interrupts with CTRL+C</li>
+<li>Sipplaucnher is terminated with any other signal</li>
+</ul>
+<p>Otherwise, we'll leave stray "dummy" interfaces and partially-configured DUT.</p>
+<p>Thus, we set up our signal handler.</p>
+<p>There is a tricky place in signal handling - we can't do much inside the signal handler.
+We can't even log a message, because sometimes it causes a deadlock.
+The details of this issue are described in <code>Signals.py</code>.</p>
+<p>To work around this issue - we set a global variable inside the signal handler.
+And later we check this variable from the main code.
+Therefore, we have <em>interruption points</em>, which are deadlock-free.</p>
+</li>
+<li>
+<p><strong>Parse command-line arguments</strong></p>
+<p>To support <a href="../user_guide/#command-line-arguments">Command-line arguments</a>, we use the <code>argparse</code> library.</p>
+</li>
+<li>
+<p><strong>Set up TLS session keys interception</strong></p>
+<p>To support <a href="../user_guide/#decrypting-tls-traffic">Decrypting Diffie-Hellman TLS traffic</a>, we include a 3rd-party library <code>sipplauncher/sslkeylog.c</code>.
+In <code>main.py</code> we set the environment variable <code>LD_PRELOAD</code>, which points to <code>sslkeylog.so</code>.</p>
+<p>When we launch a child SIPp application, Linux checks this environment variable and preloads <code>sslkeylog.so</code> before running SIPp.
+This library overwrites some methods in the standard OpenSSL library.
+This makes possible to intercept and log TLS session keys.</p>
+</li>
+</ol>
+<p>Then <strong>Sipplauncher</strong> passes control to <code>Run.run()</code>, which is defined at <code>Run.py</code>.</p>
+<p><code>Run.run()</code> runs in a single thread and performs the following steps:</p>
+<hr />
+<h2 id="2-sipptest-list-collection">2. SIPpTest list collection<a class="headerlink" href="#2-sipptest-list-collection" title="Permanent link">&para;</a></h2>
+<p><code>TestPool</code> instance, defined at <code>TestPool.py</code>, collects names of subfolders inside a <a href="../user_guide/#test-suite-folder-layout">test suite folder</a>.
+The names of subfolders are considered the <a href="../user_guide/#tests">Test</a> names.
+Then <code>TestPool</code>:</p>
+<ol>
+<li>Sorts test names in alphabetical order</li>
+<li>Iterates over the test names.</li>
+</ol>
+<p>During iterating, each test name is checked.
+The <a href="../user_guide/#tests">test</a> is skipped, if:</p>
+<ol>
+<li>A test name matches the <a href="../user_guide/#templates">Template folder</a> name.</li>
+<li>The <code>--pattern-exclude</code> <a href="../user_guide/#command-line-arguments">command-line argument</a> is specified and a test name matches it.</li>
+<li>The <code>--pattern-only</code> <a href="../user_guide/#command-line-arguments">command-line argument</a> is specified and a test name doesn't match it.</li>
+</ol>
+<p>If the <a href="../user_guide/#tests">test</a> isn't skipped, a <code>SIPpTest</code> is instantiated from a test name and the instance is added to the list.
+A <code>SIPpTest</code> instance, defined at <code>Test.py</code>, encapsulates everything, needed to execute the <a href="../user_guide/#tests">test</a>.</p>
+<p>A list of <code>SIPpTest</code> instances, sorted alphabetically by the test name, is returned to <code>Run.run()</code>.</p>
+<hr />
+<h2 id="3-sipptest-list-processing">3. SIPpTest list processing<a class="headerlink" href="#3-sipptest-list-processing" title="Permanent link">&para;</a></h2>
+<p>Then the <code>--group</code> <a href="../user_guide/#optional-arguments">command-line argument</a> is considered.</p>
+<p><code>Run.run()</code> takes a slice of <code>SIPpTests</code>, which consists of a <code>--group</code> of elements, from the beginning of a <code>SIPpTest</code> list.
+This slice is considered a <code>SIPpTest</code> run group.
+Then <code>Run.run()</code> <a href="#4-sipptest-run-group-processing">processes</a> a <code>SIPpTest</code> run group.</p>
+<p>Then <code>Run.run()</code> takes the next slice from the <code>SIPpTest</code> list and <a href="#4-sipptest-run-group-processing">processes it</a>.</p>
+<p>This repeats until all <code>SIPpTests</code> from the list are processed.</p>
+<hr />
+<h2 id="4-sipptest-run-group-processing">4. SIPpTest run group processing<a class="headerlink" href="#4-sipptest-run-group-processing" title="Permanent link">&para;</a></h2>
+<p><code>SIPpTest</code> run group processing could be divided into stages:</p>
+<ul>
+<li>consecutive stages <a href="#pre-run">Pre-run</a> and <a href="#post-run">Post-run</a>: they're run in the context of the <code>Run.run()</code> thread.</li>
+<li>concurrent stage <a href="#run">Run</a>: it's run in the context of multiple spawned threads and processes.</li>
+</ul>
+<p>Here is the order of these steps:</p>
+<hr />
+<h3 id="1-pre-run">1. Pre-run<a class="headerlink" href="#1-pre-run" title="Permanent link">&para;</a></h3>
+<p><code>Run.run()</code> consecutively iterates over <code>SIPpTests</code> in a run group.
+For each of them, <code>SIPpTest.pre_run()</code> method is executed, which:</p>
+<ol>
+<li>
+<p><strong>Assigns dynamic IP addresses</strong></p>
+<p>The high-level overview is given in <a href="../user_guide/#dynamic-ip-address-assignment">Dynamically assigned IP address</a>.
+For a developer it's worth to add a few notes:</p>
+<ol>
+<li>
+<p>The check if the randomly obtained address is already occupied, is performed through the <a href="https://en.wikipedia.org/wiki/Arping">ARP ping</a>.
+It's used instead of regular ICMP ping because some hosts in LAN might have ICMP replies disabled.
+And therefore, if we based on ICMP ping, we could cause Ethernet conflicts.
+The ARP ping is performed using the <a href="https://scapy.net/">Scapy</a> library.</p>
+</li>
+<li>
+<p>A new "dummy" interface is created for each Test.
+Dummy interface is named with pattern <code>sipp-&lt;test_run_id&gt;</code>.
+Then the randomly generated IP addresses are assigned to the "dummy" interface.
+This way we do IP aliasing.
+We do the "dummy" interface approach instead of creating IP aliases via the <code>ip address add &lt;addr&gt; dev eth0</code> approach for the following reasons:</p>
+<ol>
+<li>to ease network cleanup: just destroy all interfaces which name matches the <code>sipp-&lt;&gt;</code> pattern</li>
+<li>to remove the need to specify or calculate network interface on which to create aliases: we rely on the Linux routing system</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>Creates a test run folder</strong></p>
+<p><a href="../user_guide/#test-run-folder">Test run folder</a> is created by copying <a href="../user_guide/#tests">Test</a> folder to location <code>/var/tmp/sipplaucnher/&lt;test_name&gt;/&lt;test_run_id&gt;</code>.</p>
+<p>Copying is performed using <code>shutil.copytree()</code>.</p>
+</li>
+<li>
+<p><strong>Sets up logging into Test run folder</strong></p>
+<p>Sipplauncher <a href="../user_guide/#log-files">logging facilities</a> and paths are configured in <code>/usr/local/etc/sipplauncher/sipplauncher.configlog.conf</code>.
+Static log location is by default defined there as <code>/tmp/sipplauncher.log</code>.</p>
+<p>We have following requirements:</p>
+<ol>
+<li>
+<p>We need to easely separate the logs of different <a href="../user_guide/#tests">Test</a> runs.
+   Thus, we want to log the execution of each <a href="../user_guide/#tests">Test</a> into a <a href="../user_guide/#test-run-folder">Test run folder</a>.
+   The log path should look like <code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/sipplauncher.log</code>, where <code>&lt;test_run_id&gt;</code> is random and isn't known beforehand.
+   Therefore, the <a href="../user_guide/#tests">Test</a> run log file location can't be static. It should be dynamic.</p>
+</li>
+<li>
+<p>We want to preserve the possibility to configure log message format in <code>/usr/local/etc/sipplauncher/sipplauncher.configlog.conf</code>.</p>
+</li>
+</ol>
+<p>To fulfill the above requirements, we implement the logging class <code>sipplauncher.utils.Log.DynamicFileHandler</code>.
+It should be specified as a logging <code>class</code> for those logs, which need to be stored into a <a href="../user_guide/#test-run-folder">Test run folder</a>.</p>
+<p>At runtime, we check if the logging class is set to <code>sipplauncher.utils.Log.DynamicFileHandler</code>.
+And if yes, we supply an actual <a href="../user_guide/#test-run-folder">Test run folder</a> path to <code>sipplauncher.utils.Log.DynamicFileHandler</code> instance.</p>
+</li>
+<li>
+<p><strong>Replaces keywords using the Template Engine</strong></p>
+<p>A list of files, which need to be processed using the <a href="../user_guide/#template-engine">Template engine</a>, is collected:</p>
+<ul>
+<li><a href="../user_guide/#scripts">Scripts</a>: result of <code>glob.glob("*.sh")</code>.</li>
+<li><a href="../user_guide/#sipp-scenarios">SIPp scenarios</a>: the files, which match pattern <code>^(ua[cs]+)_(ua[0-9]+).xml$</code>.</li>
+</ul>
+<p>All these files are rendered by the <a href="https://en.wikipedia.org/wiki/Jinja_(template_engine)">Jinja2</a> API <code>Template.render()</code>.</p>
+<p>If the rendering result differs from the original file content - the file is overwritten with the newly rendered content.</p>
+</li>
+<li>
+<p><strong>Generates SSL certificates and keys</strong></p>
+<p>The process is described <a href="../user_guide/#tls">here</a>.
+Python <code>OpenSSL</code> library is used.</p>
+</li>
+<li>
+<p><strong>Activates pcap sniffing</strong></p>
+<p>We use <code>scapy.sendrecv.AsyncSniffer</code> to start a new background thread.
+This thread installs the <a href="https://en.wikipedia.org/wiki/Berkeley_Packet_Filter">BPF</a> on all system network interfaces.
+The BPF matches all traffic regarding <a href="../user_guide/#dynamic-ip-address-assignment">Dynamically assigned IP addresses</a> for this particular <a href="../user_guide/#tests">Test</a> run.
+The captured traffic is stored to the memory buffer.</p>
+</li>
+</ol>
+<hr />
+<h3 id="2-run">2. <strong>Run</strong><a class="headerlink" href="#2-run" title="Permanent link">&para;</a></h3>
+<p><code>Run.run()</code> iterates over <code>SIPpTests</code> in a run group and for each of them launches the <code>SIPpTest.run()</code> method in a dedicated Python <code>Thread</code>.</p>
+<p>Then <code>Run.run()</code> waits for threads to finish.</p>
+<p><code>SIPpTest.run()</code> method performs following steps:</p>
+<ol>
+<li>
+<p><strong>Runs before.sh</strong></p>
+<p>If <code>before.sh</code> is present in a <a href="../user_guide/#test-run-folder">Test run folder</a>, we execute it with <code>subprocess.Popen()</code> API.</p>
+<p>Then we wait for it to finish and check its exit code.
+If the exit code is non-zero - we stop the test as FAILED.</p>
+</li>
+<li>
+<p><strong>Forks a new PysippProcess</strong></p>
+<p><code>PysippProcess</code> is a subclass of the <code>multiprocessing.Process</code>.</p>
+<p><code>PysippProcess</code> performs <code>os.chdir()</code> to a <a href="../user_guide/#test-run-folder">Test run folder</a> and launches SIPp through the API of the <code>Pysipp</code> library.</p>
+<p>We need to fork the <code>Process</code>, because we have the <a href="../user_guide/#log-files">requirement</a> to store all the logs, which relate to <a href="../user_guide/#tests">Test</a> run, in the <a href="../user_guide/#test-run-folder">Test run folder</a>.</p>
+<p>From this requirement we get the following outcome:</p>
+<ol>
+<li>Some of the SIPp log locations are not configurable and are logged to a current working directory.
+   Therefore we need to <code>os.chdir()</code> into a <a href="../user_guide/#test-run-folder">Test run folder</a> before running SIPp.</li>
+<li><code>os.chdir()</code> changes the current working directory for a whole current process.
+   However, we are going to use it inside the <a href="#2-run">concurrently running Threads</a>.
+   Therefore, this introduces the race condition.</li>
+<li>Therefore, we need to launch a child <code>Process</code> from a <code>Thread</code>.
+   And then, inside the child <code>Process</code>, call <code>os.chdir()</code> and then run SIPp.
+   This way, we change the working directory inside the child process and avoid the race condition in the parent process.</li>
+</ol>
+</li>
+<li>
+<p><strong>Reports test result</strong></p>
+<p><code>SIPpTest.run()</code> waits for <code>PysippProcess</code> to finish.</p>
+<p>The test is reported as FAIL if <code>exitcode</code> is non-zero, SUCCESS otherwise.</p>
+<p>A <code>SIPpTest.run()</code> Thread measures time from its begging and reports the amount of time elapsed.</p>
+</li>
+</ol>
+<hr />
+<h3 id="3-post-run">3. Post-run<a class="headerlink" href="#3-post-run" title="Permanent link">&para;</a></h3>
+<p>Post-run performs a rollback of actions, which were done in the <a href="#pre-run">Pre-run</a>.
+The rollback is performed in the opposite order of the <a href="#pre-run">Pre-run</a>.</p>
+<p><code>Run.run()</code> consecutively iterates over <code>SIPpTests</code> in a run group.
+For each of them, <code>SIPpTest.post_run()</code> method is executed, which:</p>
+<ol>
+<li>
+<p><strong>Runs after.sh</strong></p>
+<p>If <code>after.sh</code> is present in a <a href="../user_guide/#test-run-folder">Test run folder</a>, we execute it with <code>subprocess.Popen()</code> API.</p>
+</li>
+<li>
+<p><strong>Deactivates pcap sniffing</strong></p>
+<p>We invoke <code>scapy.sendrecv.AsyncSniffer.stop()</code> and wait until the background <code>Thread</code> terminates.</p>
+<p>Then we sort the memory buffer with pcap frames by the frame timestamp.
+This is needed, because in case if traffic goes through different network interfaces, it could appear in a slightly wrong order inside the memory buffer.</p>
+<p>Then we store the sorted memory buffer in file <code>sipp-&lt;test_run_id&gt;.pcap</code> in a <a href="../user_guide/#test-run-folder">Test run folder</a>.</p>
+</li>
+<li>
+<p><strong>Removes a test run folder</strong></p>
+<p>We remove it with <code>shutil.rmtree()</code>, unless the <code>--leave-temp</code> <a href="../user_guide/#command-line-arguments">command-line argument</a> was provided.</p>
+</li>
+<li>
+<p><strong>Removes dynamic IP addresses</strong></p>
+<p>We remove a "dummy" pseudo-interface with name <code>sipp-&lt;test_run_id&gt;</code>.</p>
+</li>
+</ol>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../user_guide/" title="User Guide" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                User Guide
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../contribution_guide/" title="Contribution Guide" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Contribution Guide
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2019 Zaleos SL
+          </div>
+
+
+Updated 2019-12-12
+
+
+        
+      </div>
+      
+  <div class="md-footer-social">
+    <link rel="stylesheet" href="../assets/fonts/font-awesome.css">
+    
+      <a href="https://zaleos.net" class="md-footer-social__link fa fa-globe"></a>
+    
+      <a href="https://github.com/zaleos" class="md-footer-social__link fa fa-github"></a>
+    
+      <a href="http://linkedin.com/company/zaleos" class="md-footer-social__link fa fa-linkedin"></a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.8e03edeb.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+    
+  </body>
+</html>
