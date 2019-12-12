@@ -1,0 +1,2 @@
+recursive-include resources/etc *
+recursive-include . requirements* README*

@@ -50,3 +50,6 @@ plugins:
 
 nav:
     - Intro: index.md
+    - User Guide: user_guide.md
+    - Developer Guide: developer_guide.md
+    - Contribution Guide: contribution_guide.md
