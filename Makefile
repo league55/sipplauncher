@@ -114,10 +114,5 @@ list:
 version:
 	@echo $(PVERSION)
 
-install-reqs-docs:
-	echo '' ;
-	echo '* Installing requirements: docs' ;
-	$(PYTHON) -m pip install -r requirements_docs.txt
-
-docs_serve:
+serve-docs:
 	mkdocs serve -a 0.0.0.0:8000
