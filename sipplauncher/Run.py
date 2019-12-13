@@ -121,6 +121,11 @@ def run(args):
                 for task in tasks:
                     task.test.pre_run(args)
 
+                # Issue #69: Need to wait a bit after sniffing thread has been started.
+                # Otherwise we might miss first SIP packets.
+                if not args.no_pcap:
+                    time.sleep(PCAP_SYNC_TIMEOUT)
+
                 # Need to start all the threads
                 for task in tasks:
                     task.thread.start()
