@@ -79,7 +79,7 @@ apt-get install -y git sip-tester tcpdump libssl-dev gcc python3-pip
 This part is common for all platforms:
 
 ```bash
-git clone https://gitlab.com/zaleos/softza/sipplauncher.git -b develop
+git clone https://github.com/zaleos/sipplauncher.git -b develop
 cd sipplauncher
 make install-reqs
 make install-all

@@ -5,7 +5,7 @@ Developer Guide extends [User Guide](user_guide.md) with some information, which
 
 ## 1. Initialization
 
-1. **Set up signal handler**
+1. **Set up the signal handler**
 
     We need to perform proper cleanup in case if:
 
@@ -126,9 +126,9 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
     Sipplauncher [logging facilities](user_guide.md#log-files) and paths are configured in `/usr/local/etc/sipplauncher/sipplauncher.configlog.conf`.
     Static log location is by default defined there as `/tmp/sipplauncher.log`.
 
-    We have following requirements:
+    We have the following requirements:
 
-    1. We need to easely separate the logs of different [Test](user_guide.md#tests) runs.
+    1. We need to easily separate the logs of different [Test](user_guide.md#tests) runs.
        Thus, we want to log the execution of each [Test](user_guide.md#tests) into a [Test run folder](user_guide.md#test-run-folder).
        The log path should look like `/var/tmp/sipplauncher/<test_name>/<test_run_id>/sipplauncher.log`, where `<test_run_id>` is random and isn't known beforehand.
        Therefore, the [Test](user_guide.md#tests) run log file location can't be static. It should be dynamic.
@@ -162,7 +162,7 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
     We use `scapy.sendrecv.AsyncSniffer` to start a new background thread.
     This thread installs the [BPF](https://en.wikipedia.org/wiki/Berkeley_Packet_Filter) on all system network interfaces.
     The BPF matches all traffic regarding [Dynamically assigned IP addresses](user_guide.md#dynamic-ip-address-assignment) for this particular [Test](user_guide.md#tests) run.
-    The captured traffic is stored to the memory buffer.
+    The captured traffic is stored in the memory buffer.
 
 ---
 
@@ -185,8 +185,6 @@ Then `Run.run()` waits for threads to finish.
 
     `PysippProcess` is a subclass of the `multiprocessing.Process`.
 
-    `PysippProcess` performs `os.chdir()` to a [Test run folder](user_guide.md#test-run-folder) and launches SIPp through the API of the `Pysipp` library.
-
     We need to fork the `Process`, because we have the [requirement](user_guide.md#log-files) to store all the logs, which relate to [Test](user_guide.md#tests) run, in the [Test run folder](user_guide.md#test-run-folder).
 
     From this requirement we get the following outcome:
@@ -199,6 +197,10 @@ Then `Run.run()` waits for threads to finish.
     3. Therefore, we need to launch a child `Process` from a `Thread`.
        And then, inside the child `Process`, call `os.chdir()` and then run SIPp.
        This way, we change the working directory inside the child process and avoid the race condition in the parent process.
+
+    `PysippProcess` determines the SIPp launch order from [SIPp scenario](user_guide.md#sipp-scenarios) file names.
+    This process is described [here](user_guide.md#sipp-scenarios).
+    Then `PysippProcess` launches SIPp instances using the API of the `Pysipp` library.
 
 3. **Reports test result**
 

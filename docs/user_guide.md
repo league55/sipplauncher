@@ -14,7 +14,7 @@
 Test suite location is passed to Sipplauncher with `--testsuite` command-line option.
 In case if this option is omitted, Sipplauncher uses a test suite, which is located at `<current_working_directory>/tmp-testsuite`.
 
-In order to understand the layout required by Sipplauncher, we advice to look at the layout of the embedded mock test suite `sipplauncher/tmp-testsuite`.
+To understand the layout required by Sipplauncher, we advise looking at the layout of the embedded mock test suite `sipplauncher/tmp-testsuite`.
 The embedded mock test suite is present for the following purposes:
 
  - demonstrate **Sipplauncher** test suite layout and features
@@ -57,36 +57,110 @@ Each test folder contains all the information needed for a test to run:
 #### SIPp scenarios
 
 These are files named `uac_ua2.xml`, `uas_ua0.xml`, etc.
-All these files form a SIPp instance group, which is run concurrently.
 
-The scenario file name should match the regex pattern `^(ua[cs]+)_(ua[0-9]+).xml$`.
-The scenario file name defines test launch order and role.
+A scenario file name defines a launch order and role of a SIPp instance.
+A scenario file name should match one of the regex patterns:
 
-Here, `uac` or `uas` prefix affects the order of launching SIPp instances: `uas` scenarios are launched before `uac` scenarios.
+* `^(ua[cs]+)_(ua[0-9]+).xml$`.
+* `^([a-zA-Z0-9]+)_(ua[cs]+)_(ua[0-9]+).xml$`
 
-`ua[0-9]` suffix defines an `instance name` inside a SIPp instance group.
-A SIPp instance in a group can refer to other SIPp instances in the same group using `ua[0-9].host` keywords in its scenario file.
+A scenario file name contains several parts:
 
-For example, we have files named `uac_ua2.xml` and `uas_ua0.xml` in a test folder.
-`uac_ua2.xml` may refer to SIPp instance, which runs`uas_ua0.xml`, using `ua0.host` keyword.
+1. `^([a-zA-Z0-9]+)` optional part.
 
-This is possible due to [Dynamic IP address assignment](#dynamic-ip-address-assignment) and [Keyword replacement](#keyword-replacement).
-First, dynamic IP addresses are allocated and assigned.
-Then, [Template engine](#template-engine) replaces `ua[0-9].host` keywords with real IP addresses of SIPp instances.
+      This part defines an ID of a **run group**, in which the scenario will be run.
+
+      This part divides all the scenarios into groups and determines the order of running these groups.
+      Here are the rules:
+
+      * Scenarios from the same run group are run concurrently.
+      * Different run groups are run consecutively, ordered by the run group ID value.
+
+      If this part is absent, it's assumed that the scenario's run group ID is "" (empty string).
+
+      For example:
+
+          normal-0000
+          ├── uac_ua0.xml
+          └── uas_ua1.xml
+
+      Here, it's assumed that all scenarios belong to the same run group ID "".
+      And therefore, all these scenarios are run concurrently.
+
+      Here is the example of a more complex [Test](#tests) folder layout:
+
+          normal-0001
+          ├── part0_uac_ua0.xml
+          ├── part0_uas_ua1.xml
+          └── part1_uac_ua0.xml
+
+      Here, Sipplauncher will determine 2 run groups:
+
+      * `part0`
+      * `part1`
+
+      Then, Sipplauncher will run concurrently `part0_uac_ua0.xml` and `part0_uas_ua1.xml` and wait for them to finish.
+
+      If any of these scenarios fail, test execution stops.
+      Otherwise, Sipplauncher then runs `part1_uac_ua0.xml`.
+
+      `ua0` preserves the same [dynamically assigned](#dynamic-ip-address-assignment) IP address when running both run groups.
+
+2. `(ua[cs]+)` mandatory part.
+
+      This part defines the order of launching SIPp instances inside a **run group**.
+      `uas` scenarios are launched before `uac` scenarios.
+
+3. `ua[0-9]` mandatory part.
+
+      This part defines an `instance name` inside a SIPp instance group.
+
+      A SIPp instance in a group can refer to other SIPp instances in the same group using `ua[0-9].host` keywords in its scenario file.
+
+      For example, we have files named `uac_ua2.xml` and `uas_ua0.xml` in a test folder.
+      `uac_ua2.xml` may refer to SIPp instance, which runs`uas_ua0.xml`, using `ua0.host` keyword.
+
+      This is possible due to the [Dynamic IP address assignment](#dynamic-ip-address-assignment) and [Keyword replacement](#keyword-replacement).
+      First, dynamic IP addresses are allocated and assigned.
+      Then, the [Template engine](#template-engine) replaces `ua[0-9].host` keywords with real IP addresses of SIPp instances.
+
+      There shouldn't be duplicates of the SIPp `instance name` in the same **run group**.
+      Here are the examples:
+
+      Duplicate SIPp instance names are **disallowed** within the same default **run group**:
+
+          normal-0000
+          ├── uac_ua0.xml
+          └── uas_ua0.xml
+
+      Duplicate SIPp instance names are **disallowed** within the same **run group** `part0`:
+
+          normal-0001
+          ├── part0_uac_ua0.xml
+          └── part0_uas_ua0.xml
+
+      Duplicate SIPp instance names are **allowed** within different **run groups** `part0` and `part1`:
+
+          normal-0002
+          ├── part0_uac_ua0.xml
+          └── part1_uas_ua0.xml
+
+      SIPp instance preserves the same [dynamically assigned](#dynamic-ip-address-assignment) IP address when running both run groups.
+      Therefore, in the above example, `ua0` will preserve its IP when running in group `part0` and `part1`.
 
 #### Scripts
 
 Files, which have `.sh` extension, are considered the scripts.
 
-There are 2 predefined script names, which are automatically run by **Sipplauncher**, if present:
+There are 2 predefined script names, which are automatically run by **Sipplauncher** if present:
 
 1. `before.sh` is run before running the SIPp instance group.
 2. `after.sh` is run after running the SIPp instance group.
 
 These scripts could be used to provision a DUT with some configuration, which is needed for a test to pass.
 
-All other scripts aren't run automatically by **Sipplauncher**, but could be run from elsewhere.
-For example, from [SIPp scenario](#sipp-scenarios).
+All other scripts aren't run automatically by **Sipplauncher** but could be run from elsewhere.
+For example, from the [SIPp scenario](#sipp-scenarios).
 
 When preparing a test to run, the keywords inside all test's scripts are [replaced](#keyword-replacement).
 
@@ -136,22 +210,22 @@ sipplauncher -h
 |argument name|argument value|description|
 | --- | --- | --- |
 |-h, --help||Show help message and exit|
-|--template-folder|TEMPLATE_FOLDER|Path to folder with [templates](#templates).<br>Default: `<testsuite>/TEMPLATES`.|
+|--template-folder|TEMPLATE_FOLDER|Path to a folder with [templates](#templates).<br>Default: `<testsuite>/TEMPLATES`.|
 |--pattern-exclude|PATTERN_EXCLUDE|Regular expression to exclude tests.<br>If used with `--pattern-only` arg, and a test name matches both, the test is excluded.<br><br>Example: `--pattern-exclude options --pattern-exclude '.*_dns' --pattern-exclude '.*_tls'`.|
 |--pattern-only|PATTERN_ONLY|Regular expression to specify the only tests which should be run.<br>If used with `--pattern-exclude` arg, and a test name matches both, the test is excluded.<br><br>Example: `--pattern-only options --pattern-only '.*_dns' --pattern-only '.*_tls'`.|
 |--network-mask|NETWORK_MASK|Network mask, which is used for [Dynamic IP address assignment](#dynamic-ip-address-assignment).<br>Default: `24`.|
-|--group|GROUP|Number of SIPp tests to be run at the same time.<br>Default: `1`.<br>Please see [example](#run-all-tests-with-concurrent-grouping-by-3-tests).|
+|--group|GROUP|Number of SIPp tests to be run at the same time.<br>Default: `1`.<br>Please see the [example](#run-all-tests-with-concurrent-grouping-by-3-tests).|
 |--group-pause|GROUP_PAUSE|Pause between group executions.<br>Default: `0.8`.|
 |--group-stop-first-fail||Stops after any test of the group fails.|
 |--random||Selects randomly tests from the test pool (instead of alphabetical consecutive ordering).|
 |--dry-run||Dry run, simulates an execution without actual [SIPp scenarios](#sipp-scenarios) launch.|
 |--fail-expected||OK if the execution fails.|
-|--leave-temp||Don't remove [test run folder](#test-run-folder) after the test has finished.<br>By default, [test run folder](#test-run-folder) is removed after the test has finished.|
+|--leave-temp||Don't remove [test run folder](#test-run-folder) after the test has finished.<br>By default, a [test run folder](#test-run-folder) is removed after the test has finished.|
 |--keyword-replacement-values|KEYWORD_REPLACEMENT_VALUES|Custom [keyword values](#keyword-replacement) in JSON object format to be used by the [Template engine](#template-engine) to replace values in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).<br><br>Example: `--keyword-replacement-values '{ "ua1_username": "test1", "ua2_username": "test2", "some_url": "http://10.22.22.24:8080" }'`.|
 |--no-pcap||Disable [capturing to pcap](#pcap-capturing) files.|
 |--tls-ca-root-cert|TLS_CA_ROOT_CERT|[TLS CA root certificate](#tls) file (.pem format).<br>It must be used together with `tls-ca-root-key` arg.|
 |--tls-ca-root-key|TLS_CA_ROOT_KEY|[TLS CA root key](#tls) file (.pem format).<br>It must be used together with `tls-ca-root-key` arg.|
-|--sipp-transport|One of: u1, un, ui, t1, tn, l1, ln|SIPp -t param.<br>The default is `l1`, if [TLS](#tls) usage is auto-detected. Oherwise, it's `u1`.<br>[TLS](#tls) usage is auto-detected if any tls-related option is used.|
+|--sipp-transport|One of: u1, un, ui, t1, tn, l1, ln|SIPp -t param.<br>The default is `l1`, if [TLS](#tls) usage is auto-detected. Otherwise, it's `u1`.<br>[TLS](#tls) usage is auto-detected if any tls-related option is used.|
 |--sipp-info-file|SIPP_INFO_FILE|SIPp `-inf` argument.<br>Used to specify an [Injection file](#injection-file).|
 |--sipp-call-rate|SIPP_CALL_RATE|SIPp `-r` argument.|
 |--sipp-max-calls|SIPP_MAX_CALLS|SIPp `-m` argument.|
@@ -227,7 +301,7 @@ Both these locations are searched when Jinja2 imports a template into a test.
 
 ### Keyword replacement
 
-[Template engine](#template-engine) is also responsible for replacing keywords in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).
+The [Template engine](#template-engine) is also responsible for replacing keywords in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).
 Keywords could be either internal or supplied using `--keyword-replacement-values` command-line argument.
 
 To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use
@@ -282,8 +356,8 @@ TLS packet exchange is stored in a .pcap file and could be [decrypted](#decrypti
 ## Pcap capturing
 
 By default, Sipplauncher captures all packets, which have [dynamically assigned IP addresses](#dynamic-ip-address-assignment) as either `src` or `dst`.
-Packet exchange is captured into a .pcap file, which could be opened with Wireshark application.
-Pcap file is named `sipp-<test_run_id>.pcap` and is stored in [Test run folder](#test-run_folder).
+Packet exchange is captured into a .pcap file, which could be opened with the Wireshark application.
+Pcap file is named `sipp-<test_run_id>.pcap` and is stored in a [Test run folder](#test-run_folder).
 
 You can disable [Pcap capturing](#pcap-capturing) with `--no-pcap` command-line argument.
 
