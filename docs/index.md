@@ -62,7 +62,7 @@ This part is dependant on the selected platform:
 For CentOS-7:
 
 ```bash
-yum install -y wget git make which tcpdump openssl-devel gcc python3-pip
+yum install -y wget git make which tcpdump openssl-devel gcc python3-pip python3-devel
 wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -ivh epel-release-latest-7.noarch.rpm
 yum install -y sipp
