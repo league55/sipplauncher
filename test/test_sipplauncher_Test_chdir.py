@@ -27,7 +27,7 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
 
 @pytest.mark.parametrize(
     "mock_fs,args,expected", [
-        # Issue #62: basic test
+        # basic test
         (
             {
                 TEST_NAME: {
@@ -43,6 +43,26 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                 "uas_ua1.xml": "",
                 "before.sh": "echo -n 1 > before.txt",
                 "after.sh": "echo -n 2 > after.txt",
+                "before.txt" : "1",
+                "after.txt" : "2",
+            },
+        ),
+        # error exit code
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": "",
+                    "uas_ua1.xml": "",
+                    "before.sh": "echo -n 1 > before.txt",
+                    "after.sh": "echo -n 2 > after.txt\nexit -1",
+                },
+            },
+            "--dut {0} --leave-temp".format(DUT_IP),
+            {
+                "uac_ua0.xml": "",
+                "uas_ua1.xml": "",
+                "before.sh": "echo -n 1 > before.txt",
+                "after.sh": "echo -n 2 > after.txt\nexit -1",
                 "before.txt" : "1",
                 "after.txt" : "2",
             },
