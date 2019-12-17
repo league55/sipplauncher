@@ -57,8 +57,9 @@ def my_main_fun():
             if os.path.isfile(DEFAULT_SSL_KEY_LOG_LIB):
                 os.environ["SSLKEYLOGFILE"] = DEFAULT_TLS_PREMASTER_KEYS_FILE
                 os.environ["LD_PRELOAD"] = DEFAULT_SSL_KEY_LOG_LIB
+                logging.info("Using {0} to capture TLS pre-master keys.".format(DEFAULT_SSL_KEY_LOG_LIB))
             else:
-                logging.info("Unable to find {0}. TLS pre-master keys won't be stored.".format(DEFAULT_SSL_KEY_LOG_LIB))
+                logging.info("Please install {0} to capture TLS pre-master keys.".format(DEFAULT_SSL_KEY_LOG_LIB))
 
     # Init ret code - pesimistic
     ret_code = 1
