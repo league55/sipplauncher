@@ -60,7 +60,7 @@ RUN_RET_FAIL = 1
             "--dut {0}".format(DUT_IP),
             SIPP_RET_OK,
             RUN_RET_OK,
-            SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT,
+            SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT,
             SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # --no-pcap should be faster
@@ -86,7 +86,7 @@ RUN_RET_FAIL = 1
             "--dut {0}".format(DUT_IP),
             SIPP_RET_FAIL,
             RUN_RET_FAIL,
-            SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT,
+            SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT,
             SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # sipp fails and fail is expected
@@ -99,7 +99,7 @@ RUN_RET_FAIL = 1
             "--dut {0} --fail-expected".format(DUT_IP),
             SIPP_RET_FAIL,
             RUN_RET_OK,
-            SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT,
+            SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT,
             SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # basic insane test
@@ -140,7 +140,7 @@ RUN_RET_FAIL = 1
             "--dut {0}".format(DUT_IP),
             SIPP_RET_OK,
             RUN_RET_OK,
-            2 * (SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT) + DEFAULT_GROUP_PAUSE,
+            2 * (SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT) + DEFAULT_GROUP_PAUSE,
             2 * SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # 2 sane consecutive tests + --group-pause
@@ -156,7 +156,7 @@ RUN_RET_FAIL = 1
             "--dut {0} --group-pause 5".format(DUT_IP),
             SIPP_RET_OK,
             RUN_RET_OK,
-            2 * (SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT) + 5,
+            2 * (SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT) + 5,
             2 * SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # 2 sane concurrent tests
@@ -172,7 +172,7 @@ RUN_RET_FAIL = 1
             "--dut {0} --group 2".format(DUT_IP),
             SIPP_RET_OK,
             RUN_RET_OK,
-            SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT,
+            SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT,
             2 * SIPPLAUNCHER_RUN_TIME_OK,
         ),
         # 2 sane concurrent tests v2
@@ -188,7 +188,7 @@ RUN_RET_FAIL = 1
             "--dut {0} --group 3".format(DUT_IP),
             SIPP_RET_OK,
             RUN_RET_OK,
-            SIPP_MOCK_RUN_TIME + PCAP_SYNC_TIMEOUT,
+            SIPP_MOCK_RUN_TIME + 2 * PCAP_SYNC_TIMEOUT,
             2 * SIPPLAUNCHER_RUN_TIME_OK,
         ),
     ]
