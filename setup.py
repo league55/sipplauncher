@@ -43,7 +43,6 @@ my_config_path=os.path.join('resources', 'etc')
 my_data_files = walk_folder_recur(DEFAULT_CONFIG_FILES,
                                   my_config_path,
                                   level=2)
-my_data_files.append(('lib', ['libsslkeylog.so']))
 
 array_packages = find_packages(exclude=[])
 my_array_files = find_packages(PNAME, exclude=['tests', 'tests.*', 'test', 'test_*', '*.tests'])
@@ -94,10 +93,4 @@ setup(
     data_files=my_data_files,
     include_package_data=True,
     python_requires='>=3.6',
-    # Issue #53: We're shipping libsslkeylog.so in our bundle.
-    # We need libsslkeylog.so to be accessible in FS to preload it before running sipp.
-    # Preloading is done using LD_PRELOAD env variable.
-    # If we set zip_safe=True, the bundle is installed as an egg.
-    # And libsslkeylog.so in not available in FS for preloading.
-    zip_safe=False,
 )

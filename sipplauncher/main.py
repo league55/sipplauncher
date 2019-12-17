@@ -15,6 +15,8 @@ import sys
 import inspect
 from .utils.Signals import SignalException, capture_all_signals, check_signal
 from .utils.Utils import is_tls_transport
+from .utils.Defaults import (DEFAULT_SSL_KEY_LOG_LIB,
+                             DEFAULT_TLS_PREMASTER_KEYS_FILE)
 
 # import warnings
 # warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -52,13 +54,11 @@ def my_main_fun():
         We preload libsslkeylog.so to patch openssl.so to intercept and dump keys.
         """
         if is_tls_transport(args.sipp_transport):
-            app_dir = os.path.dirname(inspect.getfile(sipplauncher))
-            libsslkeylog_so_path = os.path.join(app_dir, "../lib", "libsslkeylog.so")
-            if os.path.isfile(libsslkeylog_so_path):
-                os.environ["SSLKEYLOGFILE"] = "tls_premaster_keys.txt"
-                os.environ["LD_PRELOAD"] = libsslkeylog_so_path
+            if os.path.isfile(DEFAULT_SSL_KEY_LOG_LIB):
+                os.environ["SSLKEYLOGFILE"] = DEFAULT_TLS_PREMASTER_KEYS_FILE
+                os.environ["LD_PRELOAD"] = DEFAULT_SSL_KEY_LOG_LIB
             else:
-                raise Exception("{0} not found. Please verify it is installed".format(libsslkeylog_so_path))
+                logging.info("Unable to find {0}. TLS pre-master keys won't be stored.".format(DEFAULT_SSL_KEY_LOG_LIB))
 
     # Init ret code - pesimistic
     ret_code = 1
