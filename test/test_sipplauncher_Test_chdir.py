@@ -39,10 +39,6 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
             },
             "--dut {0} --leave-temp".format(DUT_IP),
             {
-                "uac_ua0.xml": "",
-                "uas_ua1.xml": "",
-                "before.sh": "echo -n 1 > before.txt",
-                "after.sh": "echo -n 2 > after.txt",
                 "before.txt" : "1",
                 "after.txt" : "2",
             },
@@ -59,12 +55,22 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
             },
             "--dut {0} --leave-temp".format(DUT_IP),
             {
-                "uac_ua0.xml": "",
-                "uas_ua1.xml": "",
-                "before.sh": "echo -n 1 > before.txt",
-                "after.sh": "echo -n 2 > after.txt\nexit -1",
                 "before.txt" : "1",
                 "after.txt" : "2",
+            },
+        ),
+        # error exit code
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": "",
+                    "uas_ua1.xml": "",
+                    "before.sh": "echo -n 1 > before.txt\nexit -1",
+                },
+            },
+            "--dut {0} --leave-temp".format(DUT_IP),
+            {
+                "before.txt" : "1",
             },
         ),
     ]
@@ -72,6 +78,8 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
 def test(mocker, mock_fs, args, expected):
     """Testing SIPpTest keyword replacement
     """
+    cur_path = os.getcwd()
+
     dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test_chdir_")
     sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
 
@@ -101,3 +109,5 @@ def test(mocker, mock_fs, args, expected):
     test.post_run(parsed_args)
 
     shutil.rmtree(dirpath)
+
+    assert(os.getcwd() == cur_path) # We should return to the current working directory
