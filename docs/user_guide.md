@@ -375,6 +375,8 @@ You can go to `Edit` → `Preferences` → `Protocols` → `SSL` and choose `tls
 
 Wireshark SSL preferences ![](assets/images/wireshark_tls_premaster_keys.png)
 
+To enable this feature, you should [install Sipplauncher from source](index.md#install-sipplauncher).
+
 ---
 
 ## Log files
