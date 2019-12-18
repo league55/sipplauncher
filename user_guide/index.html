@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -62,7 +62,7 @@
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700|Ubuntu+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700%7CUbuntu+Mono&display=fallback">
         <style>body,input{font-family:"Ubuntu","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
       
     
@@ -755,7 +755,7 @@
 <p><strong>Sipplauncher</strong> needs a test suite to run.
 Test suite location is passed to Sipplauncher with <code>--testsuite</code> command-line option.
 In case if this option is omitted, Sipplauncher uses a test suite, which is located at <code>&lt;current_working_directory&gt;/tmp-testsuite</code>.</p>
-<p>In order to understand the layout required by Sipplauncher, we advice to look at the layout of the embedded mock test suite <code>sipplauncher/tmp-testsuite</code>.
+<p>To understand the layout required by Sipplauncher, we advise looking at the layout of the embedded mock test suite <code>sipplauncher/tmp-testsuite</code>.
 The embedded mock test suite is present for the following purposes:</p>
 <ul>
 <li>demonstrate <strong>Sipplauncher</strong> test suite layout and features</li>
@@ -791,28 +791,103 @@ The embedded mock test suite is present for the following purposes:</p>
 <p>A test's name is a subfolder name: <code>normal-0000</code>, <code>normal-0001</code>, etc.</p>
 <p>Each test folder contains all the information needed for a test to run:</p>
 <h4 id="sipp-scenarios">SIPp scenarios<a class="headerlink" href="#sipp-scenarios" title="Permanent link">&para;</a></h4>
-<p>These are files named <code>uac_ua2.xml</code>, <code>uas_ua0.xml</code>, etc.
-All these files form a SIPp instance group, which is run concurrently.</p>
-<p>The scenario file name should match the regex pattern <code>^(ua[cs]+)_(ua[0-9]+).xml$</code>.
-The scenario file name defines test launch order and role.</p>
-<p>Here, <code>uac</code> or <code>uas</code> prefix affects the order of launching SIPp instances: <code>uas</code> scenarios are launched before <code>uac</code> scenarios.</p>
-<p><code>ua[0-9]</code> suffix defines an <code>instance name</code> inside a SIPp instance group.
-A SIPp instance in a group can refer to other SIPp instances in the same group using <code>ua[0-9].host</code> keywords in its scenario file.</p>
+<p>These are files named <code>uac_ua2.xml</code>, <code>uas_ua0.xml</code>, etc.</p>
+<p>A scenario file name defines a launch order and role of a SIPp instance.
+A scenario file name should match one of the regex patterns:</p>
+<ul>
+<li><code>^(ua[cs]+)_(ua[0-9]+).xml$</code>.</li>
+<li><code>^([a-zA-Z0-9]+)_(ua[cs]+)_(ua[0-9]+).xml$</code></li>
+</ul>
+<p>A scenario file name contains several parts:</p>
+<ol>
+<li>
+<p><code>^([a-zA-Z0-9]+)</code> optional part.</p>
+<p>This part defines an ID of a <strong>run group</strong>, in which the scenario will be run.</p>
+<p>This part divides all the scenarios into groups and determines the order of running these groups.
+  Here are the rules:</p>
+<ul>
+<li>Scenarios from the same run group are run concurrently.</li>
+<li>Different run groups are run consecutively, ordered by the run group ID value.</li>
+</ul>
+<p>If this part is absent, it's assumed that the scenario's run group ID is "" (empty string).</p>
+<p>For example:</p>
+<div class="codehilite"><pre><span></span>  normal-0000
+  ├── uac_ua0.xml
+  └── uas_ua1.xml
+</pre></div>
+
+
+<p>Here, it's assumed that all scenarios belong to the same run group ID "".
+  And therefore, all these scenarios are run concurrently.</p>
+<p>Here is the example of a more complex <a href="#tests">Test</a> folder layout:</p>
+<div class="codehilite"><pre><span></span>  normal-0001
+  ├── part0_uac_ua0.xml
+  ├── part0_uas_ua1.xml
+  └── part1_uac_ua0.xml
+</pre></div>
+
+
+<p>Here, Sipplauncher will determine 2 run groups:</p>
+<ul>
+<li><code>part0</code></li>
+<li><code>part1</code></li>
+</ul>
+<p>Then, Sipplauncher will run concurrently <code>part0_uac_ua0.xml</code> and <code>part0_uas_ua1.xml</code> and wait for them to finish.</p>
+<p>If any of these scenarios fail, test execution stops.
+  Otherwise, Sipplauncher then runs <code>part1_uac_ua0.xml</code>.</p>
+<p><code>ua0</code> preserves the same <a href="#dynamic-ip-address-assignment">dynamically assigned</a> IP address when running both run groups.</p>
+</li>
+<li>
+<p><code>(ua[cs]+)</code> mandatory part.</p>
+<p>This part defines the order of launching SIPp instances inside a <strong>run group</strong>.
+  <code>uas</code> scenarios are launched before <code>uac</code> scenarios.</p>
+</li>
+<li>
+<p><code>ua[0-9]</code> mandatory part.</p>
+<p>This part defines an <code>instance name</code> inside a SIPp instance group.</p>
+<p>A SIPp instance in a group can refer to other SIPp instances in the same group using <code>ua[0-9].host</code> keywords in its scenario file.</p>
 <p>For example, we have files named <code>uac_ua2.xml</code> and <code>uas_ua0.xml</code> in a test folder.
-<code>uac_ua2.xml</code> may refer to SIPp instance, which runs<code>uas_ua0.xml</code>, using <code>ua0.host</code> keyword.</p>
-<p>This is possible due to <a href="#dynamic-ip-address-assignment">Dynamic IP address assignment</a> and <a href="#keyword-replacement">Keyword replacement</a>.
-First, dynamic IP addresses are allocated and assigned.
-Then, <a href="#template-engine">Template engine</a> replaces <code>ua[0-9].host</code> keywords with real IP addresses of SIPp instances.</p>
+  <code>uac_ua2.xml</code> may refer to SIPp instance, which runs<code>uas_ua0.xml</code>, using <code>ua0.host</code> keyword.</p>
+<p>This is possible due to the <a href="#dynamic-ip-address-assignment">Dynamic IP address assignment</a> and <a href="#keyword-replacement">Keyword replacement</a>.
+  First, dynamic IP addresses are allocated and assigned.
+  Then, the <a href="#template-engine">Template engine</a> replaces <code>ua[0-9].host</code> keywords with real IP addresses of SIPp instances.</p>
+<p>There shouldn't be duplicates of the SIPp <code>instance name</code> in the same <strong>run group</strong>.
+  Here are the examples:</p>
+<p>Duplicate SIPp instance names are <strong>disallowed</strong> within the same default <strong>run group</strong>:</p>
+<div class="codehilite"><pre><span></span>  normal-0000
+  ├── uac_ua0.xml
+  └── uas_ua0.xml
+</pre></div>
+
+
+<p>Duplicate SIPp instance names are <strong>disallowed</strong> within the same <strong>run group</strong> <code>part0</code>:</p>
+<div class="codehilite"><pre><span></span>  normal-0001
+  ├── part0_uac_ua0.xml
+  └── part0_uas_ua0.xml
+</pre></div>
+
+
+<p>Duplicate SIPp instance names are <strong>allowed</strong> within different <strong>run groups</strong> <code>part0</code> and <code>part1</code>:</p>
+<div class="codehilite"><pre><span></span>  normal-0002
+  ├── part0_uac_ua0.xml
+  └── part1_uas_ua0.xml
+</pre></div>
+
+
+<p>SIPp instance preserves the same <a href="#dynamic-ip-address-assignment">dynamically assigned</a> IP address when running both run groups.
+  Therefore, in the above example, <code>ua0</code> will preserve its IP when running in group <code>part0</code> and <code>part1</code>.</p>
+</li>
+</ol>
 <h4 id="scripts">Scripts<a class="headerlink" href="#scripts" title="Permanent link">&para;</a></h4>
 <p>Files, which have <code>.sh</code> extension, are considered the scripts.</p>
-<p>There are 2 predefined script names, which are automatically run by <strong>Sipplauncher</strong>, if present:</p>
+<p>There are 2 predefined script names, which are automatically run by <strong>Sipplauncher</strong> if present:</p>
 <ol>
 <li><code>before.sh</code> is run before running the SIPp instance group.</li>
 <li><code>after.sh</code> is run after running the SIPp instance group.</li>
 </ol>
 <p>These scripts could be used to provision a DUT with some configuration, which is needed for a test to pass.</p>
-<p>All other scripts aren't run automatically by <strong>Sipplauncher</strong>, but could be run from elsewhere.
-For example, from <a href="#sipp-scenarios">SIPp scenario</a>.</p>
+<p>All other scripts aren't run automatically by <strong>Sipplauncher</strong> but could be run from elsewhere.
+For example, from the <a href="#sipp-scenarios">SIPp scenario</a>.</p>
 <p>When preparing a test to run, the keywords inside all test's scripts are <a href="#keyword-replacement">replaced</a>.</p>
 <p>If <code>before.sh</code> exits with non-zero exit code, a test execution stops.
 If either <code>before.sh</code> or <code>after.sh</code> exits with non-zero exit code, the test is considered failed.</p>
@@ -878,7 +953,7 @@ If there is no folder at this location, templates aren't used.</p>
 <tr>
 <td>--template-folder</td>
 <td>TEMPLATE_FOLDER</td>
-<td>Path to folder with <a href="#templates">templates</a>.<br>Default: <code>&lt;testsuite&gt;/TEMPLATES</code>.</td>
+<td>Path to a folder with <a href="#templates">templates</a>.<br>Default: <code>&lt;testsuite&gt;/TEMPLATES</code>.</td>
 </tr>
 <tr>
 <td>--pattern-exclude</td>
@@ -898,7 +973,7 @@ If there is no folder at this location, templates aren't used.</p>
 <tr>
 <td>--group</td>
 <td>GROUP</td>
-<td>Number of SIPp tests to be run at the same time.<br>Default: <code>1</code>.<br>Please see <a href="#run-all-tests-with-concurrent-grouping-by-3-tests">example</a>.</td>
+<td>Number of SIPp tests to be run at the same time.<br>Default: <code>1</code>.<br>Please see the <a href="#run-all-tests-with-concurrent-grouping-by-3-tests">example</a>.</td>
 </tr>
 <tr>
 <td>--group-pause</td>
@@ -928,7 +1003,7 @@ If there is no folder at this location, templates aren't used.</p>
 <tr>
 <td>--leave-temp</td>
 <td></td>
-<td>Don't remove <a href="#test-run-folder">test run folder</a> after the test has finished.<br>By default, <a href="#test-run-folder">test run folder</a> is removed after the test has finished.</td>
+<td>Don't remove <a href="#test-run-folder">test run folder</a> after the test has finished.<br>By default, a <a href="#test-run-folder">test run folder</a> is removed after the test has finished.</td>
 </tr>
 <tr>
 <td>--keyword-replacement-values</td>
@@ -953,7 +1028,7 @@ If there is no folder at this location, templates aren't used.</p>
 <tr>
 <td>--sipp-transport</td>
 <td>One of: u1, un, ui, t1, tn, l1, ln</td>
-<td>SIPp -t param.<br>The default is <code>l1</code>, if <a href="#tls">TLS</a> usage is auto-detected. Oherwise, it's <code>u1</code>.<br><a href="#tls">TLS</a> usage is auto-detected if any tls-related option is used.</td>
+<td>SIPp -t param.<br>The default is <code>l1</code>, if <a href="#tls">TLS</a> usage is auto-detected. Otherwise, it's <code>u1</code>.<br><a href="#tls">TLS</a> usage is auto-detected if any tls-related option is used.</td>
 </tr>
 <tr>
 <td>--sipp-info-file</td>
@@ -1033,7 +1108,7 @@ A good example of the approach can be found in the <a href="#test-suite-folder-l
 <p>Templates could be placed either into a <a href="#tests">Test</a> folder or in the <a href="#templates">Templates</a> folder.
 Both these locations are searched when Jinja2 imports a template into a test.</p>
 <h3 id="keyword-replacement">Keyword replacement<a class="headerlink" href="#keyword-replacement" title="Permanent link">&para;</a></h3>
-<p><a href="#template-engine">Template engine</a> is also responsible for replacing keywords in <a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>.
+<p>The <a href="#template-engine">Template engine</a> is also responsible for replacing keywords in <a href="#scripts">scripts</a> and <a href="#sipp-scenarios">SIPp scenarios</a>.
 Keywords could be either internal or supplied using <code>--keyword-replacement-values</code> command-line argument.</p>
 <p>To define a keyword in <a href="#scripts">script</a> or <a href="#sipp-scenarios">SIPp scenario</a>, you should use</p>
 <blockquote>
@@ -1092,8 +1167,8 @@ Then a connection is established without security issues.</p>
 <p>TLS packet exchange is stored in a .pcap file and could be <a href="#decrypting-tls-traffic">decrypted</a>.</p>
 <h2 id="pcap-capturing">Pcap capturing<a class="headerlink" href="#pcap-capturing" title="Permanent link">&para;</a></h2>
 <p>By default, Sipplauncher captures all packets, which have <a href="#dynamic-ip-address-assignment">dynamically assigned IP addresses</a> as either <code>src</code> or <code>dst</code>.
-Packet exchange is captured into a .pcap file, which could be opened with Wireshark application.
-Pcap file is named <code>sipp-&lt;test_run_id&gt;.pcap</code> and is stored in <a href="#test-run_folder">Test run folder</a>.</p>
+Packet exchange is captured into a .pcap file, which could be opened with the Wireshark application.
+Pcap file is named <code>sipp-&lt;test_run_id&gt;.pcap</code> and is stored in a <a href="#test-run_folder">Test run folder</a>.</p>
 <p>You can disable <a href="#pcap-capturing">Pcap capturing</a> with <code>--no-pcap</code> command-line argument.</p>
 <h3 id="decrypting-tls-traffic">Decrypting TLS traffic<a class="headerlink" href="#decrypting-tls-traffic" title="Permanent link">&para;</a></h3>
 <p>Usually, it's easy to decrypt SSL packet exchange, if you have SSL private key.
@@ -1117,6 +1192,17 @@ Then this file could be used to decrypt the packet exchange in Wireshark.</p>
 </ul>
                 
                   
+                
+                
+                  
+                  <hr>
+                  <div class="md-source-date">
+                    <small>
+                      
+                        Last update: 2019-12-13
+                      
+                    </small>
+                  </div>
                 
               
               
@@ -1176,7 +1262,7 @@ Then this file could be used to decrypt the packet exchange in Wireshark.</p>
           </div>
 
 
-Updated 2019-12-12
+Updated 2019-12-13
 
 
         
@@ -1199,7 +1285,7 @@ Updated 2019-12-12
       
     </div>
     
-      <script src="../assets/javascripts/application.8e03edeb.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       

@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.5.1">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
     
     
       
@@ -62,7 +62,7 @@
     
       
         <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700|Ubuntu+Mono&display=fallback">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:300,400,400i,700%7CUbuntu+Mono&display=fallback">
         <style>body,input{font-family:"Ubuntu","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Ubuntu Mono","Courier New",Courier,monospace}</style>
       
     
@@ -454,7 +454,7 @@
 <h2 id="1-initialization">1. Initialization<a class="headerlink" href="#1-initialization" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
-<p><strong>Set up signal handler</strong></p>
+<p><strong>Set up the signal handler</strong></p>
 <p>We need to perform proper cleanup in case if:</p>
 <ul>
 <li>a user interrupts with CTRL+C</li>
@@ -557,10 +557,10 @@ We do the "dummy" interface approach instead of creating IP aliases via the <cod
 <p><strong>Sets up logging into Test run folder</strong></p>
 <p>Sipplauncher <a href="../user_guide/#log-files">logging facilities</a> and paths are configured in <code>/usr/local/etc/sipplauncher/sipplauncher.configlog.conf</code>.
 Static log location is by default defined there as <code>/tmp/sipplauncher.log</code>.</p>
-<p>We have following requirements:</p>
+<p>We have the following requirements:</p>
 <ol>
 <li>
-<p>We need to easely separate the logs of different <a href="../user_guide/#tests">Test</a> runs.
+<p>We need to easily separate the logs of different <a href="../user_guide/#tests">Test</a> runs.
    Thus, we want to log the execution of each <a href="../user_guide/#tests">Test</a> into a <a href="../user_guide/#test-run-folder">Test run folder</a>.
    The log path should look like <code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/sipplauncher.log</code>, where <code>&lt;test_run_id&gt;</code> is random and isn't known beforehand.
    Therefore, the <a href="../user_guide/#tests">Test</a> run log file location can't be static. It should be dynamic.</p>
@@ -594,7 +594,7 @@ Python <code>OpenSSL</code> library is used.</p>
 <p>We use <code>scapy.sendrecv.AsyncSniffer</code> to start a new background thread.
 This thread installs the <a href="https://en.wikipedia.org/wiki/Berkeley_Packet_Filter">BPF</a> on all system network interfaces.
 The BPF matches all traffic regarding <a href="../user_guide/#dynamic-ip-address-assignment">Dynamically assigned IP addresses</a> for this particular <a href="../user_guide/#tests">Test</a> run.
-The captured traffic is stored to the memory buffer.</p>
+The captured traffic is stored in the memory buffer.</p>
 </li>
 </ol>
 <hr />
@@ -612,7 +612,6 @@ If the exit code is non-zero - we stop the test as FAILED.</p>
 <li>
 <p><strong>Forks a new PysippProcess</strong></p>
 <p><code>PysippProcess</code> is a subclass of the <code>multiprocessing.Process</code>.</p>
-<p><code>PysippProcess</code> performs <code>os.chdir()</code> to a <a href="../user_guide/#test-run-folder">Test run folder</a> and launches SIPp through the API of the <code>Pysipp</code> library.</p>
 <p>We need to fork the <code>Process</code>, because we have the <a href="../user_guide/#log-files">requirement</a> to store all the logs, which relate to <a href="../user_guide/#tests">Test</a> run, in the <a href="../user_guide/#test-run-folder">Test run folder</a>.</p>
 <p>From this requirement we get the following outcome:</p>
 <ol>
@@ -625,6 +624,9 @@ If the exit code is non-zero - we stop the test as FAILED.</p>
    And then, inside the child <code>Process</code>, call <code>os.chdir()</code> and then run SIPp.
    This way, we change the working directory inside the child process and avoid the race condition in the parent process.</li>
 </ol>
+<p><code>PysippProcess</code> determines the SIPp launch order from <a href="../user_guide/#sipp-scenarios">SIPp scenario</a> file names.
+This process is described <a href="../user_guide/#sipp-scenarios">here</a>.
+Then <code>PysippProcess</code> launches SIPp instances using the API of the <code>Pysipp</code> library.</p>
 </li>
 <li>
 <p><strong>Reports test result</strong></p>
@@ -662,6 +664,17 @@ This is needed, because in case if traffic goes through different network interf
 </ol>
                 
                   
+                
+                
+                  
+                  <hr>
+                  <div class="md-source-date">
+                    <small>
+                      
+                        Last update: 2019-12-13
+                      
+                    </small>
+                  </div>
                 
               
               
@@ -721,7 +734,7 @@ This is needed, because in case if traffic goes through different network interf
           </div>
 
 
-Updated 2019-12-12
+Updated 2019-12-13
 
 
         
@@ -744,7 +757,7 @@ Updated 2019-12-12
       
     </div>
     
-      <script src="../assets/javascripts/application.8e03edeb.js"></script>
+      <script src="../assets/javascripts/application.808e90bb.js"></script>
       
       <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
       
