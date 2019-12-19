@@ -20,7 +20,7 @@ from pytest_mock import mocker
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest, STATES
+from sipplauncher.Test import SIPpTest
 from sipplauncher.utils.Defaults import DEFAULT_TESTSUITE_TEMPLATES
 
 # Currently we are unit-testing keyword replacement for 2 UAs max.
@@ -273,7 +273,7 @@ def test(mocker, mock_fs, args, expected):
 
     test.pre_run(parsed_args)
 
-    assert(test.state == STATES[1])
+    assert(test.state == SIPpTest.State.READY)
 
     def check_folder(fs_path, root):
         for a, b in iter(root.items()):
