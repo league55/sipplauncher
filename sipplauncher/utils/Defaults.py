@@ -11,7 +11,7 @@
 import os
 import sys
 
-VERSION = '0.0.12'
+VERSION = '0.0.13'
 
 # Folder where config files will be stored after
 # package installation.
