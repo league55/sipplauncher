@@ -83,14 +83,17 @@ PYTHON_TARGETS_UNINSTALL_OBJ := $(addprefix uninstall-, $(PYTHON_TARGETS))
 libsslkeylog.so: sslkeylog.c
 	$(CC) sslkeylog.c -shared -o libsslkeylog.so -fPIC -ldl
 
-$(PYTHON_TARGETS_INSTALL_OBJ): clean libsslkeylog.so
+$(PYTHON_TARGETS_INSTALL_OBJ): clean
 	$(call f_python_install,$(subst install-,,$@))
 
 $(PYTHON_TARGETS_UNINSTALL_OBJ): clean
 	$(call f_python_uninstall,$(subst uninstall-,,$@))
 
-install-all: $(PYTHON_TARGETS_INSTALL_OBJ)
+install-all: $(PYTHON_TARGETS_INSTALL_OBJ) libsslkeylog.so
+	install libsslkeylog.so /usr/local/lib/
+
 uninstall-all: $(PYTHON_TARGETS_UNINSTALL_OBJ)
+	rm /usr/local/lib/libsslkeylog.so
 
 check-env-git-branch:
 ifneq ($(CURRENT_GIT_BRANCH),master)
@@ -116,3 +119,6 @@ version:
 
 serve-docs:
 	mkdocs serve -a 0.0.0.0:8000
+
+deploy-docs:
+	mkdocs gh-deploy --clean
