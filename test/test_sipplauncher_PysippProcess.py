@@ -21,7 +21,7 @@ from multiprocessing import Queue
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest, STATES
+from sipplauncher.Test import SIPpTest
 from sipplauncher.utils.Defaults import (DEFAULT_SCRIPT_TIMEOUT,
                                          DEFAULT_TESTSUITE_TEMPLATES)
 

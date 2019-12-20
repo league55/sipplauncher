@@ -19,7 +19,7 @@ import shlex
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest, STATES
+from sipplauncher.Test import SIPpTest
 from sipplauncher.utils.Defaults import (DEFAULT_SCRIPT_TIMEOUT,
                                          DEFAULT_TESTSUITE_TEMPLATES)
 from sipplauncher.UA import UA
@@ -71,7 +71,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --dry-run".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -90,7 +90,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -99,7 +99,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --leave-temp".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -110,7 +110,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -120,7 +120,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -130,7 +130,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -183,7 +183,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         # Issue-25: should be error when some of keywords are not replaced
         (
@@ -230,7 +230,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"transport": "tcp"}'),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         # test templated script
         (
@@ -247,7 +247,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"val": "0"}'),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         # test templated script
         (
@@ -290,7 +290,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"keyword": "replaced"}'),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -320,7 +320,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
         (
             {
@@ -330,7 +330,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            STATES[5],
+            SIPpTest.State.SUCCESS,
         ),
     ]
 )
@@ -348,7 +348,7 @@ def test(mocker, mock_fs, args, expected):
         test.pre_run(args)
         try:
             # First test __do_run() method. It can raise exception.
-            if test.state == STATES[1]:
+            if test.state == SIPpTest.State.READY:
                 test._SIPpTest__do_run("", args)
 
             # Then test run() method. It shouldn't raise exception.

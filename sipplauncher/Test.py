@@ -16,6 +16,7 @@ import re
 import string
 import copy
 import glob
+from enum import Enum
 from jinja2 import (Environment,
                     FileSystemLoader,
                     StrictUndefined)
@@ -33,12 +34,18 @@ from .UA import UA
 from .PysippProcess import PysippProcess
 from .Scenario import Scenario
 
-STATES = ["CREATED", "READY", "DRY-RUNNING", "STARTING", "FAIL", "SUCCESS"]
-
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
+    class State(Enum):
+        CREATED = "CREATED"
+        READY = "READY"
+        DRY_RUNNING = "DRY-RUNNING"
+        STARTING = "STARTING"
+        FAIL = "FAIL"
+        SUCCESS = "SUCCESS"
+
     class InitException(Exception):
         pass
 
@@ -50,7 +57,7 @@ class SIPpTest(object):
 
     def __init__(self, folder):
         self.key = os.path.basename(folder)
-        self.state = STATES[0]
+        self.state = SIPpTest.State.CREATED
         self.__folder = folder
 
         def get_uas():
@@ -232,12 +239,11 @@ class SIPpTest(object):
             self.network.shutdown()
             raise
         # No exceptions during initialization.
-        # Switch to READY state.
-        self.state = STATES[1]
+        self.state = SIPpTest.State.READY
 
     def __print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
-        msg = '%12s %24s (%s-%s)' % (self.state, self.key, run_id_prefix, self.run_id)
+        msg = '%12s %24s (%s-%s)' % (self.state.value, self.key, run_id_prefix, self.run_id)
         msg += extra if extra is not None else ''
         logging.info(msg)
 
@@ -249,10 +255,10 @@ class SIPpTest(object):
         All other initialization (like Network, Sniffer, etc) should be done inside pre_run().
         """
         if args.dry_run:
-            self.state = STATES[2]
+            self.state = SIPpTest.State.DRY_RUNNING
             self.__print_run_state(run_id_prefix)
         else:
-            self.state = STATES[3]
+            self.state = SIPpTest.State.STARTING
             self.__print_run_state(run_id_prefix)
             self.__run_script("before.sh")
             try:
@@ -276,10 +282,10 @@ class SIPpTest(object):
             finally:
                 self.__run_script("after.sh")
         # All good
-        self.state = STATES[5]
+        self.state = SIPpTest.State.SUCCESS
 
     def run(self, run_id_prefix, args):
-        if self.state == STATES[0]:
+        if self.state == SIPpTest.State.CREATED:
             # pre_run() has failed.
             # We shouldn't run this test.
             # We shouldn't reach this, because currently run() is not invoked if pre_run() has failed.
@@ -296,11 +302,11 @@ class SIPpTest(object):
             except SIPpTest.PysippProcessException as e:
                 # Expected outcome
                 self.__get_logger().info('PysippProcess returned {0}'.format(e))
-                self.state = STATES[4]
+                self.state = SIPpTest.State.FAIL
             except Exception as e:
                 self.__get_logger().error('Caught exception while running test: {0}'.format(e))
                 self.__get_logger().debug(e, exc_info = True)
-                self.state = STATES[4]
+                self.state = SIPpTest.State.FAIL
             finally:
                 # Wrap up timing
                 end = time.time()
@@ -309,7 +315,7 @@ class SIPpTest(object):
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def post_run(self, args):
-        if self.state != STATES[0]:
+        if self.state != SIPpTest.State.CREATED:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
@@ -331,4 +337,4 @@ class SIPpTest(object):
 
     def failed(self):
         """ Returns whether a test failed"""
-        return self.state != STATES[5]
+        return self.state != SIPpTest.State.SUCCESS
