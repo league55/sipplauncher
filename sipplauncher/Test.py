@@ -108,16 +108,16 @@ class SIPpTest(object):
         :type state: State
         """
         if state == SIPpTest.State.CREATED:
-            assert(not hasattr(self, 'state'))
+            assert(not hasattr(self, '__state'))
         elif state == SIPpTest.State.READY:
-            assert(self.state == SIPpTest.State.CREATED)
+            assert(self.__state == SIPpTest.State.CREATED)
         elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
-            assert(self.state == SIPpTest.State.READY)
+            assert(self.__state == SIPpTest.State.READY)
         elif state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS]:
-            assert(self.state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
+            assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
         else:
             assert(False)
-        self.state = state
+        self.__state = state
 
     def __run_script(self, script):
         script_path = os.path.join(self.__temp_folder, script)
@@ -261,7 +261,7 @@ class SIPpTest(object):
 
     def __print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
-        msg = '%12s %24s (%s-%s)' % (self.state.value, self.key, run_id_prefix, self.run_id)
+        msg = '%12s %24s (%s-%s)' % (self.__state.value, self.key, run_id_prefix, self.run_id)
         msg += extra if extra is not None else ''
         logging.info(msg)
 
@@ -303,7 +303,7 @@ class SIPpTest(object):
         self.__set_state(SIPpTest.State.SUCCESS)
 
     def run(self, run_id_prefix, args):
-        if self.state == SIPpTest.State.CREATED:
+        if self.__state == SIPpTest.State.CREATED:
             # pre_run() has failed.
             # We shouldn't run this test.
             # We shouldn't reach this, because currently run() is not invoked if pre_run() has failed.
@@ -333,7 +333,7 @@ class SIPpTest(object):
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def post_run(self, args):
-        if self.state != SIPpTest.State.CREATED:
+        if self.__state != SIPpTest.State.CREATED:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
@@ -355,4 +355,4 @@ class SIPpTest(object):
 
     def failed(self):
         """ Returns whether a test failed"""
-        return self.state != SIPpTest.State.SUCCESS
+        return self.__state != SIPpTest.State.SUCCESS
