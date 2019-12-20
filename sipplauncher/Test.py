@@ -57,7 +57,7 @@ class SIPpTest(object):
 
     def __init__(self, folder):
         self.key = os.path.basename(folder)
-        self.state = SIPpTest.State.CREATED
+        self.__set_state(SIPpTest.State.CREATED)
         self.__folder = folder
 
         def get_uas():
@@ -100,6 +100,24 @@ class SIPpTest(object):
             raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.key))
 
         logging.debug('Created SIPpTest "{0}"'.format(self.key))
+
+    def __set_state(self, state):
+        """ Setter for state which checks for valid state transition
+
+        :param state: new state
+        :type state: State
+        """
+        if state == SIPpTest.State.CREATED:
+            assert(not hasattr(self, 'state'))
+        elif state == SIPpTest.State.READY:
+            assert(self.state == SIPpTest.State.CREATED)
+        elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
+            assert(self.state == SIPpTest.State.READY)
+        elif state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS]:
+            assert(self.state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
+        else:
+            assert(False)
+        self.state = state
 
     def __run_script(self, script):
         script_path = os.path.join(self.__temp_folder, script)
@@ -239,7 +257,7 @@ class SIPpTest(object):
             self.network.shutdown()
             raise
         # No exceptions during initialization.
-        self.state = SIPpTest.State.READY
+        self.__set_state(SIPpTest.State.READY)
 
     def __print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
@@ -255,10 +273,10 @@ class SIPpTest(object):
         All other initialization (like Network, Sniffer, etc) should be done inside pre_run().
         """
         if args.dry_run:
-            self.state = SIPpTest.State.DRY_RUNNING
+            self.__set_state(SIPpTest.State.DRY_RUNNING)
             self.__print_run_state(run_id_prefix)
         else:
-            self.state = SIPpTest.State.STARTING
+            self.__set_state(SIPpTest.State.STARTING)
             self.__print_run_state(run_id_prefix)
             self.__run_script("before.sh")
             try:
@@ -282,7 +300,7 @@ class SIPpTest(object):
             finally:
                 self.__run_script("after.sh")
         # All good
-        self.state = SIPpTest.State.SUCCESS
+        self.__set_state(SIPpTest.State.SUCCESS)
 
     def run(self, run_id_prefix, args):
         if self.state == SIPpTest.State.CREATED:
@@ -302,11 +320,11 @@ class SIPpTest(object):
             except SIPpTest.PysippProcessException as e:
                 # Expected outcome
                 self.__get_logger().info('PysippProcess returned {0}'.format(e))
-                self.state = SIPpTest.State.FAIL
+                self.__set_state(SIPpTest.State.FAIL)
             except Exception as e:
                 self.__get_logger().error('Caught exception while running test: {0}'.format(e))
                 self.__get_logger().debug(e, exc_info = True)
-                self.state = SIPpTest.State.FAIL
+                self.__set_state(SIPpTest.State.FAIL)
             finally:
                 # Wrap up timing
                 end = time.time()
