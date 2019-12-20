@@ -343,16 +343,14 @@ def test(mocker, mock_fs, args, expected):
     mocker.patch('sipplauncher.PysippProcess.PysippProcess.run', new=lambda x: sys.exit(0))
     logging.getLogger("pysipp").propagate = 0
 
-    def do_test(dirpath, args):
+    def do_test(dirpath, args, with_except):
         test = SIPpTest(os.path.join(dirpath, TEST_NAME))
         test.pre_run(args)
         try:
-            # First test __do_run() method. It can raise exception.
-            if test.state == SIPpTest.State.READY:
+            if with_except:
                 test._SIPpTest__do_run("", args)
-
-            # Then test run() method. It shouldn't raise exception.
-            test.run("", args)
+            else:
+                test.run("", args)
         finally:
             # Always post_run after successful pre_run
             # to not to leave network config from previous run
@@ -372,10 +370,10 @@ def test(mocker, mock_fs, args, expected):
         # Exception is expected
         with pytest.raises(type(expected)):
             check_and_patch_args(parsed_args)
-            do_test(dirpath, parsed_args)
+            do_test(dirpath, parsed_args, with_except = True)
     else:
         # Exception is not expected
         check_and_patch_args(parsed_args)
-        do_test(dirpath, parsed_args) == expected
+        do_test(dirpath, parsed_args, with_except = False) == expected
 
     shutil.rmtree(dirpath)
