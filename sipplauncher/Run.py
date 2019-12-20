@@ -24,7 +24,7 @@ import threading
 import copy
 import collections
 
-Task = collections.namedtuple('Task', ['thread', 'test'])
+Task = collections.namedtuple('Task', ['thread', 'test', 'run_id_prefix'])
 
 logger = logging.getLogger(__name__)
 
@@ -113,13 +113,13 @@ def run(args):
                 # 2. Scapy creates daemon thread too, and we don't want to mix daemon and non-daemon threads for the sake of simplicity.
                 thread.setDaemon(True)
 
-                tasks.append(Task(thread, test))
+                tasks.append(Task(thread, test, count_total))
                 count_total += 1
 
             try:
                 # Pre run hook for each test
                 for task in tasks:
-                    task.test.pre_run(args)
+                    task.test.pre_run(task.run_id_prefix, args)
 
                 # Issue #69: Need to wait a bit after sniffing thread has been started.
                 # Otherwise we might miss first SIP packets.
@@ -152,7 +152,7 @@ def run(args):
                 # If exception happens after SIPpTest.run() has yielded control,
                 # under scope of ContextManager (for ex. "with ContextManager():"), ContextManager.__exit__ isn't called.
                 for task in tasks:
-                    task.test.post_run(args)
+                    task.test.post_run(task.run_id_prefix, args)
 
             # Calculating failed tests
             for task in tasks:

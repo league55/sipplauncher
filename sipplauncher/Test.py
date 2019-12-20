@@ -40,11 +40,14 @@ scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 class SIPpTest(object):
     class State(Enum):
         CREATED = "CREATED"
+        PREPARING = "PREPARING"
         READY = "READY"
+        NOT_READY = "NOT READY"
         DRY_RUNNING = "DRY-RUNNING"
         STARTING = "STARTING"
         FAIL = "FAIL"
         SUCCESS = "SUCCESS"
+        DIRTY = "DIRTY"
 
     class InitException(Exception):
         pass
@@ -109,12 +112,16 @@ class SIPpTest(object):
         """
         if state == SIPpTest.State.CREATED:
             assert(not hasattr(self, '__state'))
-        elif state == SIPpTest.State.READY:
+        elif state == SIPpTest.State.PREPARING:
             assert(self.__state == SIPpTest.State.CREATED)
+        elif state in [SIPpTest.State.READY, SIPpTest.State.NOT_READY]:
+            assert(self.__state == SIPpTest.State.PREPARING)
         elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
             assert(self.__state == SIPpTest.State.READY)
         elif state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS]:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
+        elif state in [SIPpTest.State.DIRTY]:
+            assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
         else:
             assert(False)
         self.__state = state
@@ -232,10 +239,12 @@ class SIPpTest(object):
         else:
             logging.debug("You can find temp folder at {0}".format(self.__temp_folder))
 
-    def pre_run(self, args):
+    def pre_run(self, run_id_prefix, args):
         # We should rollback prior initialization on exception to not to leave test partially initialized.
         # We should propagate exception to the caller.
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
+        self.__set_state(SIPpTest.State.PREPARING)
+        self.__print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
         try:
             for ua in self.__uas:
@@ -250,14 +259,19 @@ class SIPpTest(object):
 
                 if args.leave_temp and not args.no_pcap:
                     self.network.sniffer_start(self.__temp_folder)
+
+                self.__run_script("before.sh")
             except:
                 self.__remove_temp_folder(args)
                 raise
-        except:
+        except BaseException as e:
             self.network.shutdown()
-            raise
-        # No exceptions during initialization.
-        self.__set_state(SIPpTest.State.READY)
+            self.__get_logger().debug(e, exc_info = True)
+            self.__set_state(SIPpTest.State.NOT_READY)
+            self.__print_run_state(run_id_prefix)
+        else:
+            # No exceptions during initialization.
+            self.__set_state(SIPpTest.State.READY)
 
     def __print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
@@ -279,36 +293,29 @@ class SIPpTest(object):
             self.__set_state(SIPpTest.State.STARTING)
             self.__print_run_state(run_id_prefix)
             self.__run_script("before.sh")
+            p = PysippProcess(self.__uas, self.__temp_folder, args)
+            # https://bugs.python.org/issue6721
+            # "The python logging module uses a lock to surround many operations.
+            # This causes deadlocks in programs that use logging, fork and threading simultaneously."
+            # For example, we have Process P1.
+            # P1's thread T1 obtains logging lock L1 while logging.
+            # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
+            # Then P2 tries to log, and stucks on L1, because noone will ever release it.
+            # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
+            logging._acquireLock();
             try:
-                p = PysippProcess(self.__uas, self.__temp_folder, args)
-                # https://bugs.python.org/issue6721
-                # "The python logging module uses a lock to surround many operations.
-                # This causes deadlocks in programs that use logging, fork and threading simultaneously."
-                # For example, we have Process P1.
-                # P1's thread T1 obtains logging lock L1 while logging.
-                # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
-                # Then P2 tries to log, and stucks on L1, because noone will ever release it.
-                # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
-                logging._acquireLock();
-                try:
-                    p.start()
-                finally:
-                    logging._releaseLock();
-                p.join()
-                if p.exitcode != 0:
-                    raise SIPpTest.PysippProcessException(p.exitcode)
+                p.start()
             finally:
-                self.__run_script("after.sh")
+                logging._releaseLock();
+            p.join()
+            if p.exitcode != 0:
+                raise SIPpTest.PysippProcessException(p.exitcode)
+
         # All good
         self.__set_state(SIPpTest.State.SUCCESS)
 
     def run(self, run_id_prefix, args):
-        if self.__state == SIPpTest.State.CREATED:
-            # pre_run() has failed.
-            # We shouldn't run this test.
-            # We shouldn't reach this, because currently run() is not invoked if pre_run() has failed.
-            assert False, "Don't invoke run() if pre_run() has failed"
-        else:
+        if self.__state == SIPpTest.State.READY:
             # pre_run() has succeeded.
             # We can run this test.
             try:
@@ -332,11 +339,18 @@ class SIPpTest(object):
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
-    def post_run(self, args):
-        if self.__state != SIPpTest.State.CREATED:
+    def post_run(self, run_id_prefix, args):
+        if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
+            try:
+                self.__run_script("after.sh")
+            except Exception as e:
+                self.__get_logger().debug(e, exc_info = True)
+                self.__set_state(SIPpTest.State.DIRTY)
+                self.__print_run_state(run_id_prefix)
+
             try:
                 self.network.sniffer_stop()
             except Exception as e:

@@ -219,12 +219,12 @@ def test(mocker, mock_fs, args, expected):
     check_and_patch_args(parsed_args)
 
     test = SIPpTest(os.path.join(dirpath, TEST_NAME))
-    test.pre_run(parsed_args)
+    test.pre_run("", parsed_args)
     try:
         test.run("", parsed_args)
     finally:
         # Always post_run to not to leave network config from previous run
-        test.post_run(parsed_args)
+        test.post_run("", parsed_args)
 
     res = []
     while not q.empty():
