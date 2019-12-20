@@ -360,7 +360,7 @@ def test(mocker, mock_fs, args, expected):
         exists = os.path.isdir(test._SIPpTest__temp_folder)
         assert(exists == args.leave_temp)
 
-        return test.state
+        return test._SIPpTest__state
 
     parser = generate_parser()
     parsed_args = parser.parse_args(shlex.split(args))
