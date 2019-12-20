@@ -102,6 +102,11 @@ class SIPpTest(object):
         logging.debug('Created SIPpTest "{0}"'.format(self.key))
 
     def __set_state(self, state):
+        """ Setter for state which checks for valid state transition
+
+        :param state: new state
+        :type state: State
+        """
         if state == SIPpTest.State.CREATED:
             assert(not hasattr(self, 'state'))
         elif state == SIPpTest.State.READY:
