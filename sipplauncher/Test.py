@@ -128,29 +128,29 @@ class SIPpTest(object):
         self.__state = state
 
     def __run_script(self, script):
-        script_path = os.path.join(self.__temp_folder, script)
-        if os.path.exists(script_path):
-            p = subprocess.Popen("sh " + script_path,
-                                 shell=True,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
-            try:
-                stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
-            except subprocess.TimeoutExpired:
-                # Script lasts unexpectedly long.
-                # Seems like it has deadlocked.
-                p.kill()
-                raise
-            finally:
-                ret = p.wait() # to not to leave zombie
-            # Need to strip trailing newline, because logger adds newline too.
-            if stdoutdata:
-                self.__get_logger().debug(stdoutdata.decode("utf-8").rstrip())
-            if stderrdata:
-                self.__get_logger().error(stderrdata.decode("utf-8").rstrip())
-            if ret != 0:
-                raise SIPpTest.ScriptRunException(script + " returned code " + str(ret))
+        with sipplauncher.utils.Utils.cd(self.__temp_folder):
+            if os.path.exists(script):
+                p = subprocess.Popen("sh " + script,
+                                     shell=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
+                try:
+                    stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
+                except subprocess.TimeoutExpired:
+                    # Script lasts unexpectedly long.
+                    # Seems like it has deadlocked.
+                    p.kill()
+                    raise
+                finally:
+                    ret = p.wait() # to not to leave zombie
+                # Need to strip trailing newline, because logger adds newline too.
+                if stdoutdata:
+                    self.__get_logger().debug(stdoutdata.decode("utf-8").rstrip())
+                if stderrdata:
+                    self.__get_logger().error(stderrdata.decode("utf-8").rstrip())
+                if ret != 0:
+                    raise SIPpTest.ScriptRunException(script + " returned code " + str(ret))
 
     def __get_logger(self):
         return logging.getLogger(__name__ + "." + self.run_id)
