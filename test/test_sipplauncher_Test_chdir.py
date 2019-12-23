@@ -75,6 +75,22 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                 "after.txt": None
             },
         ),
+        # dry run
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": "",
+                    "uas_ua1.xml": "",
+                    "before.sh": "echo -n 1 > before.txt",
+                    "after.sh": "echo -n 2 > after.txt",
+                },
+            },
+            "--dut {0} --leave-temp --dry-run".format(DUT_IP),
+            {
+                "before.txt" : None,
+                "after.txt" : None,
+            },
+        ),
     ]
 )
 def test(mocker, mock_fs, args, expected):

@@ -127,9 +127,9 @@ class SIPpTest(object):
             assert(False)
         self.__state = state
 
-    def __run_script(self, script):
+    def __run_script(self, script, args):
         with sipplauncher.utils.Utils.cd(self.__temp_folder):
-            if os.path.exists(script):
+            if os.path.exists(script) and not args.dry_run:
                 p = subprocess.Popen("sh " + script,
                                      shell=True,
                                      stdout=subprocess.PIPE,
@@ -262,7 +262,7 @@ class SIPpTest(object):
                 if args.leave_temp and not args.no_pcap:
                     self.network.sniffer_start(self.__temp_folder)
 
-                self.__run_script("before.sh")
+                self.__run_script("before.sh", args)
             except:
                 self.__remove_temp_folder(args)
                 raise
@@ -348,7 +348,7 @@ class SIPpTest(object):
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
-            for h in [partial(SIPpTest.__run_script, self, "after.sh"),
+            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
                       partial(Network.SIPpNetwork.sniffer_stop, self.network),
                       partial(SIPpTest.__remove_temp_folder, self, args),
                       partial(Network.SIPpNetwork.shutdown, self.network)]:
