@@ -242,7 +242,8 @@ class SIPpTest(object):
 
     def pre_run(self, run_id_prefix, args):
         # We should rollback prior initialization on exception to not to leave test partially initialized.
-        # We should propagate exception to the caller.
+        # We shouldn't propagate exception to the caller.
+        start = time.time()
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
         self.__set_state(SIPpTest.State.PREPARING)
         self.__print_run_state(run_id_prefix)
@@ -269,7 +270,10 @@ class SIPpTest(object):
             self.network.shutdown()
             self.__get_logger().debug(e, exc_info = True)
             self.__set_state(SIPpTest.State.NOT_READY)
-            self.__print_run_state(run_id_prefix)
+            end = time.time()
+            elapsed = end - start
+            elapsed_str=' - took %.0fs' % (elapsed)
+            self.__print_run_state(run_id_prefix, extra=elapsed_str)
         else:
             # No exceptions during initialization.
             self.__set_state(SIPpTest.State.READY)
