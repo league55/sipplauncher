@@ -239,3 +239,11 @@ class cd:
 
 def is_tls_transport(transport):
     return transport in ["l1", "ln"]
+
+
+def is_pcap(args):
+    """
+    :return: True if pcap capturing should be activate, False otherwise
+    :rtype: bool
+    """
+    return args.leave_temp and not args.no_pcap

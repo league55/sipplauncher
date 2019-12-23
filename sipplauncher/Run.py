@@ -18,6 +18,7 @@ import random
 
 from sipplauncher.TestPool import (TestPool)
 from .utils.Signals import check_signal
+from .utils.Utils import is_pcap
 
 
 import threading
@@ -123,7 +124,7 @@ def run(args):
 
                 # Issue #69: Need to wait a bit after sniffing thread has been started.
                 # Otherwise we might miss first SIP packets.
-                if not args.no_pcap:
+                if is_pcap(args):
                     time.sleep(PCAP_SYNC_TIMEOUT)
 
                 # Need to start all the threads
@@ -141,7 +142,7 @@ def run(args):
                 # 3) we regain control and stop sniffing (inside post_run())
                 # 4) last packets (from i.1) arrive at BPF socket with few milliseconds delay - but we don't catch them!
                 # We can't synchronize BPF and TCP/IP socket, so we can only defer stopping sniffing...
-                if not args.no_pcap:
+                if is_pcap(args):
                     time.sleep(PCAP_SYNC_TIMEOUT)
 
                 # Post run hook for each test.
