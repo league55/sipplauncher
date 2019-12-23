@@ -39,6 +39,9 @@ scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
+    # Expected state transitions:
+    # 1. CREATED -> READY -> DRY_RUNNING -> SUCCESS
+    # 2. CREATED -> READY -> STARTING -> FAIL/SUCCESS
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
         PREPARING = "PREPARING"     # Test is being prepared for the run
@@ -119,7 +122,9 @@ class SIPpTest(object):
             assert(self.__state == SIPpTest.State.PREPARING)
         elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
             assert(self.__state == SIPpTest.State.READY)
-        elif state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS]:
+        elif state == SIPpTest.State.FAIL:
+            assert(self.__state == SIPpTest.State.STARTING)
+        elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
         elif state in [SIPpTest.State.DIRTY]:
             assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
