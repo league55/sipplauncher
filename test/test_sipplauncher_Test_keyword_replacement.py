@@ -272,7 +272,6 @@ def test(mocker, mock_fs, args, expected):
     check_and_patch_args(parsed_args)
 
     test.pre_run(parsed_args)
-
     assert(test._SIPpTest__state == SIPpTest.State.READY)
 
     def check_folder(fs_path, root):
