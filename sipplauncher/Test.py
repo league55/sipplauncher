@@ -40,15 +40,15 @@ scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
     class State(Enum):
-        CREATED = "CREATED"
-        PREPARING = "PREPARING"
-        READY = "READY"
-        NOT_READY = "NOT READY"
-        DRY_RUNNING = "DRY-RUNNING"
-        STARTING = "STARTING"
-        FAIL = "FAIL"
-        SUCCESS = "SUCCESS"
-        DIRTY = "DIRTY"
+        CREATED = "CREATED"         # Test has been just created
+        PREPARING = "PREPARING"     # Test is being prepared for the run
+        READY = "READY"             # Test preparation succeeded, the test is ready to be run
+        NOT_READY = "NOT READY"     # Test preparation failed, the test isn't ready to be run
+        DRY_RUNNING = "DRY-RUNNING" # Test is having a mock run
+        STARTING = "STARTING"       # Test starts a real run
+        FAIL = "FAIL"               # Test run has failed
+        SUCCESS = "SUCCESS"         # Test run has succeeded
+        DIRTY = "DIRTY"             # Test cleanup failed, unable to rollback all the changes done
 
     class InitException(Exception):
         pass
