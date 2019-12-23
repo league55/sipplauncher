@@ -66,11 +66,13 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                     "uac_ua0.xml": "",
                     "uas_ua1.xml": "",
                     "before.sh": "echo -n 1 > before.txt\nexit -1",
+                    "after.sh": "echo -n 2 > after.txt",
                 },
             },
             "--dut {0} --leave-temp".format(DUT_IP),
             {
                 "before.txt" : "1",
+                "after.txt": None
             },
         ),
     ]
@@ -99,9 +101,12 @@ def test(mocker, mock_fs, args, expected):
     def check_folder(fs_path, root):
         for a, b in iter(root.items()):
             tmp_fs_path = os.path.join(fs_path, a)
-            with open(tmp_fs_path, 'r') as f:
-                content = f.read()
-                assert(content == b)
+            if b:
+                with open(tmp_fs_path, 'r') as f:
+                    content = f.read()
+                    assert(content == b)
+            else:
+                assert(not os.path.isfile(tmp_fs_path))
 
     check_folder(test._SIPpTest__temp_folder, expected)
 
