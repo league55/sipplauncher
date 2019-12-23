@@ -39,6 +39,9 @@ scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
+    # Expected state transitions:
+    # 1. CREATED -> READY -> DRY_RUNNING -> SUCCESS
+    # 2. CREATED -> READY -> STARTING -> FAIL/SUCCESS
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
         READY = "READY"             # Test preparation succeeded, the test is ready to be run
