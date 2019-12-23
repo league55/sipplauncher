@@ -117,7 +117,9 @@ class SIPpTest(object):
             assert(self.__state == SIPpTest.State.CREATED)
         elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
             assert(self.__state == SIPpTest.State.READY)
-        elif state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS]:
+        elif state == SIPpTest.State.FAIL:
+            assert(self.__state == SIPpTest.State.STARTING)
+        elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
         else:
             assert(False)
