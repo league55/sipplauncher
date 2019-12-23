@@ -20,6 +20,7 @@ from enum import Enum
 from jinja2 import (Environment,
                     FileSystemLoader,
                     StrictUndefined)
+from functools import partial
 
 from . import Network
 # Need to import whole module, and refer to its functions by fully qualified name,
@@ -337,21 +338,13 @@ class SIPpTest(object):
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
-            try:
-                self.network.sniffer_stop()
-            except Exception as e:
-                self.__get_logger().debug(e, exc_info = True)
-
-            try:
-                self.__remove_temp_folder(args)
-            except Exception as e:
-                self.__get_logger().debug(e, exc_info = True)
-
-            # shutdown network always
-            try:
-                self.network.shutdown()
-            except Exception as e:
-                self.__get_logger().debug(e, exc_info = True)
+            for h in [partial(Network.SIPpNetwork.sniffer_stop, self.network),
+                      partial(SIPpTest.__remove_temp_folder, self, args),
+                      partial(Network.SIPpNetwork.shutdown, self.network)]:
+                try:
+                    h()
+                except BaseException as e:
+                    self.__get_logger().debug(e, exc_info = True)
 
     def failed(self):
         """ Returns whether a test failed"""
