@@ -151,7 +151,15 @@ def run(args):
                 # because SIPpTest.run() runs in the context of a thread.
                 # If exception happens after SIPpTest.run() has yielded control,
                 # under scope of ContextManager (for ex. "with ContextManager():"), ContextManager.__exit__ isn't called.
-                for task in tasks:
+                #
+                # Issue #4: reverse the list to have proper cleanup order when provisioning some global DUT options.
+                # For ex., we need following order when having --group 2:
+                # 1. TestA pre-run
+                # 2. TestB pre-run
+                # 3. TestA run + TestB run
+                # 4. TestB post-run
+                # 5. TestA post-run
+                for task in reversed(tasks):
                     task.test.post_run(task.run_id_prefix, args)
 
             # Calculating failed tests
