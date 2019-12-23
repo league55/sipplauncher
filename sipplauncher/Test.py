@@ -265,7 +265,7 @@ class SIPpTest(object):
                 self.__replace_keywords(args)
                 self.__gen_certs_keys(args)
 
-                if args.leave_temp and not args.no_pcap:
+                if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
 
                 self.__run_script("before.sh", args)
