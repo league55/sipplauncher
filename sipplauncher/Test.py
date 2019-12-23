@@ -353,6 +353,7 @@ class SIPpTest(object):
                     h()
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
+                    # Set state to DIRTY only once
                     if self.__state != SIPpTest.State.DIRTY:
                         self.__set_state(SIPpTest.State.DIRTY)
                         self.__print_run_state(run_id_prefix)
