@@ -354,6 +354,9 @@ class SIPpTest(object):
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
+            dirty = False
+            start = time.time()
+
             for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
                       partial(Network.SIPpNetwork.sniffer_stop, self.network),
                       partial(SIPpTest.__remove_temp_folder, self, args),
@@ -362,10 +365,14 @@ class SIPpTest(object):
                     h()
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
-                    # Set state to DIRTY only once
-                    if self.__state != SIPpTest.State.DIRTY:
-                        self.__set_state(SIPpTest.State.DIRTY)
-                        self.__print_run_state(run_id_prefix)
+                    dirty = True
+
+            if dirty:
+                self.__set_state(SIPpTest.State.DIRTY)
+                end = time.time()
+                elapsed = end - start
+                elapsed_str=' - took %.0fs' % (elapsed)
+                self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def failed(self):
         """ Returns whether a test failed"""
