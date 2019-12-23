@@ -293,7 +293,6 @@ class SIPpTest(object):
         else:
             self.__set_state(SIPpTest.State.STARTING)
             self.__print_run_state(run_id_prefix)
-            self.__run_script("before.sh")
             p = PysippProcess(self.__uas, self.__temp_folder, args)
             # https://bugs.python.org/issue6721
             # "The python logging module uses a lock to surround many operations.
