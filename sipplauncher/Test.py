@@ -40,8 +40,8 @@ scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
     # Expected state transitions:
-    # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS
-    # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> DIRTY (optional)
+    # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
+    # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> CLEANING -> CLEAN/DIRTY
     # 4. CREATED -> PREPARING -> NOT_READY
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
@@ -52,6 +52,8 @@ class SIPpTest(object):
         STARTING = "STARTING"       # Test starts a real run
         FAIL = "FAIL"               # Test run has failed
         SUCCESS = "SUCCESS"         # Test run has succeeded
+        CLEANING = "CLEANING"       # Cleaning up after test
+        CLEAN = "CLEAN"             # Test cleanup successed
         DIRTY = "DIRTY"             # Test cleanup failed, unable to rollback all the changes done
 
     class InitException(Exception):
@@ -66,6 +68,7 @@ class SIPpTest(object):
     def __init__(self, folder):
         self.key = os.path.basename(folder)
         self.__set_state(SIPpTest.State.CREATED)
+        self.__successful = False
         self.__folder = folder
 
         def get_uas():
@@ -127,8 +130,10 @@ class SIPpTest(object):
             assert(self.__state == SIPpTest.State.STARTING)
         elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
-        elif state in [SIPpTest.State.DIRTY]:
+        elif state in [SIPpTest.State.CLEANING]:
             assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
+        elif state in [SIPpTest.State.CLEAN, SIPpTest.State.DIRTY]:
+            assert(self.__state == SIPpTest.State.CLEANING)
         else:
             assert(False)
         self.__state = state
@@ -322,6 +327,7 @@ class SIPpTest(object):
                 raise SIPpTest.PysippProcessException(p.exitcode)
 
         # All good
+        self.__successful = True
         self.__set_state(SIPpTest.State.SUCCESS)
 
     def run(self, run_id_prefix, args):
@@ -354,8 +360,10 @@ class SIPpTest(object):
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
-            dirty = False
+            self.__set_state(SIPpTest.State.CLEANING)
+            self.__print_run_state(run_id_prefix)
             start = time.time()
+            state = SIPpTest.State.CLEAN
 
             for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
                       partial(Network.SIPpNetwork.sniffer_stop, self.network),
@@ -365,10 +373,10 @@ class SIPpTest(object):
                     h()
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
-                    dirty = True
+                    state = SIPpTest.State.DIRTY
 
-            if dirty:
-                self.__set_state(SIPpTest.State.DIRTY)
+            self.__set_state(state)
+            if state == SIPpTest.State.DIRTY:
                 end = time.time()
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
@@ -376,4 +384,4 @@ class SIPpTest(object):
 
     def failed(self):
         """ Returns whether a test failed"""
-        return self.__state != SIPpTest.State.SUCCESS
+        return not self.__successful
