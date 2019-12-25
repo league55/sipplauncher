@@ -253,15 +253,21 @@ class SIPpTest(object):
 
     def pre_run(self, run_id_prefix, args):
         # We should rollback prior initialization on exception to not to leave test partially initialized.
-        # We shouldn't propagate exception to the caller to not to stop other tests execution.
-        # The exception could be caused by improper test definition or failure to prepare the DUT.
-        # User should see NOT READY state in this case.
-        # User could check test's logs to get exception details.
+        #
+        # We should propagate exception to the caller if it's caused by internal error.
+        # This stops tests execution.
+        #
+        # We shouldn't propagate exception to the caller if it's caused by:
+        # - improper test definition in test-suite
+        # - failure to prepare the DUT
+        # User should see NOT READY state in this case and testing should continue for further tests.
+        # User could check test's logs for exception details.
         start = time.time()
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
         self.__set_state(SIPpTest.State.PREPARING)
         self.__print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
+        propagate_exception = True
         try:
             for ua in self.__uas:
                 ua.ip = self.network.add_random_ip()
@@ -270,24 +276,37 @@ class SIPpTest(object):
 
             try:
                 self.__init_logger()
-                self.__replace_keywords(args)
+
+                try:
+                    self.__replace_keywords(args)
+                except:
+                    propagate_exception = False
+                    raise
+
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
 
-                self.__run_script("before.sh", args)
+                try:
+                    self.__run_script("before.sh", args)
+                except:
+                    propagate_exception = False
+                    raise
             except:
                 self.__remove_temp_folder(args)
                 raise
         except BaseException as e:
             self.network.shutdown()
-            self.__get_logger().debug(e, exc_info = True)
             self.__set_state(SIPpTest.State.NOT_READY)
             end = time.time()
             elapsed = end - start
             elapsed_str=' - took %.0fs' % (elapsed)
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
+            if propagate_exception:
+                raise
+            else:
+                self.__get_logger().debug(e, exc_info = True)
         else:
             # No exceptions during initialization.
             self.__set_state(SIPpTest.State.READY)
