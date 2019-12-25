@@ -121,9 +121,10 @@ class Resolver(ProxyResolver):
             return reply
 
         # no direct zone so look for an SOA record for a higher level zone
-        for record in self.records:
-            if record.sub_match(request.q):
-                reply.add_answer(record.rr)
+        for records in self.__run_id_map.values():
+            for record in records:
+                if record.sub_match(request.q):
+                    reply.add_answer(record.rr)
 
         if reply.rr:
             logger.info('found higher level SOA resource for %s[%s]', request.q.qname, type_name)
