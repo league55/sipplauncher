@@ -23,7 +23,7 @@ from dnslib.proxy import ProxyResolver
 class Resolver(ProxyResolver):
     def __init__():
         super().__init__("8.8.8.8", 53, 5)
-        self.__records = dict()
+        self.__run_id_map = dict()
 
     @staticmethod
     def __load(file):
@@ -57,7 +57,7 @@ class Resolver(ProxyResolver):
         type_name = QTYPE[request.q.qtype]
         reply = request.reply()
 
-        for records in self.__records.values():
+        for records in self.__run_id_map.values():
             for record in records:
                 if record.match(request.q):
                     reply.add_answer(record.rr)
@@ -79,11 +79,11 @@ class Resolver(ProxyResolver):
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
-        assert(run_id not in self.__records)
-        self.__records[run_id] = self.__load(file)
+        assert(run_id not in self.__run_id_map)
+        self.__run_id_map[run_id] = self.__load(file)
 
     def remove(self, run_id):
-        del self.__records[run_id]
+        del self.__run_id_map[run_id]
 
 
 class DnsServer(DNSServer):
