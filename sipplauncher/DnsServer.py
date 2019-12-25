@@ -27,40 +27,31 @@ class Resolver(ProxyResolver):
 
     @staticmethod
     def __load(file):
-        def line_generator(f):
-            current_line = ''
-            for line in f:
-                if line.startswith('#'):
-                    continue
-                line = line.rstrip('\r\n\t ')
-                if not line.startswith(' ') and current_line:
-                    yield current_line
-                    current_line = ''
-                current_line += line.lstrip('\r\n\t ')
-            if current_line:
-                yield current_line
-
         assert(os.path.exists(file))
         logger.info('loading DNS file "%s":', file)
         records = []
         with open(zone_file, 'r') as f:
-            for line in line_generator(f):
+            for line in f:
                 try:
-                    rname, rtype, args_ = line.split(maxsplit=2)
+                    if line.startswith('#'):
+                        continue
 
+                    line.strip('\r\n\t ')
+
+                    rname, rtype, args_ = line.split(maxsplit=2)
                     if args_.startswith('['):
                         args = tuple(json.loads(args_))
                     else:
                         args = (args_,)
 
                     record = Record(rname, rtype, args)
-                    zones.append(record)
-                    logger.info(' %2d: %s', len(zones), record)
+                    records.append(record)
+                    logger.info(' %2d: %s', len(records), record)
                 except Exception as e:
                     raise RuntimeError(f'Error processing line ({e.__class__.__name__}: {e}) "{line.strip()}"') from e
 
-        logger.info('%d zone resource records generated from zone file', len(zones))
-        return zones
+        logger.info('%d zone resource records generated from zone file', len(records))
+        return records
 
     def resolve(self, request, handler):
         type_name = QTYPE[request.q.qtype]
