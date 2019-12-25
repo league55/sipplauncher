@@ -85,7 +85,7 @@ class Resolver(ProxyResolver):
         assert(os.path.exists(file))
         logger.info('loading DNS file "%s":', file)
         records = []
-        with open(zone_file, 'r') as f:
+        with open(file, 'r') as f:
             for line in f:
                 try:
                     if line.startswith('#'):
@@ -105,7 +105,7 @@ class Resolver(ProxyResolver):
                 except Exception as e:
                     raise RuntimeError(f'Error processing line ({e.__class__.__name__}: {e}) "{line.strip()}"') from e
 
-        logger.info('%d zone resource records generated from zone file', len(records))
+        logger.info('%d zone resource records generated from file', len(records))
         return records
 
     def resolve(self, request, handler):
