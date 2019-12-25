@@ -20,6 +20,7 @@ copies or substantial portions of the Software.
 from dnslib.server import DNSServer
 from dnslib.proxy import ProxyResolver
 
+
 TYPE_LOOKUP = {
     'A': (dns.A, QTYPE.A),
     'AAAA': (dns.AAAA, QTYPE.AAAA),
