@@ -277,22 +277,18 @@ class SIPpTest(object):
             try:
                 self.__init_logger()
 
-                try:
-                    self.__replace_keywords(args)
-                except:
-                    propagate_exception = False
-                    raise
+                propagate_exception = False
+                self.__replace_keywords(args)
+                propagate_exception = True
 
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
 
-                try:
-                    self.__run_script("before.sh", args)
-                except:
-                    propagate_exception = False
-                    raise
+                propagate_exception = False
+                self.__run_script("before.sh", args)
+                propagate_exception = True
             except:
                 self.__remove_temp_folder(args)
                 raise
