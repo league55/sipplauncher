@@ -253,7 +253,10 @@ class SIPpTest(object):
 
     def pre_run(self, run_id_prefix, args):
         # We should rollback prior initialization on exception to not to leave test partially initialized.
-        # We shouldn't propagate exception to the caller.
+        # We shouldn't propagate exception to the caller to not to stop other tests execution.
+        # The exception could be caused by improper test definition or failure to prepare the DUT.
+        # User should see NOT READY state in this case.
+        # User could check test's logs to get exception details.
         start = time.time()
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
         self.__set_state(SIPpTest.State.PREPARING)
