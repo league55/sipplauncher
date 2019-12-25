@@ -26,37 +26,39 @@ class Resolver(ProxyResolver):
         self.__records = dict()
 
     @staticmethod
-    def __zone_lines(zone_file):
-        current_line = ''
-        for line in zone_file.open():
-            if line.startswith('#'):
-                continue
-            line = line.rstrip('\r\n\t ')
-            if not line.startswith(' ') and current_line:
+    def __load(file):
+        def line_generator(f):
+            current_line = ''
+            for line in f:
+                if line.startswith('#'):
+                    continue
+                line = line.rstrip('\r\n\t ')
+                if not line.startswith(' ') and current_line:
+                    yield current_line
+                    current_line = ''
+                current_line += line.lstrip('\r\n\t ')
+            if current_line:
                 yield current_line
-                current_line = ''
-            current_line += line.lstrip('\r\n\t ')
-        if current_line:
-            yield current_line
 
-    @staticmethod
-    def __load_zones(zone_file):
-        assert zone_file.exists(), f'zone files "{zone_file}" does not exist'
-        logger.info('loading zone file "%s":', zone_file)
-        zones = []
-        for line in __zone_lines(zone_file):
-            try:
-                rname, rtype, args_ = line.split(maxsplit=2)
+        assert(os.path.exists(file))
+        logger.info('loading DNS file "%s":', file)
+        records = []
+        with open(zone_file, 'r') as f:
+            for line in line_generator(f):
+                try:
+                    rname, rtype, args_ = line.split(maxsplit=2)
 
-                if args_.startswith('['):
-                    args = tuple(json.loads(args_))
-                else:
-                    args = (args_,)
-                record = Record(rname, rtype, args)
-                zones.append(record)
-                logger.info(' %2d: %s', len(zones), record)
-            except Exception as e:
-                raise RuntimeError(f'Error processing line ({e.__class__.__name__}: {e}) "{line.strip()}"') from e
+                    if args_.startswith('['):
+                        args = tuple(json.loads(args_))
+                    else:
+                        args = (args_,)
+
+                    record = Record(rname, rtype, args)
+                    zones.append(record)
+                    logger.info(' %2d: %s', len(zones), record)
+                except Exception as e:
+                    raise RuntimeError(f'Error processing line ({e.__class__.__name__}: {e}) "{line.strip()}"') from e
+
         logger.info('%d zone resource records generated from zone file', len(zones))
         return zones
 
@@ -87,7 +89,7 @@ class Resolver(ProxyResolver):
 
     def add(self, run_id, file):
         assert(run_id not in self.__records)
-        self.__records[run_id] = self.load_zones(file)
+        self.__records[run_id] = self.__load(file)
 
     def remove(self, run_id):
         del self.__records[run_id]
