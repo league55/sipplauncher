@@ -20,6 +20,60 @@ copies or substantial portions of the Software.
 from dnslib.server import DNSServer
 from dnslib.proxy import ProxyResolver
 
+TYPE_LOOKUP = {
+    'A': (dns.A, QTYPE.A),
+    'AAAA': (dns.AAAA, QTYPE.AAAA),
+    'CAA': (dns.CAA, QTYPE.CAA),
+    'CNAME': (dns.CNAME, QTYPE.CNAME),
+    'DNSKEY': (dns.DNSKEY, QTYPE.DNSKEY),
+    'MX': (dns.MX, QTYPE.MX),
+    'NAPTR': (dns.NAPTR, QTYPE.NAPTR),
+    'NS': (dns.NS, QTYPE.NS),
+    'PTR': (dns.PTR, QTYPE.PTR),
+    'RRSIG': (dns.RRSIG, QTYPE.RRSIG),
+    'SOA': (dns.SOA, QTYPE.SOA),
+    'SRV': (dns.SRV, QTYPE.SRV),
+    'TXT': (dns.TXT, QTYPE.TXT),
+    'SPF': (dns.TXT, QTYPE.TXT),
+}
+
+
+class Record:
+    def __init__(self, rname, rtype, args):
+        self._rname = DNSLabel(rname)
+
+        rd_cls, self._rtype = TYPE_LOOKUP[rtype]
+
+        if self._rtype == QTYPE.SOA and len(args) == 2:
+            # add sensible times to SOA
+            args += (SERIAL_NO, 3600, 3600 * 3, 3600 * 24, 3600),
+
+        if self._rtype == QTYPE.TXT and len(args) == 1 and isinstance(args[0], str) and len(args[0]) > 255:
+            # wrap long TXT records as per dnslib's docs.
+            args = wrap(args[0], 255),
+
+        if self._rtype in (QTYPE.NS, QTYPE.SOA):
+            ttl = 3600 * 24
+        else:
+            ttl = 300
+
+        self.rr = RR(
+            rname=self._rname,
+            rtype=self._rtype,
+            rdata=rd_cls(*args),
+            ttl=ttl,
+        )
+
+    def match(self, q):
+        return q.qname == self._rname and (q.qtype == QTYPE.ANY or q.qtype == self._rtype)
+
+    def sub_match(self, q):
+        return self._rtype == QTYPE.SOA and q.qname.matchSuffix(self._rname)
+
+    def __str__(self):
+        return str(self.rr)
+
+
 class Resolver(ProxyResolver):
     def __init__():
         super().__init__("8.8.8.8", 53, 5)
