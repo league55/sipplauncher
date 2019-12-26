@@ -109,7 +109,7 @@ class Resolver(BaseResolver):
                     records.append(record)
                     logger.info(' %2d: %s', len(records), record)
                 except Exception as e:
-                    raise RuntimeError(f'Error processing line ({e.__class__.__name__}: {e}) "{line.strip()}"') from e
+                    raise RuntimeError('Error processing line ({0}: {1}) "{2}"'.format(e.__class__.__name__), e, line.strip()) from e
 
         logger.info('%d zone resource records generated from file', len(records))
         return records
