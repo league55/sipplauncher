@@ -87,9 +87,9 @@ class Resolver(BaseResolver):
         self.__run_id_map = dict()
 
     @staticmethod
-    def __load(file):
+    def __load(file, run_id):
         assert(os.path.exists(file))
-        logger.info('loading DNS file "%s":', file)
+        logging.getLogger(run_id).info('loading DNS file "%s":', file)
         records = []
         with open(file, 'r') as f:
             for line in f:
@@ -107,24 +107,24 @@ class Resolver(BaseResolver):
 
                     record = Record(rname, rtype, args)
                     records.append(record)
-                    logger.info(' %2d: %s', len(records), record)
+                    logging.getLogger(run_id).info(' %2d: %s', len(records), record)
                 except Exception as e:
                     raise RuntimeError('Error processing line ({0}: {1}) "{2}"'.format(e.__class__.__name__), e, line.strip()) from e
 
-        logger.info('%d zone resource records generated from file', len(records))
+        logging.getLogger(run_id).info('%d zone resource records generated from file', len(records))
         return records
 
     def resolve(self, request, handler):
         type_name = QTYPE[request.q.qtype]
         reply = request.reply()
 
-        for records in self.__run_id_map.values():
+        for run_id, records in self.__run_id_map:
             for record in records:
                 if record.match(request.q):
                     reply.add_answer(record.rr)
+                    logging.getLogger(run_id).info('found zone for %s[%s]', request.q.qname, type_name)
 
         if reply.rr:
-            logger.info('found zone for %s[%s], %d replies', request.q.qname, type_name, len(reply.rr))
             return reply
 
         # no direct zone so look for an SOA record for a higher level zone
@@ -132,17 +132,17 @@ class Resolver(BaseResolver):
             for record in records:
                 if record.sub_match(request.q):
                     reply.add_answer(record.rr)
+                    logging.getLogger(run_id).info('found higher level SOA resource for %s[%s]', request.q.qname, type_name)
 
         if reply.rr:
-            logger.info('found higher level SOA resource for %s[%s]', request.q.qname, type_name)
             return reply
 
-        logger.info('no local zone found')
+        logging.info('no local zone found for {0}'.request.q)
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
         assert(run_id not in self.__run_id_map)
-        self.__run_id_map[run_id] = self.__load(file)
+        self.__run_id_map[run_id] = self.__load(file, run_id)
 
     def remove(self, run_id):
         del self.__run_id_map[run_id]
