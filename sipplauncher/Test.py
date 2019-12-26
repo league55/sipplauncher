@@ -154,7 +154,7 @@ class SIPpTest(object):
                 raise SIPpTest.ScriptRunException(script + " returned code " + str(ret))
 
     def __get_logger(self):
-        return logging.getLogger(self.run_id)
+        return logging.getLogger(__name__ + "." + self.run_id)
 
     def __create_temp_folder(self):
         self.__temp_folder = os.path.join(DEFAULT_TEMP_FOLDER, self.key, self.run_id)
@@ -163,7 +163,7 @@ class SIPpTest(object):
 
     def __init_logger(self):
         # get base logger instance according to options from config
-        l_base = logging.getLogger()
+        l_base = logging.getLogger(__name__)
         # get child logger
         l = self.__get_logger()
         # Check if base logger has DynamicFileHandler specified

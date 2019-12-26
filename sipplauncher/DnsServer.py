@@ -93,7 +93,7 @@ class Resolver(BaseResolver):
     @staticmethod
     def __load(file, run_id):
         assert(os.path.exists(file))
-        logging.getLogger(run_id).info('loading DNS file "%s":', file)
+        logging.getLogger(run_id).info('loading DNS file {0}'.format(file))
         records = []
         with open(file, 'r') as f:
             for line in f:
@@ -126,7 +126,7 @@ class Resolver(BaseResolver):
             for record in records:
                 if record.match(request.q):
                     reply.add_answer(record.rr)
-                    logging.getLogger(run_id).info('found zone for %s[%s]', request.q.qname, type_name)
+                    logging.getLogger(run_id).info('found zone for {0}[{1}]'.format(request.q.qname, type_name))
 
         if reply.rr:
             return reply
@@ -136,12 +136,12 @@ class Resolver(BaseResolver):
             for record in records:
                 if record.sub_match(request.q):
                     reply.add_answer(record.rr)
-                    logging.getLogger(run_id).info('found higher level SOA resource for %s[%s]', request.q.qname, type_name)
+                    logging.getLogger(run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
 
         if reply.rr:
             return reply
 
-        logging.info('no local zone found for {0}'.request.q)
+        logging.info('no local zone found for {0}'.format(request.q))
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
