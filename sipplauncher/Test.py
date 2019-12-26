@@ -207,8 +207,8 @@ class SIPpTest(object):
             files.add(os.path.basename(file))
         for ua in self.__uas:
             files |= ua.get_filenames()
-        if os.path.exists(os.path.join(self.__temp_folder, "dns.txt"))
-            filed.add("dns.txt")
+        if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_DNS_FILE))
+            filed.add(DEFAULT_DNS_FILE)
 
         # loop over files and perform replacement
         for file in files:
@@ -262,7 +262,7 @@ class SIPpTest(object):
                     self.network.sniffer_start(self.__temp_folder)
 
                 try:
-                    dns_file_path = os.path.join(self.__temp_folder, "dns.txt")
+                    dns_file_path = os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)
                     if os.path.exists(dns_file_path):
                         self.__dns_server.add(self.run_id, dns_file_path)
                 except:
