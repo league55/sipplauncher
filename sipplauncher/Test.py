@@ -30,7 +30,8 @@ import sipplauncher.utils.Utils
 from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
                                          DEFAULT_SCENARIO_FILENAME_REGEX,
                                          DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX,
-                                         DEFAULT_SCRIPT_TIMEOUT)
+                                         DEFAULT_SCRIPT_TIMEOUT,
+                                         DEFAULT_DNS_FILE)
 from .UA import UA
 from .PysippProcess import PysippProcess
 from .Scenario import Scenario
@@ -207,7 +208,7 @@ class SIPpTest(object):
             files.add(os.path.basename(file))
         for ua in self.__uas:
             files |= ua.get_filenames()
-        if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_DNS_FILE))
+        if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)):
             filed.add(DEFAULT_DNS_FILE)
 
         # loop over files and perform replacement
@@ -337,7 +338,7 @@ class SIPpTest(object):
                 self.__do_run(run_id_prefix, args)
             except SIPpTest.PysippProcessException as e:
                 # Expected outcome
-                self.__get_logger().info('PysippProcess returned {0}'.format(e))
+                self.__get_logger().debug('PysippProcess returned {0}'.format(e))
                 self.__set_state(SIPpTest.State.FAIL)
             except Exception as e:
                 self.__get_logger().error('Caught exception while running test: {0}'.format(e))

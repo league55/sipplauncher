@@ -25,8 +25,10 @@ copies or substantial portions of the Software.
 
 from dnslib.server import (DNSServer,
                            BaseResolver)
-from dnslib.label import DNSLabel
-
+from dnslib import (DNSLabel,
+                    QTYPE,
+                    RR,
+                    dns)
 
 TYPE_LOOKUP = {
     'A': (dns.A, QTYPE.A),
@@ -83,7 +85,7 @@ class Record:
 
 
 class Resolver(BaseResolver):
-    def __init__():
+    def __init__(self):
         self.__run_id_map = dict()
 
     @staticmethod
