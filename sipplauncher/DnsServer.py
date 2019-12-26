@@ -25,6 +25,7 @@ copies or substantial portions of the Software.
 
 from dnslib.server import (DNSServer,
                            BaseResolver)
+from dnslib.label import DNSLabel
 
 
 TYPE_LOOKUP = {
