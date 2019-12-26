@@ -131,7 +131,6 @@ class Resolver(BaseResolver):
             return reply
 
         logger.info('no local zone found')
-        return None
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
@@ -146,6 +145,14 @@ class DnsServer(DNSServer):
     """
     Embedded DNS server
     """
+    def __new__(cls):
+        """
+        Singleton
+        """
+        if not hasattr(cls, '__instance'):
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
     def __init__(self):
         """
         :param domain: base domain
