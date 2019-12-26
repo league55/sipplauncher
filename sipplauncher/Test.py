@@ -34,6 +34,7 @@ from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
 from .UA import UA
 from .PysippProcess import PysippProcess
 from .Scenario import Scenario
+from .DnsServer import DnsServer
 
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
@@ -63,6 +64,7 @@ class SIPpTest(object):
         self.key = os.path.basename(folder)
         self.__set_state(SIPpTest.State.CREATED)
         self.__folder = folder
+        self.__dns_server = DnsServer()
 
         def get_uas():
             uas = set()
@@ -205,6 +207,8 @@ class SIPpTest(object):
             files.add(os.path.basename(file))
         for ua in self.__uas:
             files |= ua.get_filenames()
+        if os.path.exists(os.path.join(self.__temp_folder, "dns.txt"))
+            filed.add("dns.txt")
 
         # loop over files and perform replacement
         for file in files:
@@ -256,6 +260,14 @@ class SIPpTest(object):
 
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
+
+                try:
+                    dns_file_path = os.path.join(self.__temp_folder, "dns.txt")
+                    if os.path.exists(dns_file_path):
+                        self.__dns_server.add(self.run_id, dns_file_path)
+                except:
+                    self.network.sniffer_stop()
+                    raise
             except:
                 self.__remove_temp_folder(args)
                 raise
@@ -343,7 +355,8 @@ class SIPpTest(object):
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
-            for h in [partial(Network.SIPpNetwork.sniffer_stop, self.network),
+            for h in [partial(DnsServer.remove, self.__dns_server, self.run_id),
+                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
                       partial(SIPpTest.__remove_temp_folder, self, args),
                       partial(Network.SIPpNetwork.shutdown, self.network)]:
                 try:
