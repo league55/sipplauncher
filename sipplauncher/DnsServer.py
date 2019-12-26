@@ -122,7 +122,7 @@ class Resolver(BaseResolver):
         type_name = QTYPE[request.q.qtype]
         reply = request.reply()
 
-        for run_id, records in self.__run_id_map:
+        for run_id, records in self.__run_id_map.items():
             for record in records:
                 if record.match(request.q):
                     reply.add_answer(record.rr)
@@ -132,7 +132,7 @@ class Resolver(BaseResolver):
             return reply
 
         # no direct zone so look for an SOA record for a higher level zone
-        for records in self.__run_id_map.values():
+        for run_id, records in self.__run_id_map.items():
             for record in records:
                 if record.sub_match(request.q):
                     reply.add_answer(record.rr)
