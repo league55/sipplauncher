@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
+
+.. moduleauthor:: Zaleos <admin@zaleos.net>
+
+"""
+
+"""
 The MIT License (MIT)
 
 Copyright (c) 2017 Samuel Colvin
