@@ -168,6 +168,7 @@ class DnsServer(DNSServer):
         :type domain: str
         """
         super().__init__(Resolver())
+        super().start_thread()
 
     def add(self, run_id, file):
         self.server.resolver.add(run_id, file)
