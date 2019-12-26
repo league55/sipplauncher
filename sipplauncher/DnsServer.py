@@ -24,6 +24,7 @@ copies or substantial portions of the Software.
 """
 
 import logging
+import json
 from dnslib.server import (DNSServer,
                            BaseResolver)
 from dnslib import (DNSLabel,
