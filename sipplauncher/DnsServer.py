@@ -17,8 +17,8 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 """
 
-from dnslib.server import DNSServer
-from dnslib.proxy import ProxyResolver
+from dnslib.server import (DNSServer,
+                           BaseResolver)
 
 
 TYPE_LOOKUP = {
@@ -75,9 +75,8 @@ class Record:
         return str(self.rr)
 
 
-class Resolver(ProxyResolver):
+class Resolver(BaseResolver):
     def __init__():
-        super().__init__("8.8.8.8", 53, 5)
         self.__run_id_map = dict()
 
     @staticmethod
@@ -131,7 +130,8 @@ class Resolver(ProxyResolver):
             logger.info('found higher level SOA resource for %s[%s]', request.q.qname, type_name)
             return reply
 
-        logger.info('no local zone found, proxying %s[%s]', request.q.qname, type_name)
+        logger.info('no local zone found')
+        return None
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
@@ -146,7 +146,7 @@ class DnsServer(DNSServer):
     """
     Embedded DNS server
     """
-    def __init__(self:
+    def __init__(self):
         """
         :param domain: base domain
         :type domain: str
