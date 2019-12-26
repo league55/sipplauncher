@@ -70,13 +70,13 @@ class Record:
 
         self.rr = RR(
             rname=self.__rname,
-            rtype=self._rtype,
+            rtype=self.__rtype,
             rdata=rd_cls(*args),
             ttl=ttl,
         )
 
     def match(self, q):
-        return q.qname == self.__rname and (q.qtype == QTYPE.ANY or q.qtype == self._rtype)
+        return q.qname == self.__rname and (q.qtype == QTYPE.ANY or q.qtype == self.__rtype)
 
     def sub_match(self, q):
         return self.__rtype == QTYPE.SOA and q.qname.matchSuffix(self.__rname)
