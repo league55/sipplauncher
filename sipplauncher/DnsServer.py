@@ -146,12 +146,12 @@ class DnsServer(DNSServer):
     """
     Embedded DNS server
     """
-    def __init__(self, domain):
+    def __init__(self:
         """
         :param domain: base domain
         :type domain: str
         """
-        super().__init__(Resolver(domain))
+        super().__init__(Resolver())
 
     def add(self, run_id, file):
         self.server.resolver.add(run_id, file)
