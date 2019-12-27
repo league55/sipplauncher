@@ -228,7 +228,7 @@ class DnsServer(DNSServer):
         :param domain: base domain
         :type domain: str
         """
-        super().__init__(Resolver())
+        super().__init__(resolver=Resolver(), logger=Logger())
         super().start_thread()
 
     def add(self, run_id, file):
