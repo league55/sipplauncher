@@ -218,7 +218,7 @@ class Resolver(BaseResolver):
         """
         Get SIPpTest's logger, in order to log to test's run folder.
         """
-        return logging.getLogger(".".join([sipplauncher.Test.SIPpTest.__module__, sipplauncher.Test.SIPpTest.__name__, run_id]))
+        return logging.getLogger(".".join([sipplauncher.Test.SIPpTest.__module__, run_id]))
 
 
 class DnsServer(DNSServer):
