@@ -229,9 +229,9 @@ class DnsServer(DNSServer):
         """
         Singleton
         """
-        if not hasattr(cls, '__instance'):
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
+        if not hasattr(cls, 'instance'):
+            cls.instance = super().__new__(cls)
+        return cls.instance
 
     def __init__(self):
         """
