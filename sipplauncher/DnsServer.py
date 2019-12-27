@@ -202,7 +202,7 @@ class Resolver(BaseResolver):
         if reply.rr:
             return reply
 
-        logging.info('no local zone found for {0}'.format(request.q))
+        logging.debug('no local zone found for {0}'.format(request.q))
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
