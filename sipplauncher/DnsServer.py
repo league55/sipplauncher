@@ -26,6 +26,7 @@ copies or substantial portions of the Software.
 import logging
 import json
 import binascii
+import sipplauncher.Test
 from dnslib.server import (DNSServer,
                            BaseResolver)
 from dnslib import (DNSLabel,
@@ -214,7 +215,10 @@ class Resolver(BaseResolver):
 
     @staticmethod
     def __get_logger(run_id):
-        return logging.getLogger("sipplauncher.Test." + run_id)
+        """
+        Get SIPpTest's logger, in order to log to test's run folder.
+        """
+        return logging.getLogger(".".join([sipplauncher.Test.SIPpTest.__module__, sipplauncher.Test.SIPpTest.__name__, run_id]))
 
 
 class DnsServer(DNSServer):
