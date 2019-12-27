@@ -25,10 +25,12 @@ copies or substantial portions of the Software.
 
 import logging
 import json
+import binascii
 from dnslib.server import (DNSServer,
                            BaseResolver)
 from dnslib import (DNSLabel,
                     QTYPE,
+                    RCODE,
                     RR,
                     dns)
 
