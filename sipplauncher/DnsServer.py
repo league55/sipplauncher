@@ -154,7 +154,7 @@ class Resolver(BaseResolver):
     @staticmethod
     def __load(file, run_id):
         assert(os.path.exists(file))
-        logging.getLogger("sipplauncher.Test." + run_id).info('loading DNS file {0}'.format(file))
+        Resolver.__get_logger(run_id).info('loading DNS file {0}'.format(file))
         records = []
         with open(file, 'r') as f:
             for line in f:
@@ -172,11 +172,11 @@ class Resolver(BaseResolver):
 
                     record = Record(rname, rtype, args)
                     records.append(record)
-                    logging.getLogger("sipplauncher.Test." + run_id).info(' %2d: %s', len(records), record)
+                    Resolver.__get_logger(run_id).info(' %2d: %s', len(records), record)
                 except Exception as e:
                     raise RuntimeError('Error processing line ({0}: {1}) "{2}"'.format(e.__class__.__name__), e, line.strip()) from e
 
-        logging.getLogger("sipplauncher.Test." + run_id).info('%d zone resource records generated from file', len(records))
+        Resolver.__get_logger(run_id).info('%d zone resource records generated from file', len(records))
         return records
 
     def resolve(self, request, handler):
@@ -187,7 +187,7 @@ class Resolver(BaseResolver):
             for record in records:
                 if record.match(request.q):
                     reply.add_answer(record.rr)
-                    logging.getLogger("sipplauncher.Test." + run_id).info('found zone for {0}[{1}]'.format(request.q.qname, type_name))
+                    self.__get_logger(run_id).info('found zone for {0}[{1}]'.format(request.q.qname, type_name))
 
         if reply.rr:
             return reply
@@ -197,7 +197,7 @@ class Resolver(BaseResolver):
             for record in records:
                 if record.sub_match(request.q):
                     reply.add_answer(record.rr)
-                    logging.getLogger("sipplauncher.Test." + run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
+                    self.__get_logger(run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
 
         if reply.rr:
             return reply
@@ -211,6 +211,10 @@ class Resolver(BaseResolver):
 
     def remove(self, run_id):
         del self.__run_id_map[run_id]
+
+    @staticmethod
+    def __get_logger(run_id):
+        return logging.getLogger("sipplauncher.Test." + run_id)
 
 
 class DnsServer(DNSServer):
