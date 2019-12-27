@@ -50,6 +50,65 @@ TYPE_LOOKUP = {
 }
 
 
+class Logger:
+    def log_recv(self, handler, data):
+        logging.debug("Received: [{0}:{1}] ({2}) <{3}> : {4}".format(handler.client_address[0],
+                                                                     handler.client_address[1],
+                                                                     handler.protocol,
+                                                                     len(data),
+                                                                     binascii.hexlify(data)))
+
+    def log_send(self, handler, data):
+        logging.debug("Sent: [{0}:{1}] ({2}) <{3}> : {4}".format(handler.client_address[0],
+                                                                 handler.client_address[1],
+                                                                 handler.protocol,
+                                                                 len(data),
+                                                                 binascii.hexlify(data)))
+
+    def log_request(self, handler, request):
+        logging.debug("Request: [{0}:{1}] ({2}) / '{3}' ({4})".format(handler.client_address[0],
+                                                                      handler.client_address[1],
+                                                                      handler.protocol,
+                                                                      request.q.qname,
+                                                                      QTYPE[request.q.qtype]))
+        self.log_data(request)
+
+    def log_reply(self, handler, reply):
+        if reply.header.rcode == RCODE.NOERROR:
+            logging.debug("Reply: [{0}:{1}] ({2}) / '{3}' ({4}) / RRs: {5}".format(handler.client_address[0],
+                                                                                   handler.client_address[1],
+                                                                                   handler.protocol,
+                                                                                   reply.q.qname,
+                                                                                   QTYPE[reply.q.qtype],
+                                                                                   ",".join([QTYPE[a.rtype] for a in reply.rr])))
+        else:
+            logging.debug("Reply: [{0}:{1}] ({2}) / '{3}' ({4}) / {5}".format(handler.client_address[0],
+                                                                              handler.client_address[1],
+                                                                              handler.protocol,
+                                                                              reply.q.qname,
+                                                                              QTYPE[reply.q.qtype],
+                                                                              RCODE[reply.header.rcode]))
+        self.log_data(reply)
+
+    def log_truncated(self, handler, reply):
+        logging.debug("Truncated Reply: [{0}:{1}] ({2}) / '{3}' ({4}) / RRs: {5}".format(handler.client_address[0],
+                                                                                         handler.client_address[1],
+                                                                                         handler.protocol,
+                                                                                         reply.q.qname,
+                                                                                         QTYPE[reply.q.qtype],
+                                                                                         ",".join([QTYPE[a.rtype] for a in reply.rr])))
+        self.log_data(reply)
+
+    def log_error(self, handler, e):
+        logging.debug("Invalid Request: [{0}:{1}] ({2}) :: {3}".format(handler.client_address[0],
+                                                                       handler.client_address[1],
+                                                                       handler.protocol,
+                                                                       e))
+
+    def log_data(self, dnsobj):
+        logging.debug("\n{0}\n".format(dnsobj.toZone("    ")))
+
+
 class Record:
     def __init__(self, rname, rtype, args):
         self.__rname = DNSLabel(rname)
