@@ -271,7 +271,7 @@ def test(mocker, mock_fs, args, expected):
     parsed_args.testsuite = dirpath
     check_and_patch_args(parsed_args)
 
-    test.pre_run(parsed_args)
+    test.pre_run("", parsed_args)
     assert(test._SIPpTest__state == SIPpTest.State.READY)
 
     def check_folder(fs_path, root):
@@ -283,6 +283,7 @@ def test(mocker, mock_fs, args, expected):
 
     check_folder(test._SIPpTest__temp_folder, expected)
 
-    test.post_run(parsed_args)
+    test.run("", parsed_args)
+    test.post_run("", parsed_args)
 
     shutil.rmtree(dirpath)

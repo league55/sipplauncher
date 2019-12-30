@@ -40,15 +40,21 @@ scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
 
 class SIPpTest(object):
     # Expected state transitions:
-    # 1. CREATED -> READY -> DRY_RUNNING -> SUCCESS
-    # 2. CREATED -> READY -> STARTING -> FAIL/SUCCESS
+    # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
+    # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> CLEANING -> CLEAN/DIRTY
+    # 4. CREATED -> PREPARING -> NOT_READY
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
+        PREPARING = "PREPARING"     # Test is being prepared for the run
         READY = "READY"             # Test preparation succeeded, the test is ready to be run
+        NOT_READY = "NOT READY"     # Test preparation failed, the test isn't ready to be run
         DRY_RUNNING = "DRY-RUNNING" # Test is having a mock run
         STARTING = "STARTING"       # Test starts a real run
         FAIL = "FAIL"               # Test run has failed
         SUCCESS = "SUCCESS"         # Test run has succeeded
+        CLEANING = "CLEANING"       # Cleaning up after test
+        CLEAN = "CLEAN"             # Test cleanup successed
+        DIRTY = "DIRTY"             # Test cleanup failed, unable to rollback all the changes done
 
     class InitException(Exception):
         pass
@@ -62,6 +68,7 @@ class SIPpTest(object):
     def __init__(self, folder):
         self.key = os.path.basename(folder)
         self.__set_state(SIPpTest.State.CREATED)
+        self.__successful = False
         self.__folder = folder
 
         def get_uas():
@@ -113,42 +120,48 @@ class SIPpTest(object):
         """
         if state == SIPpTest.State.CREATED:
             assert(not hasattr(self, '__state'))
-        elif state == SIPpTest.State.READY:
+        elif state == SIPpTest.State.PREPARING:
             assert(self.__state == SIPpTest.State.CREATED)
+        elif state in [SIPpTest.State.READY, SIPpTest.State.NOT_READY]:
+            assert(self.__state == SIPpTest.State.PREPARING)
         elif state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING]:
             assert(self.__state == SIPpTest.State.READY)
         elif state == SIPpTest.State.FAIL:
             assert(self.__state == SIPpTest.State.STARTING)
         elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
+        elif state in [SIPpTest.State.CLEANING]:
+            assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
+        elif state in [SIPpTest.State.CLEAN, SIPpTest.State.DIRTY]:
+            assert(self.__state == SIPpTest.State.CLEANING)
         else:
             assert(False)
         self.__state = state
 
-    def __run_script(self, script):
-        script_path = os.path.join(self.__temp_folder, script)
-        if os.path.exists(script_path):
-            p = subprocess.Popen("sh " + script_path,
-                                 shell=True,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
-            try:
-                stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
-            except subprocess.TimeoutExpired:
-                # Script lasts unexpectedly long.
-                # Seems like it has deadlocked.
-                p.kill()
-                raise
-            finally:
-                ret = p.wait() # to not to leave zombie
-            # Need to strip trailing newline, because logger adds newline too.
-            if stdoutdata:
-                self.__get_logger().debug(stdoutdata.decode("utf-8").rstrip())
-            if stderrdata:
-                self.__get_logger().error(stderrdata.decode("utf-8").rstrip())
-            if ret != 0:
-                raise SIPpTest.ScriptRunException(script + " returned code " + str(ret))
+    def __run_script(self, script, args):
+        with sipplauncher.utils.Utils.cd(self.__temp_folder):
+            if os.path.exists(script) and not args.dry_run:
+                p = subprocess.Popen("sh " + script,
+                                     shell=True,
+                                     stdout=subprocess.PIPE,
+                                     stderr=subprocess.PIPE,
+                                     preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
+                try:
+                    stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
+                except subprocess.TimeoutExpired:
+                    # Script lasts unexpectedly long.
+                    # Seems like it has deadlocked.
+                    p.kill()
+                    raise
+                finally:
+                    ret = p.wait() # to not to leave zombie
+                # Need to strip trailing newline, because logger adds newline too.
+                if stdoutdata:
+                    self.__get_logger().debug(stdoutdata.decode("utf-8").rstrip())
+                if stderrdata:
+                    self.__get_logger().error(stderrdata.decode("utf-8").rstrip())
+                if ret != 0:
+                    raise SIPpTest.ScriptRunException(script + " returned code " + str(ret))
 
     def __get_logger(self):
         return logging.getLogger(__name__ + "." + self.run_id)
@@ -238,11 +251,23 @@ class SIPpTest(object):
         else:
             logging.debug("You can find temp folder at {0}".format(self.__temp_folder))
 
-    def pre_run(self, args):
+    def pre_run(self, run_id_prefix, args):
         # We should rollback prior initialization on exception to not to leave test partially initialized.
-        # We should propagate exception to the caller.
+        #
+        # We should propagate exception to the caller if it's caused by internal error.
+        # This stops tests execution.
+        #
+        # We shouldn't propagate exception to the caller if it's caused by:
+        # - improper test definition in test-suite
+        # - failure to prepare the DUT
+        # User should see NOT READY state in this case and testing should continue for further tests.
+        # User could check test's logs for exception details.
+        start = time.time()
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
+        self.__set_state(SIPpTest.State.PREPARING)
+        self.__print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
+        propagate_exception = True
         try:
             for ua in self.__uas:
                 ua.ip = self.network.add_random_ip()
@@ -251,19 +276,46 @@ class SIPpTest(object):
 
             try:
                 self.__init_logger()
-                self.__replace_keywords(args)
+
+                try:
+                    self.__replace_keywords(args)
+                except:
+                    # This is the issue in test description.
+                    # This is not an internal issue.
+                    # Notify user with NOT READY test state and continue.
+                    propagate_exception = False
+                    raise
+
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
+
+                try:
+                    self.__run_script("before.sh", args)
+                except:
+                    # This is the issue in test description.
+                    # This is not an internal issue.
+                    # Notify user with NOT READY test state and continue.
+                    propagate_exception = False
+                    raise
             except:
                 self.__remove_temp_folder(args)
                 raise
-        except:
+        except BaseException as e:
             self.network.shutdown()
-            raise
-        # No exceptions during initialization.
-        self.__set_state(SIPpTest.State.READY)
+            self.__set_state(SIPpTest.State.NOT_READY)
+            end = time.time()
+            elapsed = end - start
+            elapsed_str=' - took %.0fs' % (elapsed)
+            self.__print_run_state(run_id_prefix, extra=elapsed_str)
+            if propagate_exception:
+                raise
+            else:
+                self.__get_logger().debug(e, exc_info = True)
+        else:
+            # No exceptions during initialization.
+            self.__set_state(SIPpTest.State.READY)
 
     def __print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
@@ -284,37 +336,30 @@ class SIPpTest(object):
         else:
             self.__set_state(SIPpTest.State.STARTING)
             self.__print_run_state(run_id_prefix)
-            self.__run_script("before.sh")
+            p = PysippProcess(self.__uas, self.__temp_folder, args)
+            # https://bugs.python.org/issue6721
+            # "The python logging module uses a lock to surround many operations.
+            # This causes deadlocks in programs that use logging, fork and threading simultaneously."
+            # For example, we have Process P1.
+            # P1's thread T1 obtains logging lock L1 while logging.
+            # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
+            # Then P2 tries to log, and stucks on L1, because noone will ever release it.
+            # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
+            logging._acquireLock();
             try:
-                p = PysippProcess(self.__uas, self.__temp_folder, args)
-                # https://bugs.python.org/issue6721
-                # "The python logging module uses a lock to surround many operations.
-                # This causes deadlocks in programs that use logging, fork and threading simultaneously."
-                # For example, we have Process P1.
-                # P1's thread T1 obtains logging lock L1 while logging.
-                # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
-                # Then P2 tries to log, and stucks on L1, because noone will ever release it.
-                # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
-                logging._acquireLock();
-                try:
-                    p.start()
-                finally:
-                    logging._releaseLock();
-                p.join()
-                if p.exitcode != 0:
-                    raise SIPpTest.PysippProcessException(p.exitcode)
+                p.start()
             finally:
-                self.__run_script("after.sh")
+                logging._releaseLock();
+            p.join()
+            if p.exitcode != 0:
+                raise SIPpTest.PysippProcessException(p.exitcode)
+
         # All good
+        self.__successful = True
         self.__set_state(SIPpTest.State.SUCCESS)
 
     def run(self, run_id_prefix, args):
-        if self.__state == SIPpTest.State.CREATED:
-            # pre_run() has failed.
-            # We shouldn't run this test.
-            # We shouldn't reach this, because currently run() is not invoked if pre_run() has failed.
-            assert False, "Don't invoke run() if pre_run() has failed"
-        else:
+        if self.__state == SIPpTest.State.READY:
             # pre_run() has succeeded.
             # We can run this test.
             try:
@@ -338,19 +383,33 @@ class SIPpTest(object):
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
-    def post_run(self, args):
-        if self.__state != SIPpTest.State.CREATED:
+    def post_run(self, run_id_prefix, args):
+        if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
-            for h in [partial(Network.SIPpNetwork.sniffer_stop, self.network),
+            self.__set_state(SIPpTest.State.CLEANING)
+            self.__print_run_state(run_id_prefix)
+            start = time.time()
+            state = SIPpTest.State.CLEAN
+
+            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
+                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
                       partial(SIPpTest.__remove_temp_folder, self, args),
                       partial(Network.SIPpNetwork.shutdown, self.network)]:
                 try:
                     h()
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
+                    state = SIPpTest.State.DIRTY
+
+            self.__set_state(state)
+            if state == SIPpTest.State.DIRTY:
+                end = time.time()
+                elapsed = end - start
+                elapsed_str=' - took %.0fs' % (elapsed)
+                self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def failed(self):
         """ Returns whether a test failed"""
-        return self.__state != SIPpTest.State.SUCCESS
+        return not self.__successful
