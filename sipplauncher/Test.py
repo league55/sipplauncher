@@ -291,6 +291,8 @@ class SIPpTest(object):
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
 
+                # Run before.sh after sniffer,
+                # because some day we might want to capture to pcap configuring the DUT...
                 try:
                     self.__run_script("before.sh", args)
                 except:
