@@ -154,12 +154,15 @@ def run(args):
                 # under scope of ContextManager (for ex. "with ContextManager():"), ContextManager.__exit__ isn't called.
                 #
                 # Issue #4: reverse the list to have proper cleanup order when provisioning some global DUT options.
-                # For ex., we need following order when having --group 2:
-                # 1. TestA pre-run
-                # 2. TestB pre-run
+                # For ex., we have been requested by user to have 2 concurrent tests running with "--group 2" command-line argument.
+                # Both tests are going to save, alter and restore same global DUT option, say OptionA, which has some original value ValueOrig.
+                # We need to restore the global DUT option at the aplication exit.
+                # This, we need to have following order in this case:
+                # 1. TestA pre-run. OptionA: ValueOrig -> ValueA
+                # 2. TestB pre-run. OptionA: ValueA -> ValueB
                 # 3. TestA run + TestB run
-                # 4. TestB post-run
-                # 5. TestA post-run
+                # 4. TestB post-run. OptionA: ValueB -> ValueA
+                # 5. TestA post-run: OptionB: ValueA -> ValueOrig
                 for task in reversed(tasks):
                     task.test.post_run(task.run_id_prefix, args)
 
