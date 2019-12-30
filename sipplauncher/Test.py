@@ -297,6 +297,7 @@ class SIPpTest(object):
                     # This is the issue in test description.
                     # This is not an internal issue.
                     # Notify user with NOT READY test state and continue.
+                    self.network.sniffer_stop()
                     propagate_exception = False
                     raise
             except:
