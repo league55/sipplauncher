@@ -157,7 +157,7 @@ def run(args):
                 # For ex., we have been requested by user to have 2 concurrent tests running with "--group 2" command-line argument.
                 # Both tests are going to save, alter and restore same global DUT option, say OptionA, which has some original value ValueOrig.
                 # We need to restore the global DUT option at the aplication exit.
-                # This, we need to have following order in this case:
+                # Thus, we need to have following order in this case:
                 # 1. TestA pre-run. OptionA: ValueOrig -> ValueA
                 # 2. TestB pre-run. OptionA: ValueA -> ValueB
                 # 3. TestA run + TestB run
