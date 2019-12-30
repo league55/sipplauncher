@@ -277,18 +277,28 @@ class SIPpTest(object):
             try:
                 self.__init_logger()
 
-                propagate_exception = False
-                self.__replace_keywords(args)
-                propagate_exception = True
+                try:
+                    self.__replace_keywords(args)
+                except:
+                    # This is the issue in test description.
+                    # This is not an internal issue.
+                    # Notify user with NOT READY test state and continue.
+                    propagate_exception = False
+                    raise
 
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
                     self.network.sniffer_start(self.__temp_folder)
 
-                propagate_exception = False
-                self.__run_script("before.sh", args)
-                propagate_exception = True
+                try:
+                    self.__run_script("before.sh", args)
+                except:
+                    # This is the issue in test description.
+                    # This is not an internal issue.
+                    # Notify user with NOT READY test state and continue.
+                    propagate_exception = False
+                    raise
             except:
                 self.__remove_temp_folder(args)
                 raise
