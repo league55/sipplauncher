@@ -25,7 +25,7 @@ import threading
 import copy
 import collections
 
-Task = collections.namedtuple('Task', ['thread', 'test'])
+Task = collections.namedtuple('Task', ['thread', 'test', 'run_id_prefix'])
 
 logger = logging.getLogger(__name__)
 
@@ -114,13 +114,13 @@ def run(args):
                 # 2. Scapy creates daemon thread too, and we don't want to mix daemon and non-daemon threads for the sake of simplicity.
                 thread.setDaemon(True)
 
-                tasks.append(Task(thread, test))
+                tasks.append(Task(thread, test, count_total))
                 count_total += 1
 
             try:
                 # Pre run hook for each test
                 for task in tasks:
-                    task.test.pre_run(args)
+                    task.test.pre_run(task.run_id_prefix, args)
 
                 # Issue #69: Need to wait a bit after sniffing thread has been started.
                 # Otherwise we might miss first SIP packets.
@@ -152,8 +152,19 @@ def run(args):
                 # because SIPpTest.run() runs in the context of a thread.
                 # If exception happens after SIPpTest.run() has yielded control,
                 # under scope of ContextManager (for ex. "with ContextManager():"), ContextManager.__exit__ isn't called.
-                for task in tasks:
-                    task.test.post_run(args)
+                #
+                # Issue #4: reverse the list to have proper cleanup order when provisioning some global DUT options.
+                # For ex., we have been requested by a user to have 2 concurrent tests running with the "--group 2" command-line argument.
+                # Both tests are going to save, alter and restore same global DUT option, say OptionA, which has some original value ValueOrig.
+                # We need to restore the global DUT option at the aplication exit.
+                # Thus, we need to have the following order in this case:
+                # 1. TestA pre-run. OptionA: ValueOrig -> ValueA
+                # 2. TestB pre-run. OptionA: ValueA -> ValueB
+                # 3. TestA run + TestB run
+                # 4. TestB post-run. OptionA: ValueB -> ValueA
+                # 5. TestA post-run: OptionB: ValueA -> ValueOrig
+                for task in reversed(tasks):
+                    task.test.post_run(task.run_id_prefix, args)
 
             # Calculating failed tests
             for task in tasks:

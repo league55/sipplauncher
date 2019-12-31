@@ -13,7 +13,6 @@ import sys
 import os
 import shutil
 import logging
-import jinja2
 import shlex
 
 from sipplauncher.utils.Utils import gen_file_struct
@@ -141,7 +140,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            SIPpTest.ScriptRunException(),
+            SIPpTest.State.NOT_READY,
         ),
         (
             {
@@ -152,7 +151,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            SIPpTest.ScriptRunException(),
+            SIPpTest.State.DIRTY,
         ),
         (
             {
@@ -162,7 +161,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            SIPpTest.ScriptRunException(),
+            SIPpTest.State.NOT_READY,
         ),
         (
             {
@@ -172,7 +171,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            SIPpTest.ScriptRunException(),
+            SIPpTest.State.DIRTY,
         ),
         (
             {
@@ -194,7 +193,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"keyword": "replaced"}'),
-            jinja2.exceptions.UndefinedError(),
+            SIPpTest.State.NOT_READY,
         ),
         (
             {
@@ -204,7 +203,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"keyword": "replaced"}'),
-            jinja2.exceptions.UndefinedError(),
+            SIPpTest.State.NOT_READY,
         ),
         # test absent template specified
         (
@@ -214,7 +213,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            jinja2.exceptions.TemplateNotFound("options.jinja2"),
+            SIPpTest.State.NOT_READY,
         ),
         # test present template specified
         (
@@ -264,7 +263,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"val": "1"}'),
-            SIPpTest.ScriptRunException(),
+            SIPpTest.State.NOT_READY,
         ),
         # test undefined keyword
         (
@@ -280,7 +279,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            jinja2.exceptions.UndefinedError(),
+            SIPpTest.State.NOT_READY,
         ),
         (
             {
@@ -300,7 +299,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            subprocess.TimeoutExpired("subprocess.communicate", DEFAULT_SCRIPT_TIMEOUT),
+            SIPpTest.State.NOT_READY,
         ),
         (
             {
@@ -310,7 +309,7 @@ TEST_NAME = "my_test_name"
                 },
             },
             "--dut {0}".format(DUT_IP),
-            subprocess.TimeoutExpired("subprocess.communicate", DEFAULT_SCRIPT_TIMEOUT),
+            SIPpTest.State.DIRTY,
         ),
         (
             {
@@ -345,16 +344,17 @@ def test(mocker, mock_fs, args, expected):
 
     def do_test(dirpath, args, with_except):
         test = SIPpTest(os.path.join(dirpath, TEST_NAME))
-        test.pre_run(args)
+        test.pre_run("", args)
         try:
             if with_except:
-                test._SIPpTest__do_run("", args)
+                if test._SIPpTest__state == SIPpTest.State.READY:
+                    test._SIPpTest__do_run("", args)
             else:
                 test.run("", args)
         finally:
             # Always post_run after successful pre_run
             # to not to leave network config from previous run
-            test.post_run(args)
+            test.post_run("", args)
 
         # Issue #9: Create dynamic execution test temp folder for each test execution
         exists = os.path.isdir(test._SIPpTest__temp_folder)
