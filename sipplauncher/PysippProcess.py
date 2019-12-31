@@ -103,10 +103,14 @@ class PysippProcess(Process):
         Therefore we are able to patch it without having access to class instance.
         All UserAgent instances will inherit _specparams and will handle our new arguments.
         """
-        def add_arg(fmtstr):
+        def add_arg(item):
             # This is a copy-paste from pysipp.command.cmdstrtype()
+            if isinstance(item, tuple):
+                fmtstr, descrtype = item
+            else:
+                fmtstr, descrtype = item, pysipp.command.Field
             fieldname = list(pysipp.command.iter_format(fmtstr))[0][1]
-            descr = pysipp.command.Field(fieldname, fmtstr)
+            descr = descrtype(fieldname, fmtstr)
             pysipp.command.SippCmd._specparams[fieldname] = descr
             setattr(pysipp.command.SippCmd, fieldname, descr)
 
