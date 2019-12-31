@@ -11,7 +11,6 @@ import pysipp
 import sys
 import os
 import logging
-import resource
 from multiprocessing import Process
 
 import sipplauncher.utils.Log
@@ -104,10 +103,14 @@ class PysippProcess(Process):
         Therefore we are able to patch it without having access to class instance.
         All UserAgent instances will inherit _specparams and will handle our new arguments.
         """
-        def add_arg(fmtstr):
+        def add_arg(item):
             # This is a copy-paste from pysipp.command.cmdstrtype()
+            if isinstance(item, tuple):
+                fmtstr, descrtype = item
+            else:
+                fmtstr, descrtype = item, pysipp.command.Field
             fieldname = list(pysipp.command.iter_format(fmtstr))[0][1]
-            descr = pysipp.command.Field(fieldname, fmtstr)
+            descr = descrtype(fieldname, fmtstr)
             pysipp.command.SippCmd._specparams[fieldname] = descr
             setattr(pysipp.command.SippCmd, fieldname, descr)
 
@@ -119,7 +122,7 @@ class PysippProcess(Process):
         add_arg(' -tls_version {tls_version}')
 
         # Issue #23: Need for TCP tests to work
-        add_arg(' -max_socket {max_socket}')
+        add_arg((' -skip_rlimit {skip_rlimit}', pysipp.command.BoolField))
 
     def __run_scenario(self, run_id, call_count):
         """
@@ -153,7 +156,7 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
-                "max_socket": min(resource.getrlimit(resource.RLIMIT_NOFILE))
+                "skip_rlimit": True,
             }
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
