@@ -11,6 +11,7 @@ import pysipp
 import sys
 import os
 import logging
+import resource
 from multiprocessing import Process
 
 import sipplauncher.utils.Log
@@ -117,6 +118,9 @@ class PysippProcess(Process):
         add_arg(' -tls_crl {tls_crl}')
         add_arg(' -tls_version {tls_version}')
 
+        # Issue #23: Need for TCP tests to work
+        add_arg(' -max_socket {max_socket}')
+
     def __run_scenario(self, run_id, call_count):
         """
         Run all UAs, which support given Run ID
@@ -149,6 +153,7 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
+                "max_socket": min(resource.getrlimit(resource.RLIMIT_NOFILE))
             }
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
