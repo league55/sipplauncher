@@ -19,6 +19,7 @@ from dnslib import (DNSLabel,
                     RR,
                     dns)
 
+
 """
 The MIT License (MIT)
 
@@ -159,6 +160,7 @@ class Logger:
 
     def log_data(self, dnsobj):
         logging.debug("\n{0}\n".format(dnsobj.toZone("    ")))
+
 
 class Resolver(BaseResolver):
     def __init__(self):
