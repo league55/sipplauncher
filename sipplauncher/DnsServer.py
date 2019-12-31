@@ -167,16 +167,16 @@ class Resolver(BaseResolver):
         self.__run_id_map = dict()
 
     @staticmethod
-    def __load(file, run_id):
+    def __load(run_id, file):
         """
         Parse and load a file into memory.
         Store it in dict with a key of run_id.
 
-        :param file: a path to file to parse and load
-        :type file: str
-
         :param run_id: a key of DNS information which is added
         :type run_id: str
+
+        :param file: a path to file to parse and load
+        :type file: str
         """
         assert(os.path.exists(file))
         Resolver.__get_logger(run_id).info('loading DNS file {0}'.format(file))
@@ -245,7 +245,7 @@ class Resolver(BaseResolver):
         """
         # Attempt to add duplicate run_id is an error
         assert(run_id not in self.__run_id_map)
-        self.__run_id_map[run_id] = self.__load(file, run_id)
+        self.__run_id_map[run_id] = self.__load(run_id, file)
 
     def remove(self, run_id):
         """
