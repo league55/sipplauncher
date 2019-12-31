@@ -144,10 +144,6 @@ class PysippProcess(Process):
                # Just skip this UA for this Run ID.
                continue
 
-            concurrent_limit = 1
-            soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-            max_socket = soft - concurrent_limit
-
             kwargs = {
                 "logdir": ".", # we already did chdir()
                 "scen_file": scen.get_filename(),
@@ -161,9 +157,13 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
-                "limit": concurrent_limit,
-                "max_socket": max_socket, # Issue #23: Need for TCP tests to work
             }
+
+            # Issue #23: Need for TCP tests to work
+            kwargs["limit"] = 1
+            soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+            kwargs["max_socket"] = soft - kwargs["limit"]
+
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
 
