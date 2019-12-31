@@ -297,8 +297,6 @@ class SIPpTest(object):
                 if os.path.exists(dns_file_path):
                     self.__dns_server.add(self.run_id, dns_file_path)
 
-                # Run before.sh after sniffer,
-                # because some day we might want to capture to pcap configuring the DUT...
                 try:
                     if sipplauncher.utils.Utils.is_pcap(args):
                         self.network.sniffer_start(self.__temp_folder)
