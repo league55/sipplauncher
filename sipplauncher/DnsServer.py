@@ -7,6 +7,18 @@
 
 """
 
+import logging
+import json
+import binascii
+import sipplauncher.Test
+from dnslib.server import (DNSServer,
+                           BaseResolver)
+from dnslib import (DNSLabel,
+                    QTYPE,
+                    RCODE,
+                    RR,
+                    dns)
+
 """
 The MIT License (MIT)
 
@@ -21,19 +33,15 @@ furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-"""
 
-import logging
-import json
-import binascii
-import sipplauncher.Test
-from dnslib.server import (DNSServer,
-                           BaseResolver)
-from dnslib import (DNSLabel,
-                    QTYPE,
-                    RCODE,
-                    RR,
-                    dns)
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 
 TYPE_LOOKUP = {
     'A': (dns.A, QTYPE.A),
@@ -51,6 +59,47 @@ TYPE_LOOKUP = {
     'TXT': (dns.TXT, QTYPE.TXT),
     'SPF': (dns.TXT, QTYPE.TXT),
 }
+
+
+class Record:
+    def __init__(self, rname, rtype, args):
+        self.__rname = DNSLabel(rname)
+
+        rd_cls, self.__rtype = TYPE_LOOKUP[rtype]
+
+        if self.__rtype == QTYPE.SOA and len(args) == 2:
+            # add sensible times to SOA
+            args += (SERIAL_NO, 3600, 3600 * 3, 3600 * 24, 3600),
+
+        if self.__rtype == QTYPE.TXT and len(args) == 1 and isinstance(args[0], str) and len(args[0]) > 255:
+            # wrap long TXT records as per dnslib's docs.
+            args = wrap(args[0], 255),
+
+        if self.__rtype in (QTYPE.NS, QTYPE.SOA):
+            ttl = 3600 * 24
+        else:
+            ttl = 300
+
+        self.rr = RR(
+            rname=self.__rname,
+            rtype=self.__rtype,
+            rdata=rd_cls(*args),
+            ttl=ttl,
+        )
+
+    def match(self, q):
+        return q.qname == self.__rname and (q.qtype == QTYPE.ANY or q.qtype == self.__rtype)
+
+    def sub_match(self, q):
+        return self.__rtype == QTYPE.SOA and q.qname.matchSuffix(self.__rname)
+
+    def __str__(self):
+        return str(self.rr)
+
+
+"""
+End of MIT-licensed code
+"""
 
 
 class Logger:
@@ -110,43 +159,6 @@ class Logger:
 
     def log_data(self, dnsobj):
         logging.debug("\n{0}\n".format(dnsobj.toZone("    ")))
-
-
-class Record:
-    def __init__(self, rname, rtype, args):
-        self.__rname = DNSLabel(rname)
-
-        rd_cls, self.__rtype = TYPE_LOOKUP[rtype]
-
-        if self.__rtype == QTYPE.SOA and len(args) == 2:
-            # add sensible times to SOA
-            args += (SERIAL_NO, 3600, 3600 * 3, 3600 * 24, 3600),
-
-        if self.__rtype == QTYPE.TXT and len(args) == 1 and isinstance(args[0], str) and len(args[0]) > 255:
-            # wrap long TXT records as per dnslib's docs.
-            args = wrap(args[0], 255),
-
-        if self.__rtype in (QTYPE.NS, QTYPE.SOA):
-            ttl = 3600 * 24
-        else:
-            ttl = 300
-
-        self.rr = RR(
-            rname=self.__rname,
-            rtype=self.__rtype,
-            rdata=rd_cls(*args),
-            ttl=ttl,
-        )
-
-    def match(self, q):
-        return q.qname == self.__rname and (q.qtype == QTYPE.ANY or q.qtype == self.__rtype)
-
-    def sub_match(self, q):
-        return self.__rtype == QTYPE.SOA and q.qname.matchSuffix(self.__rname)
-
-    def __str__(self):
-        return str(self.rr)
-
 
 class Resolver(BaseResolver):
     def __init__(self):
