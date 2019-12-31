@@ -207,11 +207,14 @@ class Resolver(BaseResolver):
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
+        # Attempt to add duplicate run_id is an error
         assert(run_id not in self.__run_id_map)
         self.__run_id_map[run_id] = self.__load(file, run_id)
 
     def remove(self, run_id):
-        del self.__run_id_map[run_id]
+        # Attempt to delete non-existent run_id is not an error
+        if run_id in self.__run_id_map:
+            del self.__run_id_map[run_id]
 
     @staticmethod
     def __get_logger(run_id):
