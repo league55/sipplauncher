@@ -156,7 +156,7 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
-                "skip_rlimit": True,
+                "skip_rlimit": True, # Issue #23: Need for TCP tests to work
             }
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
