@@ -409,8 +409,8 @@ class SIPpTest(object):
             start = time.time()
             state = SIPpTest.State.CLEAN
             for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
-                      partial(DnsServer.remove, self.__dns_server, self.run_id),
                       partial(Network.SIPpNetwork.sniffer_stop, self.network),
+                      partial(DnsServer.remove, self.__dns_server, self.run_id),
                       partial(SIPpTest.__remove_temp_folder, self, args),
                       partial(Network.SIPpNetwork.shutdown, self.network)]:
                 try:
