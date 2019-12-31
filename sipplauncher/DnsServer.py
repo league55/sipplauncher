@@ -189,6 +189,9 @@ class Resolver(BaseResolver):
 
                     line.strip('\r\n\t ')
 
+                    if not line:
+                        continue
+
                     rname, rtype, args_ = line.split(maxsplit=2)
                     if args_.startswith('['):
                         args = tuple(json.loads(args_))
