@@ -183,26 +183,23 @@ class Resolver(BaseResolver):
         records = []
         with open(file, 'r') as f:
             for line in f:
-                try:
-                    if line.startswith('#'):
-                        continue
+                if line.startswith('#'):
+                    continue
 
-                    line.strip('\r\n\t ')
+                line = line.strip()
 
-                    if not line:
-                        continue
+                if not line:
+                    continue
 
-                    rname, rtype, args_ = line.split(maxsplit=2)
-                    if args_.startswith('['):
-                        args = tuple(json.loads(args_))
-                    else:
-                        args = (args_,)
+                rname, rtype, args_ = line.split(maxsplit=2)
+                if args_.startswith('['):
+                    args = tuple(json.loads(args_))
+                else:
+                    args = (args_,)
 
-                    record = Record(rname, rtype, args)
-                    records.append(record)
-                    Resolver.__get_logger(run_id).info(' %2d: %s', len(records), record)
-                except Exception as e:
-                    raise RuntimeError('Error processing line ({0}: {1}) "{2}"'.format(e.__class__.__name__, e, line.strip())) from e
+                record = Record(rname, rtype, args)
+                records.append(record)
+                Resolver.__get_logger(run_id).info(' %2d: %s', len(records), record)
 
         Resolver.__get_logger(run_id).info('%d zone resource records generated from file', len(records))
         return records
