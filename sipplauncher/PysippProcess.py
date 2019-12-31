@@ -11,6 +11,7 @@ import pysipp
 import sys
 import os
 import logging
+import resource
 from multiprocessing import Process
 
 import sipplauncher.utils.Log
