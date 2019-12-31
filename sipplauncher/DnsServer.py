@@ -154,6 +154,16 @@ class Resolver(BaseResolver):
 
     @staticmethod
     def __load(file, run_id):
+        """
+        Parse and load a file into memory.
+        Store it in dict with a key of run_id.
+
+        :param file: a path to file to parse and load
+        :type file: str
+
+        :param run_id: a key of DNS information which is added
+        :type run_id: str
+        """
         assert(os.path.exists(file))
         Resolver.__get_logger(run_id).info('loading DNS file {0}'.format(file))
         records = []
@@ -181,6 +191,9 @@ class Resolver(BaseResolver):
         return records
 
     def resolve(self, request, handler):
+        """
+        Virtual overriden method which serves the requests from the clients.
+        """
         type_name = QTYPE[request.q.qtype]
         reply = request.reply()
 
@@ -207,11 +220,26 @@ class Resolver(BaseResolver):
         return super().resolve(request, handler)
 
     def add(self, run_id, file):
+        """
+        Add a file with DNS information for test.
+
+        :param run_id: a key of DNS information which is added
+        :type run_id: str
+
+        :param file: a path to file with DNS information
+        :type file: str
+        """
         # Attempt to add duplicate run_id is an error
         assert(run_id not in self.__run_id_map)
         self.__run_id_map[run_id] = self.__load(file, run_id)
 
     def remove(self, run_id):
+        """
+        Remove DNS information.
+
+        :param run_id: a key of DNS information which needs to be deleted
+        :type run_id: str
+        """
         # Attempt to delete non-existent run_id is not an error
         if run_id in self.__run_id_map:
             del self.__run_id_map[run_id]
@@ -225,9 +253,6 @@ class Resolver(BaseResolver):
 
 
 class DnsServer(DNSServer):
-    """
-    Embedded DNS server
-    """
     def __new__(cls):
         """
         Singleton
@@ -237,15 +262,26 @@ class DnsServer(DNSServer):
         return cls.instance
 
     def __init__(self):
-        """
-        :param domain: base domain
-        :type domain: str
-        """
         super().__init__(resolver=Resolver(), logger=Logger())
         super().start_thread()
 
     def add(self, run_id, file):
+        """
+        Add a file with DNS information for test
+
+        :param run_id: a key of DNS information which is added
+        :type run_id: str
+
+        :param file: a path to file with DNS information
+        :type file: str
+        """
         self.server.resolver.add(run_id, file)
 
     def remove(self, run_id):
+        """
+        Remove DNS information by a given key "run_id"
+
+        :param run_id: a key of DNS information which needs to be deleted
+        :type run_id: str
+        """
         self.server.resolver.remove(run_id)
