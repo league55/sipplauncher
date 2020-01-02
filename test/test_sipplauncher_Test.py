@@ -331,6 +331,29 @@ TEST_NAME = "my_test_name"
             "--dut {0}".format(DUT_IP),
             SIPpTest.State.SUCCESS,
         ),
+        # DNS
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    "dns.txt": "ep1.example.com  A       {{ ua0.host }}",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            SIPpTest.State.SUCCESS,
+        ),
+        # DNS + failed before.sh (should be DNS cleanup without exception)
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    "dns.txt": "ep1.example.com  A       {{ ua0.host }}",
+                    "before.sh": "exit -1",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            SIPpTest.State.NOT_READY,
+        ),
     ]
 )
 def test(mocker, mock_fs, args, expected):
