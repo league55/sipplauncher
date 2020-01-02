@@ -11,6 +11,7 @@ import pysipp
 import sys
 import os
 import logging
+import resource
 from multiprocessing import Process
 
 import sipplauncher.utils.Log
@@ -122,7 +123,7 @@ class PysippProcess(Process):
         add_arg(' -tls_version {tls_version}')
 
         # Issue #23: Need for TCP tests to work
-        add_arg((' -skip_rlimit {skip_rlimit}', pysipp.command.BoolField))
+        add_arg(' -max_socket {max_socket}')
 
     def __run_scenario(self, run_id, call_count):
         """
@@ -156,8 +157,22 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
-                "skip_rlimit": True, # Issue #23: Need for TCP tests to work
             }
+
+            # Issue #23: We need to adjust SIPp's "max_socket" argument to pass SIPp's internal check.
+            # We use the same formula as it exists in the SIPp's source code.
+            #
+            # Otherwise SIPp exits with the following error message:
+            # "Maximum number of open sockets (50000) should be less than the maximum number of open files (1024).
+            # Tune this with the `ulimit` command or the -max_socket option.
+            # Maximum number of open sockets (1024) plus number of open calls (1) should be less than the maximum number of open files (1024) to allow for media support."
+            concurrent_call_limit = 1 # Hardcode it at the moment, possibly it will be a cmdline arg in future...
+            kwargs["limit"] = concurrent_call_limit
+            soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
+            if soft <= concurrent_call_limit:
+                raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, concurrent_call_limit + 1))
+            kwargs["max_socket"] = soft - concurrent_call_limit
+
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
 

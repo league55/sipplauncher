@@ -109,29 +109,7 @@ sipplauncher --dut 10.22.22.24 --testsuite tmp-testsuite
 
 You should see similar output:
 
-```bash
-sipplauncher 0.0.1 Using log configuration file "/usr/local/etc/sipplauncher/sipplauncher.configlog.conf"
-sipplauncher 0.0.1 Auto-selected transport: u1
-sipplauncher 0.0.1 Ready to run 4 tests (in groups of 1)
-sipplauncher 0.0.1 ================================================================================
-sipplauncher 0.0.1     STARTING              normal-0000 (0-qsdqei)
-sipplauncher 0.0.1         FAIL              normal-0000 (0-qsdqei) - took 7s
-sipplauncher 0.0.1 --------------------------------------------------------------------------------
-sipplauncher 0.0.1     STARTING              normal-0001 (1-vqtahr)
-sipplauncher 0.0.1         FAIL              normal-0001 (1-vqtahr) - took 6s
-sipplauncher 0.0.1 --------------------------------------------------------------------------------
-sipplauncher 0.0.1     STARTING             options-0000 (2-bcumqk)
-sipplauncher 0.0.1         FAIL             options-0000 (2-bcumqk) - took 6s
-sipplauncher 0.0.1 --------------------------------------------------------------------------------
-sipplauncher 0.0.1     STARTING             options-0001 (3-ymspvk)
-sipplauncher 0.0.1         FAIL             options-0001 (3-ymspvk) - took 6s
-sipplauncher 0.0.1 ================================================================================
-sipplauncher 0.0.1 TOTAL: 4
-sipplauncher 0.0.1 SUCCESS: 0
-sipplauncher 0.0.1 FAILED: 4
-sipplauncher 0.0.1 ================================================================================
-sipplauncher 0.0.1 Total time elapsed 38s
-```
+![](assets/images/sipplauncher.gif)
 
 This means, test suite run has succeded.
 Individual tests have failed, but this is expected, because these are mock tests, not tied to your DUT.
