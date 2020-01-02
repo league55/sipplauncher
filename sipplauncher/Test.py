@@ -148,11 +148,11 @@ class SIPpTest(object):
                                      preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
                 try:
                     stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
-                except subprocess.TimeoutExpired:
+                except subprocess.TimeoutExpired as e:
                     # Script lasts unexpectedly long.
                     # Seems like it has deadlocked.
                     p.kill()
-                    raise
+                    raise SIPpTest.ScriptRunException(script + " lasts too long") from e
                 finally:
                     ret = p.wait() # to not to leave zombie
                 # Need to strip trailing newline, because logger adds newline too.
@@ -295,12 +295,13 @@ class SIPpTest(object):
                 # because some day we might want to capture to pcap configuring the DUT...
                 try:
                     self.__run_script("before.sh", args)
-                except:
-                    # This is the issue in test description.
-                    # This is not an internal issue.
-                    # Notify user with NOT READY test state and continue.
+                except BaseException as e:
                     self.network.sniffer_stop()
-                    propagate_exception = False
+                    if isinstance(e, SIPpTest.ScriptRunException):
+                        # This is the issue in test description.
+                        # This is not an internal issue.
+                        # Notify user with NOT READY test state and continue.
+                        propagate_exception = False
                     raise
             except:
                 self.__remove_temp_folder(args)
