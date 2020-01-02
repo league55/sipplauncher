@@ -30,8 +30,8 @@ DEFAULT_GROUP=1
 DEFAULT_NETWORK_MASK=24
 DEFAULT_GROUP_PAUSE=0.8
 
-DEFAULT_SCENARIO_FILENAME_REGEX='^(ua[cs]+)_(ua[0-9]+).xml$'
-DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX='^([a-zA-Z0-9]+)_(ua[cs]+)_(ua[0-9]+).xml$'
+DEFAULT_SCENARIO_FILENAME_REGEX='^(ua[cs])_(ua[0-9]+).xml$'
+DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX='^([a-zA-Z0-9]+)_(ua[cs])_(ua[0-9]+).xml$'
 
 # Issue #9: Create dynamic execution test temp folder for each test execution
 DEFAULT_TEMP_FOLDER="/var/tmp/sipplauncher"

@@ -61,8 +61,8 @@ These are files named `uac_ua2.xml`, `uas_ua0.xml`, etc.
 A scenario file name defines a launch order and role of a SIPp instance.
 A scenario file name should match one of the regex patterns:
 
-* `^(ua[cs]+)_(ua[0-9]+).xml$`.
-* `^([a-zA-Z0-9]+)_(ua[cs]+)_(ua[0-9]+).xml$`
+* `^(ua[cs])_(ua[0-9]+).xml$`.
+* `^([a-zA-Z0-9]+)_(ua[cs])_(ua[0-9]+).xml$`
 
 A scenario file name contains several parts:
 
@@ -106,7 +106,7 @@ A scenario file name contains several parts:
 
       `ua0` preserves the same [dynamically assigned](#dynamic-ip-address-assignment) IP address when running both run groups.
 
-2. `(ua[cs]+)` mandatory part.
+2. `(ua[cs])` mandatory part.
 
       This part defines the order of launching SIPp instances inside a **run group**.
       `uas` scenarios are launched before `uac` scenarios.

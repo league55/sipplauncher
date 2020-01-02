@@ -87,16 +87,23 @@ This repeats until all `SIPpTests` from the list are processed.
 - consecutive stages [Pre-run](#pre-run) and [Post-run](#post-run): they're run in the context of the `Run.run()` thread.
 - concurrent stage [Run](#run): it's run in the context of multiple spawned threads and processes.
 
-Here is the order of these steps:
+During the stages each `SIPpTest` transits through states:
+
+![](assets/images/states.png)
+
+Here is the order of these stages:
 
 ---
 
 ### 1. Pre-run
 
+All `SIPpTests` in a run group start in the CREATED state.
+
 `Run.run()` consecutively iterates over `SIPpTests` in a run group.
 For each of them, `SIPpTest.pre_run()` method is executed, which:
 
-1. **Assigns dynamic IP addresses**
+1. **Transits the Test into PREPARING state**
+2. **Assigns dynamic IP addresses**
 
     The high-level overview is given in [Dynamically assigned IP address](user_guide.md#dynamic-ip-address-assignment).
     For a developer it's worth to add a few notes:
@@ -115,13 +122,13 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
         1. to ease network cleanup: just destroy all interfaces which name matches the `sipp-<>` pattern
         2. to remove the need to specify or calculate network interface on which to create aliases: we rely on the Linux routing system
 
-2. **Creates a test run folder**
+3. **Creates a test run folder**
 
     [Test run folder](user_guide.md#test-run-folder) is created by copying [Test](user_guide.md#tests) folder to location `/var/tmp/sipplaucnher/<test_name>/<test_run_id>`.
 
     Copying is performed using `shutil.copytree()`.
 
-3. **Sets up logging into Test run folder**
+4. **Sets up logging into Test run folder**
 
     Sipplauncher [logging facilities](user_guide.md#log-files) and paths are configured in `/usr/local/etc/sipplauncher/sipplauncher.configlog.conf`.
     Static log location is by default defined there as `/tmp/sipplauncher.log`.
@@ -141,28 +148,39 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
     At runtime, we check if the logging class is set to `sipplauncher.utils.Log.DynamicFileHandler`.
     And if yes, we supply an actual [Test run folder](user_guide.md#test-run-folder) path to `sipplauncher.utils.Log.DynamicFileHandler` instance.
 
-4. **Replaces keywords using the Template Engine**
+5. **Replaces keywords using the Template Engine**
 
     A list of files, which need to be processed using the [Template engine](user_guide.md#template-engine), is collected:
 
     - [Scripts](user_guide.md#scripts): result of `glob.glob("*.sh")`.
-    - [SIPp scenarios](user_guide.md#sipp-scenarios): the files, which match pattern `^(ua[cs]+)_(ua[0-9]+).xml$`.
+    - [SIPp scenarios](user_guide.md#sipp-scenarios): the files, which match pattern `^(ua[cs])_(ua[0-9]+).xml$`.
 
     All these files are rendered by the [Jinja2](https://en.wikipedia.org/wiki/Jinja_(template_engine)) API `Template.render()`.
 
     If the rendering result differs from the original file content - the file is overwritten with the newly rendered content.
 
-5. **Generates SSL certificates and keys**
+7. **Generates SSL certificates and keys**
 
     The process is described [here](user_guide.md#tls).
     Python `OpenSSL` library is used.
 
-6. **Activates pcap sniffing**
+8. **Activates pcap sniffing**
 
     We use `scapy.sendrecv.AsyncSniffer` to start a new background thread.
     This thread installs the [BPF](https://en.wikipedia.org/wiki/Berkeley_Packet_Filter) on all system network interfaces.
     The BPF matches all traffic regarding [Dynamically assigned IP addresses](user_guide.md#dynamic-ip-address-assignment) for this particular [Test](user_guide.md#tests) run.
     The captured traffic is stored in the memory buffer.
+
+9. **Runs before.sh**
+
+    If `before.sh` is present in a [Test run folder](user_guide.md#test-run-folder), we execute it with `subprocess.Popen()` API.
+
+    Then we wait for it to finish and check its exit code.
+
+10. **Transits the Test into the READY state**
+
+    If we got an error at any of the steps above - the TEST gets transited into the NOT READY state.
+    Sipplauncher doesn't move to the next stages in this case.
 
 ---
 
@@ -174,12 +192,7 @@ Then `Run.run()` waits for threads to finish.
 
 `SIPpTest.run()` method performs following steps:
 
-1. **Runs before.sh**
-
-    If `before.sh` is present in a [Test run folder](user_guide.md#test-run-folder), we execute it with `subprocess.Popen()` API.
-
-    Then we wait for it to finish and check its exit code.
-    If the exit code is non-zero - we stop the test as FAILED.
+1. **Transits the Test into STARTING state**
 
 2. **Forks a new PysippProcess**
 
@@ -220,11 +233,15 @@ The rollback is performed in the opposite order of the [Pre-run](#pre-run).
 `Run.run()` consecutively iterates over `SIPpTests` in a run group.
 For each of them, `SIPpTest.post_run()` method is executed, which:
 
-1. **Runs after.sh**
+1. **Transits the Test into the CLEANING state**
+
+2. **Runs after.sh**
 
     If `after.sh` is present in a [Test run folder](user_guide.md#test-run-folder), we execute it with `subprocess.Popen()` API.
 
-2. **Deactivates pcap sniffing**
+    Then we wait for it to finish and check its exit code.
+
+3. **Deactivates pcap sniffing**
 
     We invoke `scapy.sendrecv.AsyncSniffer.stop()` and wait until the background `Thread` terminates.
 
@@ -233,10 +250,14 @@ For each of them, `SIPpTest.post_run()` method is executed, which:
 
     Then we store the sorted memory buffer in file `sipp-<test_run_id>.pcap` in a [Test run folder](user_guide.md#test-run-folder).
 
-3. **Removes a test run folder**
+4. **Removes a test run folder**
 
     We remove it with `shutil.rmtree()`, unless the `--leave-temp` [command-line argument](user_guide.md#command-line-arguments) was provided.
 
-4. **Removes dynamic IP addresses**
+5. **Removes dynamic IP addresses**
 
     We remove a "dummy" pseudo-interface with name `sipp-<test_run_id>`.
+
+6. **Transits the Test into the CLEAN state**
+
+    If we got an error at any of the steps above - the TEST gets transited into the DIRTY state.
