@@ -159,7 +159,7 @@ class PysippProcess(Process):
                 "trace_error_codes": True,
             }
 
-            # Issue #23: We need to adjust SIPp's max_socket argument to pass SIPp's internal check.
+            # Issue #23: We need to adjust SIPp's "max_socket" argument to pass SIPp's internal check.
             # We use the same formula as it exists in the SIPp's source code.
             #
             # Otherwise SIPp exits with following error message:
