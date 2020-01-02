@@ -168,7 +168,7 @@ class PysippProcess(Process):
             # Maximum number of open sockets (1024) plus number of open calls (1) should be less than the maximum number of open files (1024) to allow for media support."
             concurrent_call_limit = 1 # Hardcode it at the moment, possibly it will be a cmdline arg in future...
             kwargs["limit"] = concurrent_call_limit
-            soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+            soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
             if soft <= concurrent_call_limit:
                 raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, concurrent_call_limit + 1))
             kwargs["max_socket"] = soft - concurrent_call_limit
