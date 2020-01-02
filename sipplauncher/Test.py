@@ -72,7 +72,7 @@ class SIPpTest(object):
         self.__set_state(SIPpTest.State.CREATED)
         self.__successful = False
         self.__folder = folder
-        self.__dns_server = DnsServer()
+        self.__dns_server = None
 
         def get_uas():
             uas = set()
@@ -295,6 +295,7 @@ class SIPpTest(object):
 
                 dns_file_path = os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)
                 if os.path.exists(dns_file_path):
+                    self.__dns_server = DnsServer()
                     self.__dns_server.add(self.run_id, dns_file_path)
 
                 try:
@@ -313,7 +314,8 @@ class SIPpTest(object):
                         propagate_exception = False
                         raise
                 except:
-                    self.__dns_server.remove(self.run_id, dns_file_path)
+                    if self.__dns_server:
+                        self.__dns_server.remove(self.run_id, dns_file_path)
                     raise
             except:
                 self.__remove_temp_folder(args)
@@ -408,11 +410,14 @@ class SIPpTest(object):
             self.__print_run_state(run_id_prefix)
             start = time.time()
             state = SIPpTest.State.CLEAN
-            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
-                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
-                      partial(DnsServer.remove, self.__dns_server, self.run_id),
-                      partial(SIPpTest.__remove_temp_folder, self, args),
-                      partial(Network.SIPpNetwork.shutdown, self.network)]:
+
+            cleanup_handlers = [partial(SIPpTest.__run_script, self, "after.sh", args),
+                                partial(Network.SIPpNetwork.sniffer_stop, self.network),
+                                partial(SIPpTest.__remove_temp_folder, self, args),
+                                partial(Network.SIPpNetwork.shutdown, self.network)]
+            if self.__dns_server:
+                cleanup_handlers.append(partial(DnsServer.remove, self.__dns_server, self.run_id))
+            for h in cleanup_handlers:
                 try:
                     h()
                 except BaseException as e:

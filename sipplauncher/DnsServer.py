@@ -257,9 +257,9 @@ class Resolver(BaseResolver):
         :param run_id: a key of DNS information which needs to be deleted
         :type run_id: str
         """
-        # Attempt to delete non-existent run_id is not the error
-        if run_id in self.__run_id_map:
-            del self.__run_id_map[run_id]
+        # Attempt to delete non-existent run_id is the error
+        assert(run_id in self.__run_id_map)
+        del self.__run_id_map[run_id]
 
     @staticmethod
     def __get_logger(run_id):
