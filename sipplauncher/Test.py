@@ -152,7 +152,7 @@ class SIPpTest(object):
                     # Script lasts unexpectedly long.
                     # Seems like it has deadlocked.
                     p.kill()
-                    raise SIPpTest.ScriptRunException(script + " lasts too long") from e
+                    raise SIPpTest.ScriptRunException(script + " lasted too long") from e
                 finally:
                     ret = p.wait() # to not to leave zombie
                 # Need to strip trailing newline, because logger adds newline too.
