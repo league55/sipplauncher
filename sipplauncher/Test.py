@@ -315,7 +315,7 @@ class SIPpTest(object):
                         raise
                 except:
                     if self.__dns_server:
-                        self.__dns_server.remove(self.run_id, dns_file_path)
+                        self.__dns_server.remove(self.run_id)
                     raise
             except:
                 self.__remove_temp_folder(args)
