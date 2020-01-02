@@ -162,7 +162,7 @@ class PysippProcess(Process):
             # Issue #23: We need to adjust SIPp's "max_socket" argument to pass SIPp's internal check.
             # We use the same formula as it exists in the SIPp's source code.
             #
-            # Otherwise SIPp exits with following error message:
+            # Otherwise SIPp exits with the following error message:
             # "Maximum number of open sockets (50000) should be less than the maximum number of open files (1024).
             # Tune this with the `ulimit` command or the -max_socket option.
             # Maximum number of open sockets (1024) plus number of open calls (1) should be less than the maximum number of open files (1024) to allow for media support."
