@@ -222,21 +222,19 @@ class Resolver(BaseResolver):
                     reply.add_answer(record.rr)
                     self.__get_logger(run_id).info('found zone for {0}[{1}]'.format(request.q.qname, type_name))
 
-        if reply.rr:
-            return reply
+        if not reply.rr:
+            # no direct zone so look for an SOA record for a higher level zone
+            for run_id, records in self.__run_id_map.items():
+                for record in records:
+                    if record.sub_match(request.q):
+                        reply.add_answer(record.rr)
+                        self.__get_logger(run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
 
-        # no direct zone so look for an SOA record for a higher level zone
-        for run_id, records in self.__run_id_map.items():
-            for record in records:
-                if record.sub_match(request.q):
-                    reply.add_answer(record.rr)
-                    self.__get_logger(run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
+            if not reply.rr:
+                logging.debug('no local zone found for {0}'.format(request.q))
+                reply = super().resolve(request, handler)
 
-        if reply.rr:
-            return reply
-
-        logging.debug('no local zone found for {0}'.format(request.q))
-        return super().resolve(request, handler)
+        return reply
 
     def add(self, run_id, file):
         """
