@@ -187,11 +187,13 @@ class Resolver(BaseResolver):
         with open(file, 'r') as f:
             for line in f:
                 if line.startswith('#'):
+                    # commented-out line
                     continue
 
                 line = line.strip()
 
                 if not line:
+                    # empty line
                     continue
 
                 rname, rtype, args_ = line.split(maxsplit=2)
