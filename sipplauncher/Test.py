@@ -388,7 +388,7 @@ class SIPpTest(object):
                 self.__do_run(run_id_prefix, args)
             except SIPpTest.PysippProcessException as e:
                 # Expected outcome
-                self.__get_logger().debug('PysippProcess returned {0}'.format(e))
+                self.__get_logger().info('PysippProcess returned {0}'.format(e))
                 self.__set_state(SIPpTest.State.FAIL)
             except Exception as e:
                 self.__get_logger().error('Caught exception while running test: {0}'.format(e))
