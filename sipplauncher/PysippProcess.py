@@ -160,12 +160,14 @@ class PysippProcess(Process):
             }
 
             # Issue #23: Need for TCP tests to work
-            kwargs["limit"] = 1 # concurrent call limit
+            concurrent_call_limit = 1 # Hardcode it at the moment, possibly it will be a cmdline arg in future...
+            kwargs["limit"] = concurrent_call_limit
             soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
-            if soft <= kwargs["limit"]:
-                raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, kwargs["limit"] + 1))
-            # We adjust SIPp arguments to pass its rlimit checks
-            kwargs["max_socket"] = soft - kwargs["limit"]
+            if soft <= concurrent_call_limit:
+                raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, concurrent_call_limit + 1))
+            # We adjust SIPp's max_socket argument to pass SIPp's internal check.
+            # We got the below formula from the SIPp's source code.
+            kwargs["max_socket"] = soft - concurrent_call_limit
 
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
