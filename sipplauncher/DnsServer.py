@@ -246,7 +246,7 @@ class Resolver(BaseResolver):
         :param file: a path to file with DNS information
         :type file: str
         """
-        # Attempt to add duplicate run_id is an error
+        # Attempt to add duplicate run_id is the error
         assert(run_id not in self.__run_id_map)
         self.__run_id_map[run_id] = self.__load(run_id, file)
 
@@ -257,7 +257,7 @@ class Resolver(BaseResolver):
         :param run_id: a key of DNS information which needs to be deleted
         :type run_id: str
         """
-        # Attempt to delete non-existent run_id is not an error
+        # Attempt to delete non-existent run_id is not the error
         if run_id in self.__run_id_map:
             del self.__run_id_map[run_id]
 
