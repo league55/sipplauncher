@@ -177,6 +177,9 @@ class Resolver(BaseResolver):
 
         :param file: a path to file to parse and load
         :type file: str
+
+        :returns: list of Records
+        :rtype: list(Record)
         """
         assert(os.path.exists(file))
         Resolver.__get_logger(run_id).info('loading DNS file {0}'.format(file))
@@ -262,6 +265,9 @@ class Resolver(BaseResolver):
     def __get_logger(run_id):
         """
         Get SIPpTest's logger, in order to log to test's run folder.
+
+        :returns: a Logger instance
+        :rtype: Logger
         """
         return logging.getLogger(".".join([sipplauncher.Test.SIPpTest.__module__, run_id]))
 
