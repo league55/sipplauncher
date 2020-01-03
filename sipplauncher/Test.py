@@ -388,7 +388,7 @@ class SIPpTest(object):
             #
             # We shouldn't propagate exception to the caller if it's caused by
             # - improper test definition in test-suite
-            # - failure to prepare the DUT
+            # - failure to cleanup the DUT
             # User should see DIRTY state in this case and testing should continue for further tests.
             # User could check test's logs for exception details.
             self.__set_state(SIPpTest.State.CLEANING)
