@@ -399,22 +399,22 @@ class SIPpTest(object):
             start = time.time()
             state = SIPpTest.State.CLEAN
 
-            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
-                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
-                      partial(SIPpTest.__remove_temp_folder, self, args),
-                      partial(Network.SIPpNetwork.shutdown, self.network)]:
+            try:
                 try:
-                    h()
-                except BaseException as e:
-                    self.__get_logger().debug(e, exc_info = True)
-                    state = SIPpTest.State.DIRTY
-
-            self.__set_state(state)
-            if state == SIPpTest.State.DIRTY:
+                    self.__run_script("after.sh", args)
+                finally:
+                    self.network.sniffer_stop()
+                    self.__remove_temp_folder(args)
+                    self.network.shutdown()
+            except BaseException as e:
+                self.__get_logger().debug(e, exc_info = True)
+                self.__set_state(SIPpTest.State.DIRTY)
                 end = time.time()
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
+                if not isinstance(e, SIPpTest.ScriptRunException):
+                    raise
 
     def failed(self):
         """ Returns whether a test failed"""
