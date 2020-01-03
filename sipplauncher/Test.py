@@ -306,7 +306,7 @@ class SIPpTest(object):
                     self.network.sniffer_stop()
                     if isinstance(e, SIPpTest.ScriptRunException):
                         raise SIPpTest.TestsuiteException() from e
-                    else
+                    else:
                         raise
             except:
                 self.__remove_temp_folder(args)
