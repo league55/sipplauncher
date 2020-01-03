@@ -406,6 +406,8 @@ class SIPpTest(object):
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
                 if not isinstance(last_exception, SIPpTest.ScriptRunException):
+                    # We should propagate exception to the caller if it's caused by internal error.
+                    # This stops tests execution.
                     raise last_exception
             else:
                 self.__set_state(SIPpTest.State.CLEAN)
