@@ -19,7 +19,8 @@ import glob
 from enum import Enum
 from jinja2 import (Environment,
                     FileSystemLoader,
-                    StrictUndefined)
+                    StrictUndefined,
+                    TemplateError)
 from functools import partial
 
 from . import Network
@@ -287,7 +288,10 @@ class SIPpTest(object):
                 try:
                     self.__replace_keywords(args)
                 except BaseException as e:
-                    raise SIPpTest.TestsuiteException() from e
+                    if isinstance(e, TemplateError):
+                        raise SIPpTest.TestsuiteException() from e
+                    else:
+                        raise
 
                 self.__gen_certs_keys(args)
 
@@ -302,7 +306,8 @@ class SIPpTest(object):
                     self.network.sniffer_stop()
                     if isinstance(e, SIPpTest.ScriptRunException):
                         raise SIPpTest.TestsuiteException() from e
-                    raise
+                    else
+                        raise
             except:
                 self.__remove_temp_folder(args)
                 raise
@@ -315,10 +320,13 @@ class SIPpTest(object):
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
             if isinstance(e, SIPpTest.TestsuiteException):
                 # This is the issue in test description.
-                # This is not an internal issue.
-                # Notify user with NOT READY test state and continue.
+                # This is not an internal critical Sipplaucher issue.
+                # It's OK to move to next test.
                 self.__get_logger().debug(e, exc_info = True)
             else:
+                # This is the internal critical Sipplaucher issue.
+                # Propagate exception to caller.
+                # This should stop Sipplaucher.
                 raise
         else:
             # No exceptions during initialization.
