@@ -387,7 +387,6 @@ class SIPpTest(object):
             self.__set_state(SIPpTest.State.CLEANING)
             self.__print_run_state(run_id_prefix)
             start = time.time()
-            state = SIPpTest.State.CLEAN
 
             try:
                 try:
@@ -405,6 +404,8 @@ class SIPpTest(object):
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
                 if not isinstance(e, SIPpTest.ScriptRunException):
                     raise
+            else:
+                self.__set_state(SIPpTest.State.CLEAN)
 
     def failed(self):
         """ Returns whether a test failed"""
