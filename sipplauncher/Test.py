@@ -399,9 +399,13 @@ class SIPpTest(object):
                 try:
                     self.__run_script("after.sh", args)
                 finally:
-                    self.network.sniffer_stop()
-                    self.__remove_temp_folder(args)
-                    self.network.shutdown()
+                    try:
+                        self.network.sniffer_stop()
+                    finally:
+                        try:
+                            self.__remove_temp_folder(args)
+                        finally:
+                            self.network.shutdown()
             except BaseException as e:
                 self.__get_logger().debug(e, exc_info = True)
                 self.__set_state(SIPpTest.State.DIRTY)
