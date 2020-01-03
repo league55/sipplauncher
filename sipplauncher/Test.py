@@ -21,7 +21,6 @@ from jinja2 import (Environment,
                     FileSystemLoader,
                     StrictUndefined,
                     TemplateError)
-from functools import partial
 
 from . import Network
 # Need to import whole module, and refer to its functions by fully qualified name,
