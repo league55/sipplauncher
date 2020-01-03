@@ -19,7 +19,8 @@ import glob
 from enum import Enum
 from jinja2 import (Environment,
                     FileSystemLoader,
-                    StrictUndefined)
+                    StrictUndefined,
+                    TemplateError)
 from functools import partial
 
 from . import Network
@@ -279,11 +280,12 @@ class SIPpTest(object):
 
                 try:
                     self.__replace_keywords(args)
-                except:
-                    # This is the issue in test description.
-                    # This is not an internal issue.
-                    # Notify user with NOT READY test state and continue.
-                    propagate_exception = False
+                except BaseException as e:
+                    if isinstance(e, TemplateError):
+                        # This is the issue in test description.
+                        # This is not an internal issue.
+                        # Notify user with NOT READY test state and continue.
+                        propagate_exception = False
                     raise
 
                 self.__gen_certs_keys(args)
