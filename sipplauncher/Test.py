@@ -268,7 +268,6 @@ class SIPpTest(object):
         self.__set_state(SIPpTest.State.PREPARING)
         self.__print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
-        propagate_exception = True
         try:
             for ua in self.__uas:
                 ua.ip = self.network.add_random_ip()
@@ -277,17 +276,7 @@ class SIPpTest(object):
 
             try:
                 self.__init_logger()
-
-                try:
-                    self.__replace_keywords(args)
-                except BaseException as e:
-                    if isinstance(e, TemplateError):
-                        # This is the issue in test description.
-                        # This is not an internal issue.
-                        # Notify user with NOT READY test state and continue.
-                        propagate_exception = False
-                    raise
-
+                self.__replace_keywords(args)
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
@@ -297,13 +286,8 @@ class SIPpTest(object):
                 # because some day we might want to capture to pcap configuring the DUT...
                 try:
                     self.__run_script("before.sh", args)
-                except BaseException as e:
+                except:
                     self.network.sniffer_stop()
-                    if isinstance(e, SIPpTest.ScriptRunException):
-                        # This is the issue in test description.
-                        # This is not an internal issue.
-                        # Notify user with NOT READY test state and continue.
-                        propagate_exception = False
                     raise
             except:
                 self.__remove_temp_folder(args)
@@ -315,10 +299,16 @@ class SIPpTest(object):
             elapsed = end - start
             elapsed_str=' - took %.0fs' % (elapsed)
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
-            if propagate_exception:
-                raise
-            else:
+            if isinstance(e, (TemplateError, SIPpTest.ScriptRunException)):
+                # This is the issue in test description.
+                # This is not an internal critical Sipplaucher issue.
+                # It's OK to move to next test.
                 self.__get_logger().debug(e, exc_info = True)
+            else:
+                # This is the internal critical Sipplaucher issue.
+                # Propagate exception to caller.
+                # This should stop Sipplaucher.
+                raise
         else:
             # No exceptions during initialization.
             self.__set_state(SIPpTest.State.READY)
