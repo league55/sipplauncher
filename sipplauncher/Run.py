@@ -163,8 +163,14 @@ def run(args):
                 # 3. TestA run + TestB run
                 # 4. TestB post-run. OptionA: ValueB -> ValueA
                 # 5. TestA post-run: OptionB: ValueA -> ValueOrig
+                last_exception = None
                 for task in reversed(tasks):
-                    task.test.post_run(task.run_id_prefix, args)
+                    try:
+                       task.test.post_run(task.run_id_prefix, args)
+                    except BaseException as e:
+                       last_exception = e
+                if last_exception:
+                    raise last_exception
 
             # Calculating failed tests
             for task in tasks:

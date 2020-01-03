@@ -21,6 +21,7 @@ from jinja2 import (Environment,
                     FileSystemLoader,
                     StrictUndefined,
                     TemplateError)
+from functools import partial
 
 from . import Network
 # Need to import whole module, and refer to its functions by fully qualified name,
@@ -382,44 +383,31 @@ class SIPpTest(object):
         if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
-            #
-            # We should propagate exception to the caller if it's caused by internal error.
-            # This stops tests execution.
-            #
-            # We shouldn't propagate exception to the caller if it's caused by
-            # - improper test definition in test-suite
-            # - failure to cleanup the DUT
-            # User should see DIRTY state in this case and testing should continue for further tests.
-            # User could check test's logs for exception details.
+            # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
             self.__set_state(SIPpTest.State.CLEANING)
             self.__print_run_state(run_id_prefix)
             start = time.time()
+            last_exception = None
 
-            try:
+            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
+                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
+                      partial(SIPpTest.__remove_temp_folder, self, args),
+                      partial(Network.SIPpNetwork.shutdown, self.network)]:
                 try:
-                    self.__run_script("after.sh", args)
-                finally:
-                    try:
-                        self.network.sniffer_stop()
-                    finally:
-                        try:
-                            self.__remove_temp_folder(args)
-                        finally:
-                            self.network.shutdown()
-            except BaseException as e:
-                self.__get_logger().debug(e, exc_info = True)
+                    h()
+                except BaseException as e:
+                    self.__get_logger().debug(e, exc_info = True)
+                    last_exception = e
+
+            if last_exception:
                 self.__set_state(SIPpTest.State.DIRTY)
                 end = time.time()
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
-                if not isinstance(e, SIPpTest.ScriptRunException):
-                    # This is the internal critical Sipplaucher issue.
-                    # Propagate exception to caller.
-                    # This should stop Sipplaucher.
-                    raise
+                if not isinstance(last_exception, SIPpTest.ScriptRunException):
+                    raise last_exception
             else:
-                # No exceptions during cleanup.
                 self.__set_state(SIPpTest.State.CLEAN)
 
     def failed(self):
