@@ -170,6 +170,7 @@ def run(args):
                     except BaseException as e:
                        last_exception = e
                 if last_exception:
+                    # Notify user and stop
                     raise last_exception
 
             # Calculating failed tests
