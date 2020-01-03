@@ -383,7 +383,15 @@ class SIPpTest(object):
         if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
-            # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
+            #
+            # We should propagate exception to the caller if it's caused by internal error.
+            # This stops tests execution.
+            #
+            # We shouldn't propagate exception to the caller if it's caused by
+            # - improper test definition in test-suite
+            # - failure to prepare the DUT
+            # User should see DIRTY state in this case and testing should continue for further tests.
+            # User could check test's logs for exception details.
             self.__set_state(SIPpTest.State.CLEANING)
             self.__print_run_state(run_id_prefix)
             start = time.time()
@@ -403,8 +411,12 @@ class SIPpTest(object):
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
                 if not isinstance(e, SIPpTest.ScriptRunException):
+                    # This is the internal critical Sipplaucher issue.
+                    # Propagate exception to caller.
+                    # This should stop Sipplaucher.
                     raise
             else:
+                # No exceptions during cleanup.
                 self.__set_state(SIPpTest.State.CLEAN)
 
     def failed(self):
