@@ -66,14 +66,6 @@ class SIPpTest(object):
     class ScriptRunException(Exception):
         pass
 
-    class TestsuiteException(Exception):
-        """Issue #26:
-        It's raised due to the content of a test-suite:
-        - a before/after.sh script content
-        - a failure to replace keywords in the files in test's folder.
-        """
-        pass
-
     def __init__(self, folder):
         self.key = os.path.basename(folder)
         self.__set_state(SIPpTest.State.CREATED)
@@ -284,15 +276,7 @@ class SIPpTest(object):
 
             try:
                 self.__init_logger()
-
-                try:
-                    self.__replace_keywords(args)
-                except BaseException as e:
-                    if isinstance(e, TemplateError):
-                        raise SIPpTest.TestsuiteException() from e
-                    else:
-                        raise
-
+                self.__replace_keywords(args)
                 self.__gen_certs_keys(args)
 
                 if sipplauncher.utils.Utils.is_pcap(args):
@@ -302,12 +286,9 @@ class SIPpTest(object):
                 # because some day we might want to capture to pcap configuring the DUT...
                 try:
                     self.__run_script("before.sh", args)
-                except BaseException as e:
+                except:
                     self.network.sniffer_stop()
-                    if isinstance(e, SIPpTest.ScriptRunException):
-                        raise SIPpTest.TestsuiteException() from e
-                    else:
-                        raise
+                    raise
             except:
                 self.__remove_temp_folder(args)
                 raise
@@ -318,7 +299,7 @@ class SIPpTest(object):
             elapsed = end - start
             elapsed_str=' - took %.0fs' % (elapsed)
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
-            if isinstance(e, SIPpTest.TestsuiteException):
+            if isinstance(e, (TemplateError, SIPpTest.ScriptRunException)):
                 # This is the issue in test description.
                 # This is not an internal critical Sipplaucher issue.
                 # It's OK to move to next test.
