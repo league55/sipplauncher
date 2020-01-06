@@ -131,6 +131,23 @@ TEST_NAME = "my_test_name"
              (TEST_NAME, SIPpTest.State.PREPARING),
              (TEST_NAME, SIPpTest.State.NOT_READY)],
         ),
+        # after.sh failure
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    "after.sh": "exit -1",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            [(TEST_NAME, SIPpTest.State.CREATED),
+             (TEST_NAME, SIPpTest.State.PREPARING),
+             (TEST_NAME, SIPpTest.State.READY),
+             (TEST_NAME, SIPpTest.State.STARTING),
+             (TEST_NAME, SIPpTest.State.FAIL),
+             (TEST_NAME, SIPpTest.State.CLEANING),
+             (TEST_NAME, SIPpTest.State.DIRTY)],
+        ),
         # 2 consecutive tests, before.sh failure
         (
             {
