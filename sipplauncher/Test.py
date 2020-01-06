@@ -43,7 +43,7 @@ class SIPpTest(object):
     # Expected state transitions:
     # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
     # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> CLEANING -> CLEAN/DIRTY
-    # 4. CREATED -> PREPARING -> NOT_READY
+    # 3. CREATED -> PREPARING -> NOT_READY
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
         PREPARING = "PREPARING"     # Test is being prepared for the run
@@ -301,13 +301,13 @@ class SIPpTest(object):
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
             if isinstance(e, (TemplateError, SIPpTest.ScriptRunException)):
                 # This is the issue in test description.
-                # This is not an internal critical Sipplaucher issue.
+                # This is not an internal critical Sipplauncher issue.
                 # It's OK to move to next test.
                 self.__get_logger().debug(e, exc_info = True)
             else:
-                # This is the internal critical Sipplaucher issue.
+                # This is the internal critical Sipplauncher issue.
                 # Propagate exception to caller.
-                # This should stop Sipplaucher.
+                # This should stop Sipplauncher.
                 raise
         else:
             # No exceptions during initialization.

@@ -91,6 +91,14 @@ During the stages each `SIPpTest` transits through states:
 
 ![](assets/images/states.png)
 
+State colors:
+
+|color|description|displayed to a user|
+|---|---|---|
+|![#65c295](https://placehold.it/15/65c295/000000?text=+) `green`|state during normal operation|yes|
+|![#7da7d8](https://placehold.it/15/7da7d8/000000?text=+) `blue`|state during normal operation|no|
+|![#f04e4d](https://placehold.it/15/f04e4d/000000?text=+) `red`|state during error|yes|
+
 Here is the order of these stages:
 
 ---
