@@ -131,6 +131,29 @@ TEST_NAME = "my_test_name"
              (TEST_NAME, SIPpTest.State.PREPARING),
              (TEST_NAME, SIPpTest.State.NOT_READY)],
         ),
+        # 2 consecutive tests, before.sh failure
+        (
+            {
+                "{0}_1".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                    "before.sh": "exit -1",
+                },
+                "{0}_2".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            [("{0}_1".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.NOT_READY),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.READY),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.STARTING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.FAIL),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN)],
+        ),
     ]
 )
 def test(mocker, mock_fs, args, expected_states):
