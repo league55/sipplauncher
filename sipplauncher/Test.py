@@ -399,7 +399,7 @@ class SIPpTest(object):
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
                     state = SIPpTest.State.DIRTY
-                    if not isinstance(last_exception, SIPpTest.ScriptRunException):
+                    if not isinstance(e, SIPpTest.ScriptRunException):
                         # We should propagate exception to the caller if it's caused by internal error.
                         # This stops tests execution.
                         # We shouldn't propagae ScriptRunException, because it's caused by a test-suite content.
