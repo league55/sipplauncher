@@ -118,6 +118,19 @@ TEST_NAME = "my_test_name"
              ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEANING),
              ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEAN)],
         ),
+        # before.sh failure
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    "before.sh": "exit -1",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            [(TEST_NAME, SIPpTest.State.CREATED),
+             (TEST_NAME, SIPpTest.State.PREPARING),
+             (TEST_NAME, SIPpTest.State.NOT_READY)],
+        ),
     ]
 )
 def test(mocker, mock_fs, args, expected_states):
