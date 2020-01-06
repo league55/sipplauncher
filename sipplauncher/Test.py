@@ -43,7 +43,8 @@ class SIPpTest(object):
     # Expected state transitions:
     # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
     # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> CLEANING -> CLEAN/DIRTY
-    # 3. CREATED -> PREPARING -> NOT_READY
+    # 3. CREATED -> PREPARING -> READY -> CLEANING -> CLEAN/DIRTY
+    # 4. CREATED -> PREPARING -> NOT_READY
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
         PREPARING = "PREPARING"     # Test is being prepared for the run
@@ -132,7 +133,7 @@ class SIPpTest(object):
         elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
         elif state in [SIPpTest.State.CLEANING]:
-            assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
+            assert(self.__state in [SIPpTest.State.READY, SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
         elif state in [SIPpTest.State.CLEAN, SIPpTest.State.DIRTY]:
             assert(self.__state == SIPpTest.State.CLEANING)
         else:
@@ -380,7 +381,7 @@ class SIPpTest(object):
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def post_run(self, run_id_prefix, args):
-        if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
+        if self.__state in [SIPpTest.State.READY, SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
