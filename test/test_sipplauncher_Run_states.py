@@ -26,7 +26,7 @@ TEST_NAME = "my_test_name"
 
 @pytest.mark.parametrize(
     "mock_fs,args,expected_states", [
-        # basic sane test
+        # basic dry-run test
         (
             {
                 TEST_NAME: {
@@ -39,6 +39,22 @@ TEST_NAME = "my_test_name"
              (TEST_NAME, SIPpTest.State.READY),
              (TEST_NAME, SIPpTest.State.DRY_RUNNING),
              (TEST_NAME, SIPpTest.State.SUCCESS),
+             (TEST_NAME, SIPpTest.State.CLEANING),
+             (TEST_NAME, SIPpTest.State.CLEAN)],
+        ),
+        # basic sane test
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            [(TEST_NAME, SIPpTest.State.CREATED),
+             (TEST_NAME, SIPpTest.State.PREPARING),
+             (TEST_NAME, SIPpTest.State.READY),
+             (TEST_NAME, SIPpTest.State.STARTING),
+             (TEST_NAME, SIPpTest.State.FAIL),
              (TEST_NAME, SIPpTest.State.CLEANING),
              (TEST_NAME, SIPpTest.State.CLEAN)],
         ),
