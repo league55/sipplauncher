@@ -328,6 +328,31 @@ def test(mocker, mock_fs, args, expected_states):
              ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEANING),
              ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEAN)],
         ),
+        # 2 concurrent tests + 1 consecutive, exception in 2nd test before.sh
+        (
+            {
+                "{0}_1".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+                "{0}_2".format(TEST_NAME): {
+                    "uas_ua0.xml": None,
+                },
+                "{0}_3".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+            },
+            "--dut {0} --group 2".format(DUT_IP),
+            ("{0}_2".format(TEST_NAME), "before.sh"),
+            [("{0}_1".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_3".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.READY),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.NOT_READY),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEANING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEAN)],
+        ),
     ]
 )
 def test_exception(mocker, mock_fs, args, expected_exception_at, expected_states):
