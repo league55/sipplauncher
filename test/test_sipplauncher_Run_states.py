@@ -262,3 +262,81 @@ def test(mocker, mock_fs, args, expected_states):
     assert(states == expected_states)
 
     shutil.rmtree(dirpath)
+
+
+@pytest.mark.parametrize(
+    "mock_fs,args,expected_exception_at,expected_states", [
+        # 2 concurrent tests + 1 consecutive, exception in 1st test before.sh
+        (
+            {
+                "{0}_1".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+                "{0}_2".format(TEST_NAME): {
+                    "uas_ua0.xml": None,
+                },
+                "{0}_3".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+            },
+            "--dut {0} --group 2".format(DUT_IP),
+            ("{0}_1".format(TEST_NAME), "before.sh"),
+            [("{0}_1".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_3".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.NOT_READY)],
+        ),
+        # 1 test, exception in after.sh
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            (TEST_NAME, "after.sh"),
+            [(TEST_NAME, SIPpTest.State.CREATED),
+             (TEST_NAME, SIPpTest.State.PREPARING),
+             (TEST_NAME, SIPpTest.State.READY),
+             (TEST_NAME, SIPpTest.State.STARTING),
+             (TEST_NAME, SIPpTest.State.FAIL),
+             (TEST_NAME, SIPpTest.State.CLEANING),
+             (TEST_NAME, SIPpTest.State.DIRTY)],
+        ),
+    ]
+)
+def test_exception(mocker, mock_fs, args, expected_exception_at, expected_states):
+    """Testing SIPpTest basic sanity
+    """
+    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test")
+    gen_file_struct(dirpath, mock_fs)
+
+    states = []
+
+    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._SIPpTest__set_state):
+        states.append((self.key, state))
+        orig_set_state(self, state)
+
+    class MockException(Exception):
+        pass
+
+    def my_run_script(self, script, args):
+        if self.key == expected_exception_at[0] and script == expected_exception_at[1]:
+            raise MockException
+
+    mocker.patch('sipplauncher.Test.SIPpTest._SIPpTest__set_state', new=my_test_set_state)
+    mocker.patch('sipplauncher.Test.SIPpTest._SIPpTest__run_script', new=my_run_script)
+    logging.getLogger("pysipp").propagate = 0
+
+    parser = generate_parser()
+    parsed_args = parser.parse_args(shlex.split(args))
+    parsed_args.testsuite = dirpath
+    check_and_patch_args(parsed_args)
+
+    with pytest.raises(MockException):
+        run(parsed_args)
+
+    assert(states == expected_states)
+
+    shutil.rmtree(dirpath)
