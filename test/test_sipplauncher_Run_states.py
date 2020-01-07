@@ -335,7 +335,7 @@ def test(mocker, mock_fs, args, expected_states):
                     "uac_ua0.xml": None,
                 },
                 "{0}_2".format(TEST_NAME): {
-                    "uas_ua0.xml": VALID_XML,
+                    "uas_ua0.xml": None,
                 },
                 "{0}_3".format(TEST_NAME): {
                     "uac_ua0.xml": None,
