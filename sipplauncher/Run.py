@@ -163,8 +163,18 @@ def run(args):
                 # 3. TestA run + TestB run
                 # 4. TestB post-run. OptionA: ValueB -> ValueA
                 # 5. TestA post-run: OptionB: ValueA -> ValueOrig
+                raise_exception = None
                 for task in reversed(tasks):
-                    task.test.post_run(task.run_id_prefix, args)
+                    try:
+                       task.test.post_run(task.run_id_prefix, args)
+                    except BaseException as e:
+                       logger.debug(e, exc_info = True)
+                       # re-raise 1st exception
+                       if raise_exception is None:
+                           raise_exception = e
+                if raise_exception:
+                    # Notify user and stop
+                    raise raise_exception
 
             # Calculating failed tests
             for task in tasks:

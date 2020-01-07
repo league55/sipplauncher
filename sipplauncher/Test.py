@@ -388,6 +388,7 @@ class SIPpTest(object):
             self.__print_run_state(run_id_prefix)
             start = time.time()
             state = SIPpTest.State.CLEAN
+            raise_exception = None
 
             for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
                       partial(Network.SIPpNetwork.sniffer_stop, self.network),
@@ -398,6 +399,12 @@ class SIPpTest(object):
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
                     state = SIPpTest.State.DIRTY
+                    if raise_exception is None and not isinstance(e, SIPpTest.ScriptRunException):
+                        # We should propagate 1st exception to the caller if it's caused by internal error.
+                        # This stops tests execution.
+                        # We shouldn't propagae ScriptRunException, because it's caused by a test-suite content.
+                        # Therefore, it's not internal.
+                        raise_exception = e
 
             self.__set_state(state)
             if state == SIPpTest.State.DIRTY:
@@ -405,6 +412,8 @@ class SIPpTest(object):
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
+                if raise_exception:
+                    raise raise_exception
 
     def failed(self):
         """ Returns whether a test failed"""
