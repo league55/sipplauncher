@@ -168,6 +168,7 @@ def run(args):
                     try:
                        task.test.post_run(task.run_id_prefix, args)
                     except BaseException as e:
+                       logger.debug(e, exc_info = True)
                        # re-raise 1st exception
                        if raise_exception is None:
                            raise_exception = e
