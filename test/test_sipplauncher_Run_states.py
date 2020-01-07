@@ -23,6 +23,15 @@ import sipplauncher.Test
 
 DUT_IP = "1.1.1.1"
 TEST_NAME = "my_test_name"
+VALID_XML = """<?xml version="1.0" encoding="ISO-8859-1" ?>
+<scenario name="">
+<send>
+<![CDATA[
+ACK SIP/2.0
+]]>
+</send>
+<pause milliseconds="1000" />
+</scenario>"""
 
 @pytest.mark.parametrize(
     "mock_fs,args,expected_states", [
@@ -91,15 +100,7 @@ TEST_NAME = "my_test_name"
                     "uac_ua0.xml": None,
                 },
                 "{0}_2".format(TEST_NAME): {
-                    "uas_ua0.xml": '<?xml version="1.0" encoding="ISO-8859-1" ?>\n' +
-                                   '<scenario name="">\n' +
-                                   '<send>\n' +
-                                   '<![CDATA[\n' +
-                                   'ACK SIP/2.0\n' +
-                                   ']]>\n'
-                                   '</send>\n'
-                                   '<pause milliseconds="1000" />\n' # to make 2nd test longer than first
-                                   '</scenario>\n',
+                    "uas_ua0.xml": VALID_XML,
                 },
             },
             "--dut {0} --group 2".format(DUT_IP),
@@ -179,15 +180,7 @@ TEST_NAME = "my_test_name"
                     "before.sh": "exit -1",
                 },
                 "{0}_2".format(TEST_NAME): {
-                    "uas_ua0.xml": '<?xml version="1.0" encoding="ISO-8859-1" ?>\n' +
-                                   '<scenario name="">\n' +
-                                   '<send>\n' +
-                                   '<![CDATA[\n' +
-                                   'ACK SIP/2.0\n' +
-                                   ']]>\n'
-                                   '</send>\n'
-                                   '<pause milliseconds="1000" />\n' # to make 2nd test longer than first
-                                   '</scenario>\n',
+                    "uas_ua0.xml": VALID_XML,
                 },
             },
             "--dut {0} --group 2".format(DUT_IP),
