@@ -210,15 +210,7 @@ TEST_NAME = "my_test_name"
                     "before.sh": "exit -1",
                 },
                 "{0}_2".format(TEST_NAME): {
-                    "uas_ua0.xml": '<?xml version="1.0" encoding="ISO-8859-1" ?>\n' +
-                                   '<scenario name="">\n' +
-                                   '<send>\n' +
-                                   '<![CDATA[\n' +
-                                   'ACK SIP/2.0\n' +
-                                   ']]>\n'
-                                   '</send>\n'
-                                   '<pause milliseconds="1000" />\n' # to make 2nd test longer than first
-                                   '</scenario>\n',
+                    "uas_ua0.xml": None,
                 },
                 "{0}_3".format(TEST_NAME): {
                     "uac_ua0.xml": None,
@@ -233,7 +225,7 @@ TEST_NAME = "my_test_name"
              ("{0}_2".format(TEST_NAME), SIPpTest.State.PREPARING),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.READY),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.STARTING),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.SUCCESS),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.FAIL),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN),
              ("{0}_3".format(TEST_NAME), SIPpTest.State.PREPARING),
