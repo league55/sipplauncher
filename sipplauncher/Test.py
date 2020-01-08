@@ -19,7 +19,8 @@ import glob
 from enum import Enum
 from jinja2 import (Environment,
                     FileSystemLoader,
-                    StrictUndefined)
+                    StrictUndefined,
+                    TemplateError)
 from functools import partial
 
 from . import Network
@@ -44,6 +45,7 @@ class SIPpTest(object):
     # Expected state transitions:
     # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
     # 2. CREATED -> PREPARING -> READY -> STARTING -> FAIL/SUCCESS -> CLEANING -> CLEAN/DIRTY
+    # 3. CREATED -> PREPARING -> READY -> CLEANING -> CLEAN/DIRTY
     # 4. CREATED -> PREPARING -> NOT_READY
     class State(Enum):
         CREATED = "CREATED"         # Test has been just created
@@ -134,7 +136,7 @@ class SIPpTest(object):
         elif state == SIPpTest.State.SUCCESS:
             assert(self.__state in [SIPpTest.State.DRY_RUNNING, SIPpTest.State.STARTING])
         elif state in [SIPpTest.State.CLEANING]:
-            assert(self.__state in [SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
+            assert(self.__state in [SIPpTest.State.READY, SIPpTest.State.FAIL, SIPpTest.State.SUCCESS])
         elif state in [SIPpTest.State.CLEAN, SIPpTest.State.DIRTY]:
             assert(self.__state == SIPpTest.State.CLEANING)
         else:
@@ -151,11 +153,11 @@ class SIPpTest(object):
                                      preexec_fn=os.setpgrp) # Issue #36: change group to not to propagate signals to subprocess
                 try:
                     stdoutdata, stderrdata = p.communicate(timeout=DEFAULT_SCRIPT_TIMEOUT)
-                except subprocess.TimeoutExpired:
+                except subprocess.TimeoutExpired as e:
                     # Script lasts unexpectedly long.
                     # Seems like it has deadlocked.
                     p.kill()
-                    raise
+                    raise SIPpTest.ScriptRunException(script + " lasted too long") from e
                 finally:
                     ret = p.wait() # to not to leave zombie
                 # Need to strip trailing newline, because logger adds newline too.
@@ -272,7 +274,6 @@ class SIPpTest(object):
         self.__set_state(SIPpTest.State.PREPARING)
         self.__print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
-        propagate_exception = True
         try:
             for ua in self.__uas:
                 ua.ip = self.network.add_random_ip()
@@ -281,16 +282,7 @@ class SIPpTest(object):
 
             try:
                 self.__init_logger()
-
-                try:
-                    self.__replace_keywords(args)
-                except:
-                    # This is the issue in test description.
-                    # This is not an internal issue.
-                    # Notify user with NOT READY test state and continue.
-                    propagate_exception = False
-                    raise
-
+                self.__replace_keywords(args)
                 self.__gen_certs_keys(args)
 
                 dns_file_path = os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)
@@ -307,11 +299,7 @@ class SIPpTest(object):
                     try:
                         self.__run_script("before.sh", args)
                     except:
-                        # This is the issue in test description.
-                        # This is not an internal issue.
-                        # Notify user with NOT READY test state and continue.
                         self.network.sniffer_stop()
-                        propagate_exception = False
                         raise
                 except:
                     if self.__dns_server:
@@ -327,10 +315,16 @@ class SIPpTest(object):
             elapsed = end - start
             elapsed_str=' - took %.0fs' % (elapsed)
             self.__print_run_state(run_id_prefix, extra=elapsed_str)
-            if propagate_exception:
-                raise
-            else:
+            if isinstance(e, (TemplateError, SIPpTest.ScriptRunException)):
+                # This is the issue in test description.
+                # This is not an internal critical Sipplauncher issue.
+                # It's OK to move to next test.
                 self.__get_logger().debug(e, exc_info = True)
+            else:
+                # This is the internal critical Sipplauncher issue.
+                # Propagate exception to caller.
+                # This should stop Sipplauncher.
+                raise
         else:
             # No exceptions during initialization.
             self.__set_state(SIPpTest.State.READY)
@@ -402,7 +396,7 @@ class SIPpTest(object):
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
 
     def post_run(self, run_id_prefix, args):
-        if self.__state in [SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
+        if self.__state in [SIPpTest.State.READY, SIPpTest.State.SUCCESS, SIPpTest.State.FAIL]:
             # pre_run() has succedded.
             # Now we should attempt to cleanup as much as we can.
             # We shouldn't propagate exception to the caller, because caller should post_run other tests as well.
@@ -410,6 +404,7 @@ class SIPpTest(object):
             self.__print_run_state(run_id_prefix)
             start = time.time()
             state = SIPpTest.State.CLEAN
+            raise_exception = None
 
             cleanup_handlers = [partial(SIPpTest.__run_script, self, "after.sh", args),
                                 partial(Network.SIPpNetwork.sniffer_stop, self.network),
@@ -423,6 +418,12 @@ class SIPpTest(object):
                 except BaseException as e:
                     self.__get_logger().debug(e, exc_info = True)
                     state = SIPpTest.State.DIRTY
+                    if raise_exception is None and not isinstance(e, SIPpTest.ScriptRunException):
+                        # We should propagate 1st exception to the caller if it's caused by internal error.
+                        # This stops tests execution.
+                        # We shouldn't propagae ScriptRunException, because it's caused by a test-suite content.
+                        # Therefore, it's not internal.
+                        raise_exception = e
 
             self.__set_state(state)
             if state == SIPpTest.State.DIRTY:
@@ -430,6 +431,8 @@ class SIPpTest(object):
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
                 self.__print_run_state(run_id_prefix, extra=elapsed_str)
+                if raise_exception:
+                    raise raise_exception
 
     def failed(self):
         """ Returns whether a test failed"""
