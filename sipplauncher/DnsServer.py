@@ -231,6 +231,9 @@ class Resolver(BaseResolver):
                         self.__get_logger(run_id).info('found higher level SOA resource for {0}[{1}]'.format(request.q.qname, type_name))
 
             if not reply.rr:
+                # We can't find a match for particular run_id.
+                # Therefore we don't know to which test run directory to log.
+                # Thus, we use global log.
                 logging.debug('no local zone found for {0}'.format(request.q))
                 reply = super().resolve(request, handler)
 
