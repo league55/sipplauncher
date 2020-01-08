@@ -21,7 +21,8 @@ from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
 from sipplauncher.Test import SIPpTest
-from sipplauncher.utils.Defaults import DEFAULT_TESTSUITE_TEMPLATES
+from sipplauncher.utils.Defaults import (DEFAULT_TESTSUITE_TEMPLATES,
+                                         DEFAULT_DNS_FILE)
 
 # Currently we are unit-testing keyword replacement for 2 UAs max.
 # Therefore we define 2 IP address for tests.
@@ -42,7 +43,7 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                     "before.sh": "echo {{placeholder1}} > /dev/null",
                     "after.sh": "echo {{placeholder2}} > /dev/null",
                     "{0}.sh".format(TEST_RUN_ID): "echo {{placeholder1}} > /dev/null",
-                    "dns.txt": "ep1.example.com  A       {{ua1.host}}",
+                    DEFAULT_DNS_FILE: "ep1.example.com  A       {{ua1.host}}",
                     "dummy.txt": "{{placeholder1}}",
                 },
             },
@@ -53,7 +54,7 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                 "before.sh": "echo replaced1 > /dev/null",
                 "after.sh": "echo replaced2 > /dev/null",
                 "{0}.sh".format(TEST_RUN_ID): "echo replaced1 > /dev/null",
-                "dns.txt": "ep1.example.com  A       10.22.22.101",
+                DEFAULT_DNS_FILE: "ep1.example.com  A       10.22.22.101",
                 "dummy.txt": "{{placeholder1}}",
             },
         ),
