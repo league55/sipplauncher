@@ -391,10 +391,11 @@ class SIPpTest(object):
             state = SIPpTest.State.CLEAN
             raise_exception = None
 
-            cleanup_handlers = [partial(SIPpTest.__run_script, self, "after.sh", args),
-                                partial(Network.SIPpNetwork.sniffer_stop, self.network),
-                                partial(SIPpTest.__remove_temp_folder, self, args),
-                                partial(Network.SIPpNetwork.shutdown, self.network)]
+            cleanup_handlers = []
+            cleanup_handlers.append(partial(SIPpTest.__run_script, self, "after.sh", args))
+            cleanup_handlers.append(partial(Network.SIPpNetwork.sniffer_stop, self.network))
+            cleanup_handlers.append(partial(SIPpTest.__remove_temp_folder, self, args))
+            cleanup_handlers.append(partial(Network.SIPpNetwork.shutdown, self.network))
             for h in cleanup_handlers:
                 try:
                     h()
