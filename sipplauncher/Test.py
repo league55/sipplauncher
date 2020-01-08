@@ -391,10 +391,11 @@ class SIPpTest(object):
             state = SIPpTest.State.CLEAN
             raise_exception = None
 
-            for h in [partial(SIPpTest.__run_script, self, "after.sh", args),
-                      partial(Network.SIPpNetwork.sniffer_stop, self.network),
-                      partial(SIPpTest.__remove_temp_folder, self, args),
-                      partial(Network.SIPpNetwork.shutdown, self.network)]:
+            cleanup_handlers = [partial(SIPpTest.__run_script, self, "after.sh", args),
+                                partial(Network.SIPpNetwork.sniffer_stop, self.network),
+                                partial(SIPpTest.__remove_temp_folder, self, args),
+                                partial(Network.SIPpNetwork.shutdown, self.network)]
+            for h in cleanup_handlers:
                 try:
                     h()
                 except BaseException as e:
