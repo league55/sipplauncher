@@ -1,0 +1,13 @@
+ep1.example.com  A       {{ ua1.host }}
+
+# UDP SRV records
+_sip._udp.example.com.         SRV [10, 60, 5060, "ep1.example.com."]
+
+# TCP SRV records
+_sip._tcp.example.com.         SRV [10, 60, 5060, "ep1.example.com."]
+
+# TLS SRV records
+_sip._tls.example.com.         SRV [10, 60, 5061, "ep1.example.com."]
+
+# SIPS SRV records
+_sips._tcp.example.com.         SRV [10, 60, 5061, "ep1.example.com."]

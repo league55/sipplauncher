@@ -20,7 +20,8 @@ from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
 from sipplauncher.Test import SIPpTest
 from sipplauncher.utils.Defaults import (DEFAULT_SCRIPT_TIMEOUT,
-                                         DEFAULT_TESTSUITE_TEMPLATES)
+                                         DEFAULT_TESTSUITE_TEMPLATES,
+                                         DEFAULT_DNS_FILE)
 from sipplauncher.UA import UA
 
 DUT_IP = "1.1.1.1"
@@ -330,6 +331,29 @@ TEST_NAME = "my_test_name"
             },
             "--dut {0}".format(DUT_IP),
             SIPpTest.State.SUCCESS,
+        ),
+        # DNS
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    DEFAULT_DNS_FILE: "ep1.example.com  A       {{ ua0.host }}",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            SIPpTest.State.SUCCESS,
+        ),
+        # DNS + failed before.sh (should be DNS cleanup without exception)
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": None,
+                    DEFAULT_DNS_FILE: "ep1.example.com  A       {{ ua0.host }}",
+                    "before.sh": "exit -1",
+                },
+            },
+            "--dut {0}".format(DUT_IP),
+            SIPpTest.State.NOT_READY,
         ),
     ]
 )

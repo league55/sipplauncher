@@ -31,10 +31,12 @@ import sipplauncher.utils.Utils
 from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
                                          DEFAULT_SCENARIO_FILENAME_REGEX,
                                          DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX,
-                                         DEFAULT_SCRIPT_TIMEOUT)
+                                         DEFAULT_SCRIPT_TIMEOUT,
+                                         DEFAULT_DNS_FILE)
 from .UA import UA
 from .PysippProcess import PysippProcess
 from .Scenario import Scenario
+from .DnsServer import DnsServer
 
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
@@ -72,6 +74,7 @@ class SIPpTest(object):
         self.__set_state(SIPpTest.State.CREATED)
         self.__successful = False
         self.__folder = folder
+        self.__dns_server = None
 
         def get_uas():
             uas = set()
@@ -220,6 +223,8 @@ class SIPpTest(object):
             files.add(os.path.basename(file))
         for ua in self.__uas:
             files |= ua.get_filenames()
+        if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)):
+            files.add(DEFAULT_DNS_FILE)
 
         # loop over files and perform replacement
         for file in files:
@@ -280,15 +285,25 @@ class SIPpTest(object):
                 self.__replace_keywords(args)
                 self.__gen_certs_keys(args)
 
-                if sipplauncher.utils.Utils.is_pcap(args):
-                    self.network.sniffer_start(self.__temp_folder)
+                dns_file_path = os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)
+                if os.path.exists(dns_file_path):
+                    self.__dns_server = DnsServer()
+                    self.__dns_server.add(self.run_id, dns_file_path)
 
-                # Run before.sh after sniffer,
-                # because some day we might want to capture to pcap configuring the DUT...
                 try:
-                    self.__run_script("before.sh", args)
+                    if sipplauncher.utils.Utils.is_pcap(args):
+                        self.network.sniffer_start(self.__temp_folder)
+
+                    # Run before.sh after sniffer,
+                    # because some day we might want to capture to pcap configuring the DUT...
+                    try:
+                        self.__run_script("before.sh", args)
+                    except:
+                        self.network.sniffer_stop()
+                        raise
                 except:
-                    self.network.sniffer_stop()
+                    if self.__dns_server:
+                        self.__dns_server.remove(self.run_id)
                     raise
             except:
                 self.__remove_temp_folder(args)
@@ -394,6 +409,8 @@ class SIPpTest(object):
             cleanup_handlers = []
             cleanup_handlers.append(partial(SIPpTest.__run_script, self, "after.sh", args))
             cleanup_handlers.append(partial(Network.SIPpNetwork.sniffer_stop, self.network))
+            if self.__dns_server:
+                cleanup_handlers.append(partial(DnsServer.remove, self.__dns_server, self.run_id))
             cleanup_handlers.append(partial(SIPpTest.__remove_temp_folder, self, args))
             cleanup_handlers.append(partial(Network.SIPpNetwork.shutdown, self.network))
             for h in cleanup_handlers:
