@@ -369,6 +369,8 @@ Thus, Sipplauncher might add dynamically assigned IP addresses to the embedded D
 And then SIPp scenarios might use domain names instead of IP addresses.
 This allows to test how a DUT works with regards to the DNS name resolution.
 
+![](assets/images/sipplauncher_dns.png)
+
 Of course, the DUT should be configured to use Sipplauncher's DNS instead of regular DNS servers.
 Usually this requires patching the DUT's `resolve.conf`:
 
