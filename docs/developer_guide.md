@@ -161,7 +161,7 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
     A list of files, which need to be processed using the [Template engine](user_guide.md#template-engine), is collected:
 
     - [Scripts](user_guide.md#scripts): result of `glob.glob("*.sh")`.
-    - [SIPp scenarios](user_guide.md#sipp-scenarios): the files, which match pattern `^(ua[cs])_(ua[0-9]+).xml$`.
+    - [SIPp scenarios](user_guide.md#sipp-scenarios): the files, which match pattern `^(ua[cs])_(ua[0-9]+).xml$` or `^([a-zA-Z0-9]+)_(ua[cs])_(ua[0-9]+).xml$`.
 
     All these files are rendered by the [Jinja2](https://en.wikipedia.org/wiki/Jinja_(template_engine)) API `Template.render()`.
 
