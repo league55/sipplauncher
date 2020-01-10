@@ -379,7 +379,7 @@ This allows to test how a DUT works with regards to the DNS name resolution.
 ![](assets/images/sipplauncher_dns.png)
 
 Of course, the DUT should be configured to use Sipplauncher's DNS service instead of regular DNS servers.
-Usually this requires patching the DUT's `resolve.conf` like this:
+Usually this requires patching the DUT's `/etc/resolve.conf` like this:
 
 ```bash
 search example.com
