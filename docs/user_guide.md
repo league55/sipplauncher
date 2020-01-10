@@ -370,7 +370,7 @@ And then SIPp scenarios might use domain names instead of IP addresses.
 This allows to test how a DUT works with regards to the DNS name resolution.
 
 Of course, the DUT should be configured to use Sipplauncher's DNS instead of regular DNS servers.
-Usually this requires patching DUT's `resolve.conf`:
+Usually this requires patching a DUT's `resolve.conf`:
 
 ```bash
 search example.com
