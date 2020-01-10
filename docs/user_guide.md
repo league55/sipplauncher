@@ -307,6 +307,7 @@ The [Template engine](#template-engine) processes following files:
 ### Keyword replacement
 
 The [Template engine](#template-engine) is also responsible for replacing keywords in the [Templated files](#templated-files).
+
 Keywords could be either internal or supplied using `--keyword-replacement-values` command-line argument.
 
 To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use `{{ '{{' }}keyword{{ '}}' }}` syntax.
