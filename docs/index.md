@@ -20,6 +20,8 @@ Features:
 
 ![](assets/images/sipplauncher.png)
 
+![](assets/images/sipplauncher.png)
+
 Supported transports:
 
 - UDP
