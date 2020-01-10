@@ -17,6 +17,8 @@ Features:
 - Each test execution will generate a [.pcap file](user_guide/#pcap-capturing) if desired.
 - Ability to provision and/or clean-up Device Under Test (DUT) using [BASH scripts](user_guide/#scripts).
 
+![](assets/images/sipplauncher.png)
+
 Supported transports:
 
 - UDP
