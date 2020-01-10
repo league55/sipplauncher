@@ -381,9 +381,8 @@ Here `10.22.22.22` - is the IP address of Sipplauncher's VM.
 
 The DNS server is launched on UDP port `53`, if at least one [Test](#tests) has [DNS zone description file](#dns-zone-description-file) in it.
 
-When a [Test](#tests) is [prepared](developer_guide.md#pre-run], a (DNS zone description file)[#dns-zone-description-file] is added to the DNS server.
-
-When a [Test](#tests) is [cleaned](developer_guide.md#post-run], a (DNS zone description file)[#dns-zone-description-file] is removed from the DNS server.
+* When a [Test](#tests) is [prepared](developer_guide.md#1-pre-run), a [DNS zone description file](#dns-zone-description-file) is added to the DNS server.
+* When a [Test](#tests) is [cleaned](developer_guide.md#3-post-run), a [DNS zone description file](#dns-zone-description-file) is removed from the DNS server.
 
 The DNS server has only a single instance.
 It's shared among all the [Test](#tests).
@@ -410,6 +409,12 @@ ep1.example.com  A       10.22.22.321
 ```
 
 This will cause undefined behavior when a DUT attempts to resolve `ep1.example.com`.
+
+Please note that the same issue will occur if TestB defines empty in its `dns.txt` like:
+
+```
+ep1.example.com  A       {{ '{{' }}ua2.host{{ '}}' }}
+```
 
 ## TLS
 
