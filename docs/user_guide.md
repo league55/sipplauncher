@@ -367,7 +367,7 @@ Sipplauncher has the DNS server inside.
 This makes possible to mock DNS names resolution for a DUT.
 Thus, Sipplauncher might add dynamically assigned IP addresses to the embedded DNS server.
 And then SIPp scenarios might use domain names instead of IP addresses.
-This allows to test how a DUT works when it involves DNS name resolution.
+This allows to test how a DUT works with regards to the DNS name resolution.
 
 Of course, the DUT should be configured to use Sipplauncher's DNS instead of regular DNS servers.
 Usually this requires patching DUT's `resolve.conf`:
