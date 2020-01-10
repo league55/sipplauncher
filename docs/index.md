@@ -16,6 +16,7 @@ Features:
 - [Dynamically](user_guide/#dynamic-ip-address-assignment) creates networking pseudo-interfaces, to which SIPp instances will be bound.
 - Each test execution will generate a [.pcap file](user_guide/#pcap-capturing) if desired.
 - Ability to provision and/or clean-up Device Under Test (DUT) using [BASH scripts](user_guide/#scripts).
+- [Embeds DNS server](user_guide/#embedded-dns-server) to support DNS mocking for the [dynamically](user_guide/#dynamic-ip-address-assignment) assigned IP addresses.
 
 Supported transports:
 

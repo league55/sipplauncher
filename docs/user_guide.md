@@ -167,6 +167,34 @@ When preparing a test to run, the keywords inside all test's scripts are [replac
 If `before.sh` exits with non-zero exit code, a test execution stops.
 If either `before.sh` or `after.sh` exits with non-zero exit code, the test is considered failed.
 
+#### DNS zone description file
+
+A file named `dns.txt` is considered the DNS zone description file.
+
+When preparing a test to run, the keywords inside this file are [replaced](#keyword-replacement).
+
+Then the contents of this file are added to the [Embedded DNS server](#embeded-dns-server).
+
+After the test is finished, the file is removed from the [Embedded DNS server](#embeded-dns-server).
+
+The example of a `dns.txt` contents:
+
+```bash
+ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
+
+# UDP SRV records
+_sip._udp.example.com.         SRV [10, 60, 5060, "ep1.example.com."]
+
+# TCP SRV records
+_sip._tcp.example.com.         SRV [10, 60, 5060, "ep1.example.com."]
+
+# TLS SRV records
+_sip._tls.example.com.         SRV [10, 60, 5061, "ep1.example.com."]
+
+# SIPS SRV records
+_sips._tcp.example.com.         SRV [10, 60, 5061, "ep1.example.com."]
+```
+
 ### Injection file
 
 Injection file is passed to Sipplauncher with `--sipp-info-file` command-line option.
@@ -275,12 +303,13 @@ Then Sipplauncher [replaces keywords](#keyword-replacement) in:
 
 1. [scripts](#scripts)
 2. [SIPp scenarios](#sipp-scenarios)
+3. [DNS zone description file](#dns-zone-description-file)
 
 Then Sipplauncher launches SIPp instances in the working directory of a [Test run folder](#test-run-folder).
 
 After the test has finished, [Test run folder](#test-run-folder) contains:
 
-- [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios), which were run during the test
+- [scripts](#scripts), [SIPp scenarios](#sipp-scenarios) and [DNS zone description file](#dns-zone-description-file), which were run during the test
 - all [log files](#log-files)
 - generated [TLS](#tls) certificates, private keys and [session keys](#decrypting-tls-traffic)
 - [pcap](#pcap-capturing) file
@@ -304,10 +333,7 @@ Both these locations are searched when Jinja2 imports a template into a test.
 The [Template engine](#template-engine) is also responsible for replacing keywords in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).
 Keywords could be either internal or supplied using `--keyword-replacement-values` command-line argument.
 
-To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use
->{ { keyword } }
-
-syntax.
+To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use `{{ '{{' }}keyword{{ '}}' }}` syntax.
 
 #### Internal keywords
 
@@ -333,6 +359,57 @@ Then the address is assigned to a machine, which runs Sipplauncher.
 The number of assigned IP addresses corresponds to the number of [SIPp scenarios](#sipp-scenarios) in a [test](#tests).
 
 After the test has finished, the allocated IP addresses are deleted.
+
+## Embedded DNS server
+
+Sipplauncher has the DNS server inside.
+
+This makes possible to mock DNS names resolution for a DUT.
+Thus, Sipplauncher might add dynamically assigned IP addresses to the embedded DNS server.
+And then SIPp scenarios might use domain names instead of IP addresses.
+This allows to test how a DUT works when it involves DNS name resolution.
+
+Of course, the DUT should be configured to use Sipplauncher's DNS instead of regular DNS servers.
+Usually this requires patching DUT's `resolve.conf`:
+
+```bash
+search example.com
+nameserver 10.22.22.22
+```
+
+Here `10.22.22.22` - is the IP address of Sipplauncher's VM.
+
+The DNS server is launched on UDP port `53`, if at least one [Test](#tests) has [DNS zone description file](#dns-zone-description-file) in it.
+
+When a [Test](#tests) is [prepared](developer_guide.md#pre-run], a (DNS zone description file)[#dns-zone-description-file] is added to the DNS server.
+
+When a [Test](#tests) is [cleaned](developer_guide.md#post-run], a (DNS zone description file)[#dns-zone-description-file] is removed from the DNS server.
+
+The DNS server has only a single instance.
+It's shared among all the [Test](#tests).
+Therefore, to support concurrent tests execution (see `--group` command-line argument`), tests should avoid defining overlapping DNS zone information.
+
+For example, TestA defines such entry in its `dns.txt`:
+
+```
+ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
+```
+
+And TestB defines same empty in its `dns.txt`:
+
+```
+ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
+```
+
+Due to the [Dynamic IP address assignment](#dynamic-ip-address-assignment) {{ '{{' }}ua1.host{{ '}}' }} will be replaced with different IP addresses for TestA and TestB.
+Then a single DNS server instance will be configured this way:
+
+```
+ep1.example.com  A       10.22.22.123
+ep1.example.com  A       10.22.22.321
+```
+
+This will cause undefined behavior when a DUT attempts to resolve `ep1.example.com`.
 
 ## TLS
 
