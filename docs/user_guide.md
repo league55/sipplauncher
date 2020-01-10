@@ -299,11 +299,7 @@ Default location of test run folder is `/var/tmp/sipplauncher/<test_name>/<test_
 `test_name` matches test folder name from [Test suite folder layout](#test-suite-folder-layout).
 `test_run_id` is assigned dynamically for each test run and is seen in [test result output](index.md#getting-started).
 
-Then Sipplauncher [replaces keywords](#keyword-replacement) in:
-
-1. [scripts](#scripts)
-2. [SIPp scenarios](#sipp-scenarios)
-3. [DNS zone description file](#dns-zone-description-file)
+Then Sipplauncher [replaces keywords](#keyword-replacement) in [Templated files](#templated-files).
 
 Then Sipplauncher launches SIPp instances in the working directory of a [Test run folder](#test-run-folder).
 
@@ -333,6 +329,7 @@ Both these locations are searched when Jinja2 imports a template into a test.
 ### Templated files
 
 The [Template engine](#template-engine) processes following files:
+
 - [scripts](#scripts)
 - [SIPp scenarios](#sipp-scenarios)
 - [DNS zone description file](#dns-zone-description-file)
