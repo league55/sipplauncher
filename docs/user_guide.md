@@ -291,6 +291,7 @@ To change this behavior, please use `--leave-temp` command-line argument.
 
 Sipplauncher uses [Jinja2](https://en.wikipedia.org/wiki/Jinja_(template_engine)) as a template engine.
 Therefore, you can use Jinja2 syntax when defining the [Templated files](#templated-files).
+
 A good example of the approach can be found in the [embedded mock test suite](#test-suite-folder-layout).
 
 Templates could be placed either into a [Test](#tests) folder or in the [Templates](#templates) folder.
