@@ -397,10 +397,9 @@ ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
 And TestB defines same empty in its `dns.txt`:
 
 ```
-ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
+ep1.example.com  A       {{ '{{' }}ua2.host{{ '}}' }}
 ```
 
-Due to the [Dynamic IP address assignment](#dynamic-ip-address-assignment) {{ '{{' }}ua1.host{{ '}}' }} will be replaced with different IP addresses for TestA and TestB.
 Then a single DNS server instance will be configured this way:
 
 ```
@@ -408,13 +407,17 @@ ep1.example.com  A       10.22.22.123
 ep1.example.com  A       10.22.22.321
 ```
 
+Therefore, information for `ep1.example.com` is overlapping.
 This will cause undefined behavior when a DUT attempts to resolve `ep1.example.com`.
 
-Please note that the same issue will occur if TestB defines empty in its `dns.txt` like:
+!!! Note
+    The same issue will occur if TestB defines entry in its `dns.txt` this way:
 
-```
-ep1.example.com  A       {{ '{{' }}ua2.host{{ '}}' }}
-```
+    ```
+    ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
+    ```
+
+    Due to the [Dynamic IP address assignment](#dynamic-ip-address-assignment), `{{ '{{' }}ua1.host{{ '}}' }}` will be replaced with different IP addresses for TestA and TestB.
 
 ## TLS
 
