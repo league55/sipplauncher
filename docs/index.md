@@ -18,6 +18,8 @@ Features:
 - Ability to provision and/or clean-up Device Under Test (DUT) using [BASH scripts](user_guide/#scripts).
 - [Embeds DNS server](user_guide/#embedded-dns-server) to support DNS mocking for the [dynamically](user_guide/#dynamic-ip-address-assignment) assigned IP addresses.
 
+![](assets/images/sipplauncher.png)
+
 Supported transports:
 
 - UDP
