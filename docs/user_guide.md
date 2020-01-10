@@ -221,7 +221,7 @@ sipplauncher -h
 |--dry-run||Dry run, simulates an execution without actual [SIPp scenarios](#sipp-scenarios) launch.|
 |--fail-expected||OK if the execution fails.|
 |--leave-temp||Don't remove [test run folder](#test-run-folder) after the test has finished.<br>By default, a [test run folder](#test-run-folder) is removed after the test has finished.|
-|--keyword-replacement-values|KEYWORD_REPLACEMENT_VALUES|Custom [keyword values](#keyword-replacement) in JSON object format to be used by the [Template engine](#template-engine) to replace values in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).<br><br>Example: `--keyword-replacement-values '{ "ua1_username": "test1", "ua2_username": "test2", "some_url": "http://10.22.22.24:8080" }'`.|
+|--keyword-replacement-values|KEYWORD_REPLACEMENT_VALUES|Custom [keyword values](#keyword-replacement) in JSON object format to be used by the [Template engine](#template-engine) to replace values in [Templated files](#templated-files).<br><br>Example: `--keyword-replacement-values '{ "ua1_username": "test1", "ua2_username": "test2", "some_url": "http://10.22.22.24:8080" }'`.|
 |--no-pcap||Disable [capturing to pcap](#pcap-capturing) files.|
 |--tls-ca-root-cert|TLS_CA_ROOT_CERT|[TLS CA root certificate](#tls) file (.pem format).<br>It must be used together with `tls-ca-root-key` arg.|
 |--tls-ca-root-key|TLS_CA_ROOT_KEY|[TLS CA root key](#tls) file (.pem format).<br>It must be used together with `tls-ca-root-key` arg.|
@@ -271,10 +271,7 @@ Default location of test run folder is `/var/tmp/sipplauncher/<test_name>/<test_
 `test_name` matches test folder name from [Test suite folder layout](#test-suite-folder-layout).
 `test_run_id` is assigned dynamically for each test run and is seen in [test result output](index.md#getting-started).
 
-Then Sipplauncher [replaces keywords](#keyword-replacement) in:
-
-1. [scripts](#scripts)
-2. [SIPp scenarios](#sipp-scenarios)
+Then Sipplauncher [replaces keywords](#keyword-replacement) in the [Templated files](#templated-files).
 
 Then Sipplauncher launches SIPp instances in the working directory of a [Test run folder](#test-run-folder).
 
@@ -293,15 +290,22 @@ To change this behavior, please use `--leave-temp` command-line argument.
 ## Template engine
 
 Sipplauncher uses [Jinja2](https://en.wikipedia.org/wiki/Jinja_(template_engine)) as a template engine.
-Therefore, you can use Jinja2 syntax when defining [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).
+Therefore, you can use Jinja2 syntax when defining the [Templated files](#templated-files).
 A good example of the approach can be found in the [embedded mock test suite](#test-suite-folder-layout).
 
 Templates could be placed either into a [Test](#tests) folder or in the [Templates](#templates) folder.
 Both these locations are searched when Jinja2 imports a template into a test.
 
+### Templated files
+
+The [Template engine](#template-engine) processes following files:
+
+- [scripts](#scripts)
+- [SIPp scenarios](#sipp-scenarios)
+
 ### Keyword replacement
 
-The [Template engine](#template-engine) is also responsible for replacing keywords in [scripts](#scripts) and [SIPp scenarios](#sipp-scenarios).
+The [Template engine](#template-engine) is also responsible for replacing keywords in the [Templated files](#templated-files).
 Keywords could be either internal or supplied using `--keyword-replacement-values` command-line argument.
 
 To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use
