@@ -162,6 +162,7 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
 
     - [Scripts](user_guide.md#scripts): result of `glob.glob("*.sh")`.
     - [SIPp scenarios](user_guide.md#sipp-scenarios): the files, which match pattern `^(ua[cs])_(ua[0-9]+).xml$` or `^([a-zA-Z0-9]+)_(ua[cs])_(ua[0-9]+).xml$`.
+    - [DNS zone description file](user_guide.md#dns-zone-description-file): a `dns.txt` file.
 
     All these files are rendered by the [Jinja2](https://en.wikipedia.org/wiki/Jinja_(template_engine)) API `Template.render()`.
 
@@ -172,20 +173,28 @@ For each of them, `SIPpTest.pre_run()` method is executed, which:
     The process is described [here](user_guide.md#tls).
     Python `OpenSSL` library is used.
 
-8. **Activates pcap sniffing**
+8. **Adds DNS zone description to the embedded DNS server**
+
+    If the [Embedded DNS server](user_guide.md#embedded-dns-server) hasn't been launched yet, it's launched now.
+
+    Then a [DNS zone description file](user_guide.md#dns-zone-description-file) is added to the embedded DNS server.
+
+    Python `dnslib` library is used.
+
+9. **Activates pcap sniffing**
 
     We use `scapy.sendrecv.AsyncSniffer` to start a new background thread.
     This thread installs the [BPF](https://en.wikipedia.org/wiki/Berkeley_Packet_Filter) on all system network interfaces.
     The BPF matches all traffic regarding [Dynamically assigned IP addresses](user_guide.md#dynamic-ip-address-assignment) for this particular [Test](user_guide.md#tests) run.
     The captured traffic is stored in the memory buffer.
 
-9. **Runs before.sh**
+10. **Runs before.sh**
 
     If `before.sh` is present in a [Test run folder](user_guide.md#test-run-folder), we execute it with `subprocess.Popen()` API.
 
     Then we wait for it to finish and check its exit code.
 
-10. **Transits the Test into the READY state**
+11. **Transits the Test into the READY state**
 
     If we got an error at any of the steps above - the TEST gets transited into the NOT READY state.
     Sipplauncher doesn't move to the next stages in this case.
@@ -258,14 +267,16 @@ For each of them, `SIPpTest.post_run()` method is executed, which:
 
     Then we store the sorted memory buffer in file `sipp-<test_run_id>.pcap` in a [Test run folder](user_guide.md#test-run-folder).
 
-4. **Removes a test run folder**
+4. **Removes DNS zone description from the embedded DNS server**
+
+5. **Removes a test run folder**
 
     We remove it with `shutil.rmtree()`, unless the `--leave-temp` [command-line argument](user_guide.md#command-line-arguments) was provided.
 
-5. **Removes dynamic IP addresses**
+6. **Removes dynamic IP addresses**
 
     We remove a "dummy" pseudo-interface with name `sipp-<test_run_id>`.
 
-6. **Transits the Test into the CLEAN state**
+7. **Transits the Test into the CLEAN state**
 
     If we got an error at any of the steps above - the TEST gets transited into the DIRTY state.
