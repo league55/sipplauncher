@@ -328,7 +328,7 @@ Both these locations are searched when Jinja2 imports a template into a test.
 
 ### Templated files
 
-The [Template engine](#template-engine) processes following files:
+The [Template engine](#template-engine) processes the following files:
 
 - [scripts](#scripts)
 - [SIPp scenarios](#sipp-scenarios)
@@ -340,7 +340,7 @@ The [Template engine](#template-engine) is also responsible for replacing keywor
 
 Keywords could be either internal or supplied using `--keyword-replacement-values` command-line argument.
 
-To define a keyword in [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use `{{ '{{' }}keyword{{ '}}' }}` syntax.
+To define a keyword in a [script](#scripts) or [SIPp scenario](#sipp-scenarios), you should use `{{ '{{' }}keyword{{ '}}' }}` syntax.
 
 #### Internal keywords
 
@@ -470,7 +470,7 @@ You can go to `Edit` → `Preferences` → `Protocols` → `SSL` and choose `tls
 
 Wireshark SSL preferences ![](assets/images/wireshark_tls_premaster_keys.png)
 
-To enable this feature, you should [install Sipplauncher from source](index.md#install-sipplauncher).
+To enable this feature, you should [install Sipplauncher from the source](index.md#install-sipplauncher).
 
 ---
 
