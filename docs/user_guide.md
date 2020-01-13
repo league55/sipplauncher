@@ -374,12 +374,12 @@ Sipplauncher has the DNS server inside.
 This makes possible to mock DNS names resolution for a DUT.
 Thus, if requested, Sipplauncher adds [dynamically](#dynamic-ip-address-assignment) assigned IP addresses to the embedded DNS server.
 And then [SIPp scenarios](#sipp-scenarios) might use domain names instead of IP addresses.
-This allows to test how a DUT works with regards to the DNS name resolution.
+This allows testing how a DUT works with regards to the DNS name resolution.
 
 ![](assets/images/sipplauncher_dns.png)
 
 Of course, the DUT should be configured to use Sipplauncher's DNS service instead of regular DNS servers.
-Usually this requires patching the DUT's `/etc/resolve.conf` like this:
+Usually, this requires patching the DUT's `/etc/resolve.conf` like this:
 
 ```bash
 search example.com
@@ -395,7 +395,7 @@ Sipplauncher launches the DNS service on UDP port `53`, if at least one [Test](#
 
 The DNS server has only a single instance.
 It's shared among all the [Tests](#tests).
-Therefore, to support concurrent tests execution (see `--group` command-line argument`), tests should avoid defining overlapping DNS zone information.
+Therefore, to support concurrent test execution (see `--group` command-line argument`), tests should avoid defining overlapping DNS zone information.
 
 For example, `TestA` defines such entry in its `dns.txt`:
 
@@ -403,7 +403,7 @@ For example, `TestA` defines such entry in its `dns.txt`:
 ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
 ```
 
-And `TestB` defines same empty in its `dns.txt`:
+And `TestB` defines the same entry in its `dns.txt`:
 
 ```
 ep1.example.com  A       {{ '{{' }}ua2.host{{ '}}' }}
@@ -420,7 +420,7 @@ Therefore, information for `ep1.example.com` is overlapping.
 This will cause undefined behavior when a DUT attempts to resolve `ep1.example.com`.
 
 !!! Note
-    The same issue will occur if `TestB` defines entry in its `dns.txt` this way:
+    The same issue will occur if `TestB` defines an entry in its `dns.txt` this way:
 
     ```
     ep1.example.com  A       {{ '{{' }}ua1.host{{ '}}' }}
