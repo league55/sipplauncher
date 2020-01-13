@@ -173,9 +173,9 @@ A file named `dns.txt` is considered the DNS zone description file.
 
 When preparing a test to run, the keywords inside this file are [replaced](#keyword-replacement).
 
-Then the contents of this file are added to the [Embedded DNS server](#embeded-dns-server).
+Then the contents of this file are added to the [Embedded DNS server](#embedded-dns-server).
 
-After the test is finished, the file is removed from the [Embedded DNS server](#embeded-dns-server).
+After the test is finished, the file is removed from the [Embedded DNS server](#embedded-dns-server).
 
 The example of a `dns.txt` contents:
 
@@ -372,7 +372,7 @@ After the test has finished, the allocated IP addresses are deleted.
 Sipplauncher has the DNS server inside.
 
 This makes possible to mock DNS names resolution for a DUT.
-Thus, Sipplauncher might add [dynamically](#dynamic-ip-address-assignment) assigned IP addresses to the embedded DNS server.
+Thus, if requested, Sipplauncher adds [dynamically](#dynamic-ip-address-assignment) assigned IP addresses to the embedded DNS server.
 And then [SIPp scenarios](#sipp-scenarios) might use domain names instead of IP addresses.
 This allows to test how a DUT works with regards to the DNS name resolution.
 
