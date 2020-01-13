@@ -395,7 +395,7 @@ Sipplauncher launches the DNS service on UDP port `53`, if at least one [Test](#
 
 The DNS server has only a single instance.
 It's shared among all the [Tests](#tests).
-Therefore, to support concurrent test execution (see `--group` command-line argument`), tests should avoid defining overlapping DNS zone information.
+Therefore, to support concurrent test execution (see `--group` command-line argument), tests should avoid defining overlapping DNS zone information.
 
 For example, `TestA` defines such entry in its `dns.txt`:
 
