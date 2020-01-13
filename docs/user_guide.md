@@ -413,7 +413,7 @@ Then a single DNS server instance will be configured this way:
 
 ```
 ep1.example.com  A       10.22.22.123
-ep1.example.com  A       10.22.22.321
+ep1.example.com  A       10.22.22.210
 ```
 
 Therefore, information for `ep1.example.com` is overlapping.
