@@ -53,3 +53,4 @@ nav:
     - User Guide: user_guide.md
     - Developer Guide: developer_guide.md
     - Contribution Guide: contribution_guide.md
+    - Dependencies: dependencies.md
