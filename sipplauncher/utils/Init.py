@@ -105,10 +105,11 @@ def generate_parser():
     # SIPp args
     parser.add_argument("--sipp-transport", help="SIPp -t param. Default is 'l1' if TLS is requested, otherwise 'u1'", choices=['u1', 'un', 'ui', 't1', 'tn', 'l1', 'ln'])
     parser.add_argument("--sipp-info-file", help="SIPp -inf param", type=valid_abs_file_path)
-    parser.add_argument("--sipp-call-rate", help="SIPp -r param", type=float, default=1.0)
-    parser.add_argument("--sipp-max-calls", help="SIPp -m param", type=int, default=1)
+    parser.add_argument("--sipp-call-rate", help="Calls per seconds, SIPp -r param. Be aware, that '--sipp-concurrent-calls-limit' could be hit before call rate", type=float, default=1.0)
+    parser.add_argument("--sipp-max-calls", help="Amount of calls to perform. SIPp -m param", type=int, default=1)
     parser.add_argument("--sipp-recv-timeout", help="SIPp -recv_timeout param", type=int, default=5000)
     parser.add_argument("--sipp-tls-version", help="SIPp -tls_version param", choices=['1.0', '1.1', '1.2'], default=None)
+    parser.add_argument("--sipp-concurrent-calls-limit", help="Maximum number of simultaneous calls. SIPp -l param.", type=int, default=1)
 
     return parser
 

@@ -255,10 +255,11 @@ sipplauncher -h
 |--tls-ca-root-key|TLS_CA_ROOT_KEY|[TLS CA root key](#tls) file (.pem format).<br>It must be used together with `tls-ca-root-key` arg.|
 |--sipp-transport|One of: u1, un, ui, t1, tn, l1, ln|SIPp -t param.<br>The default is `l1`, if [TLS](#tls) usage is auto-detected. Otherwise, it's `u1`.<br>[TLS](#tls) usage is auto-detected if any tls-related option is used.|
 |--sipp-info-file|SIPP_INFO_FILE|SIPp `-inf` argument.<br>Used to specify an [Injection file](#injection-file).|
-|--sipp-call-rate|SIPP_CALL_RATE|SIPp `-r` argument.|
-|--sipp-max-calls|SIPP_MAX_CALLS|SIPp `-m` argument.|
+|--sipp-call-rate|SIPP_CALL_RATE|Calls per seconds, SIPp -r param. Be aware, that `--sipp-concurrent-calls-limit` could be hit before call rate.|
+|--sipp-max-calls|SIPP_MAX_CALLS|Amount of calls to perform. SIPp `-m` argument.|
 |--sipp-recv-timeout|SIPP_RECV_TIMEOUT|SIPp `-recv_timeout` argument.|
 |--sipp-tls-version|One of:  1.0, 1.1, 1.2|SIPp `-tls_version` argument.<br>Please see [TLS](#tls).|
+|--sipp-concurrent-calls-limit|Number|Maximum number of simultaneous calls. Default: 1. SIPp `-l` param. |
 
 ---
 

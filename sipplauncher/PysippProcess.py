@@ -166,12 +166,11 @@ class PysippProcess(Process):
             # "Maximum number of open sockets (50000) should be less than the maximum number of open files (1024).
             # Tune this with the `ulimit` command or the -max_socket option.
             # Maximum number of open sockets (1024) plus number of open calls (1) should be less than the maximum number of open files (1024) to allow for media support."
-            concurrent_call_limit = 1 # Hardcode it at the moment, possibly it will be a cmdline arg in future...
-            kwargs["limit"] = concurrent_call_limit
+            kwargs["limit"] = self.__args.sipp_concurrent_calls_limit
             soft, _ = resource.getrlimit(resource.RLIMIT_NOFILE)
-            if soft <= concurrent_call_limit:
-                raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, concurrent_call_limit + 1))
-            kwargs["max_socket"] = soft - concurrent_call_limit
+            if soft <= self.__args.sipp_concurrent_calls_limit:
+                raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, sipp_concurrent_calls_limit + 1))
+            kwargs["max_socket"] = soft - self.__args.sipp_concurrent_calls_limit
 
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
