@@ -80,7 +80,8 @@ PYTHON_TARGETS := sipplauncher
 PYTHON_TARGETS_INSTALL_OBJ := $(addprefix install-, $(PYTHON_TARGETS))
 PYTHON_TARGETS_UNINSTALL_OBJ := $(addprefix uninstall-, $(PYTHON_TARGETS))
 
-libsslkeylog.so: sslkeylog.c
+cc-exists: ; @which $(CC) > /dev/null
+libsslkeylog.so: sslkeylog.c cc-exists
 	$(CC) sslkeylog.c -shared -o libsslkeylog.so -fPIC -ldl
 
 $(PYTHON_TARGETS_INSTALL_OBJ): clean
