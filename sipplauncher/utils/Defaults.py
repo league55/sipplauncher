@@ -13,6 +13,8 @@ import sys
 
 VERSION = '0.0.13'
 
+long_description = 'Execute your SIPp testsuite with just one command'
+
 # Folder where config files will be stored after
 # package installation.
 DEFAULT_CONFIG_FILES = os.path.join(sys.prefix,

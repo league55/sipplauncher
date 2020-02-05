@@ -14,7 +14,8 @@ import os
 import logging
 
 from . import Log
-from .Defaults import (VERSION,
+from .Defaults import (long_description,
+                      VERSION,
                       log_config_paths,
                       DEFAULT_GROUP,
                       DEFAULT_GROUP_PAUSE,
@@ -72,9 +73,7 @@ def generate_parser():
 
     prog_name = 'sipplauncher'
 
-    usage = prog_name + ' TODO'
-
-    parser = argparse.ArgumentParser(prog=prog_name, description=usage)
+    parser = argparse.ArgumentParser(prog=prog_name, description=long_description)
     parser.add_argument("-v", "--version", help="product version", action="version", version=get_stamped_id())
 
     # Mandatory args

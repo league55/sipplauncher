@@ -12,7 +12,7 @@ import re
 import os
 
 from sipplauncher.utils.Utils import (walk_folder_recur)
-from sipplauncher.utils.Defaults import (VERSION, DEFAULT_CONFIG_FILES)
+from sipplauncher.utils.Defaults import (long_description, VERSION, DEFAULT_CONFIG_FILES)
 
 dependency_links = []
 VCS_PREFIXES = ('git+', 'hg+', 'bzr+', 'svn+')
@@ -38,7 +38,6 @@ def extract_requirements(filename):
 PNAME = 'sipplauncher'
 requirements = extract_requirements('requirements.txt')
 requirements_test = extract_requirements('requirements_test.txt')
-long_description = 'Execute your SIPp testsuite with just one command'
 my_config_path=os.path.join('resources', 'etc')
 my_data_files = walk_folder_recur(DEFAULT_CONFIG_FILES,
                                   my_config_path,
