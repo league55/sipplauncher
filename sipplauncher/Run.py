@@ -107,7 +107,7 @@ def run(args):
                 # Getting a local copy of the test from the testpool.
                 # Issue #43: We need deepcopy, because shallow copy leaves shared references inside SIPpTest.
                 # For example, if --random arg is supplied, we might make 2 copies of the same SIPpTest, chosen randomly.
-                # And if shallow copy is used, these 2 SIPpTest instances will have a common reference to Network object inside.
+                # And if shallow copy is used, these 2 SIPpTest instances will share a reference to Network object inside.
                 # This will make them using the same UA IP address, which is completely wrong.
                 test = copy.deepcopy(test_from_testpool)
 
