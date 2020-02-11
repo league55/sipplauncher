@@ -59,8 +59,8 @@ class PysippProcess(Process):
         self.__folder = folder
         self.__args = args
 
-        self.__pysipp_logger = pysipp.utils.get_logger()
-        if self.__pysipp_logger.propagate:
+        pysipp_logger = pysipp.utils.get_logger()
+        if pysipp_logger.propagate:
             # User has configured log propagation to the upper layer.
             # Log propagation likely will end up writing to some single log file.
             # We will run in a multiprocessing.Process context.
@@ -68,6 +68,17 @@ class PysippProcess(Process):
             # This is not synchronized, so likely this will make log file full of garbage.
             # We don't want user to misinterpret results of such logging.
             raise Exception("Please specify propagate=0 in log config for pysipp module")
+        for h in pysipp_logger.handlers:
+            if not isinstance(h, sipplauncher.utils.Log.DynamicFileHandler):
+                # DynamicFileHandler is specified by default in log config for "pysip" logger.
+                # However, user has configured some other logging handler.
+                # We are running in a multiprocessing.Process context.
+                # Therefore user requests us to write to the same log file concurrently from different processes.
+                # This is not synchronized, so likely this make log file full of garbage.
+                # We don't want user to misinterpret results of such logging.
+                # Therefore we explicitly exit and log an error to main log.
+                raise Exception("Please specify class=sipplauncher.utils.Log.DynamicFileHandler in log config for pysipp module")
+        self.__pysipp_logger = pysipp_logger
 
     def __init_logging(self):
         # https://bugs.python.org/issue6721
@@ -84,15 +95,7 @@ class PysippProcess(Process):
         # Patching should be done in the context of Process.run(),
         # Because pysipp's logger is not thread/multiprocess-safe.
         for h in self.__pysipp_logger.handlers:
-            if not isinstance(h, sipplauncher.utils.Log.DynamicFileHandler):
-                # DynamicFileHandler is specified by default in log config for "pysip" logger.
-                # However, user has configured some other logging handler.
-                # We are running in a multiprocessing.Process context.
-                # Therefore user requests us to write to the same log file concurrently from different processes.
-                # This is not synchronized, so likely this make log file full of garbage.
-                # We don't want user to misinterpret results of such logging.
-                # Therefore we explicitly exit and log an error to main log.
-                raise Exception("Please specify class=sipplauncher.utils.Log.DynamicFileHandler in log config for pysipp module")
+            assert(isinstance(h, sipplauncher.utils.Log.DynamicFileHandler))  # checked at __init__()
             h.set_folder(self.__folder)
 
     @staticmethod
