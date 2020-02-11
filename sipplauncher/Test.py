@@ -349,19 +349,7 @@ class SIPpTest(object):
             self.__set_state(SIPpTest.State.STARTING)
             self.__print_run_state(run_id_prefix)
             p = PysippProcess(self.__uas, self.__temp_folder, args)
-            # https://bugs.python.org/issue6721
-            # "The python logging module uses a lock to surround many operations.
-            # This causes deadlocks in programs that use logging, fork and threading simultaneously."
-            # For example, we have Process P1.
-            # P1's thread T1 obtains logging lock L1 while logging.
-            # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
-            # Then P2 tries to log, and stucks on L1, because noone will ever release it.
-            # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
-            logging._acquireLock();
-            try:
-                p.start()
-            finally:
-                logging._releaseLock();
+            p.start()
             p.join()
             if p.exitcode != 0:
                 raise SIPpTest.PysippProcessException(p.exitcode)
