@@ -90,6 +90,13 @@ class PysippProcess(Process):
                                         get_stamped_id(),
                                         quiet=True)   # don't report again about logging has been initialized
 
+        # Issue #45: We're running in a fresh Process now.
+        # We can initialize self.__pysipp_logger now.
+        # We can't initialize self.__pysipp_logger in __init__(),
+        # because `Logger` contains unsafe handles (locks and file descriptors).
+        # `Multiprocessing`, when used in 'forkserver' start method,
+        # prevents us from creating Process objects whose members contain unsafe handles.
+        # Likely, to prevent us from deadlock when these objects are being transferred to a Forkserver.
         self.__pysipp_logger = pysipp.utils.get_logger()
 
         # Patch Pysipp logger to support DynamicFileHandler.
