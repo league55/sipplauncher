@@ -80,7 +80,6 @@ class PysippProcess(Process):
                 # We don't want user to misinterpret results of such logging.
                 # Therefore we explicitly exit and log an error to main log.
                 raise Exception("Please specify class=sipplauncher.utils.Log.DynamicFileHandler in log config for pysipp module")
-        self.__pysipp_logger = pysipp_logger
 
     def __init_logging(self):
         # Issue #45: We're running in a fresh Process.
