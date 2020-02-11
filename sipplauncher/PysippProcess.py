@@ -83,7 +83,7 @@ class PysippProcess(Process):
         # Patch Pysipp logger to support DynamicFileHandler.
         # Patching should be done in the context of Process.run(),
         # Because pysipp's logger is not thread/multiprocess-safe.
-        for h in self.__pysipp_logger.handlers[:]: # copy, because we may remove items inside cycle
+        for h in self.__pysipp_logger.handlers:
             if not isinstance(h, sipplauncher.utils.Log.DynamicFileHandler):
                 # DynamicFileHandler is specified by default in log config for "pysip" logger.
                 # However, user has configured some other logging handler.
