@@ -91,12 +91,11 @@ class PysippProcess(Process):
                                         quiet=True)   # don't report again about logging has been initialized
 
         # Issue #45: We're running in a fresh Process now.
-        # We can initialize self.__pysipp_logger now.
-        # We can't initialize self.__pysipp_logger in __init__(),
-        # because `Logger` contains locks.
-        # `Multiprocessing`, when used in 'forkserver' start method,
-        # prevents us from creating Process objects whose members contain locks.
-        # Likely, to prevent us from deadlock when these objects are being transferred to a Forkserver.
+        # Therefore, we can initialize self.__pysipp_logger now.
+        # We can't initialize self.__pysipp_logger in __init__(), because `Logger` contains locks.
+        # `Multiprocessing`, when used in 'forkserver' start method, sends `Process` object to a Forkserver.
+        # Sending an embedded lock object to a Forkserver seems to be error-prone and could cause deadlock.
+        # `Multiprocessing` raises an exception when we try to do it.
         self.__pysipp_logger = pysipp.utils.get_logger()
 
         # Patch Pysipp logger to support DynamicFileHandler.
