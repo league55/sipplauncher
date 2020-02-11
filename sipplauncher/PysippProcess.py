@@ -84,7 +84,7 @@ class PysippProcess(Process):
     def __init_logging(self):
         # Issue #45: We're running in a fresh Process.
         # Logging handles haven't been copied from parent process,
-        # because we've are using 'forkserver' Process start method.
+        # because we're using 'forkserver' Process start method.
         # Therefore we need to initialize logging once again.
         sipplauncher.utils.Log.init_log(log_config_paths,
                                         get_stamped_id(),
@@ -94,7 +94,7 @@ class PysippProcess(Process):
         # Therefore, we can initialize self.__pysipp_logger now.
         # We can't initialize self.__pysipp_logger in __init__(), because `Logger` contains locks.
         # `Multiprocessing`, when used in 'forkserver' start method, sends `Process` object to a Forkserver.
-        # Sending an embedded lock object to a Forkserver seems to be error-prone and could cause deadlock.
+        # Sending an embedded lock object to a Forkserver could cause deadlock.
         # `Multiprocessing` raises an exception when we try to do it.
         self.__pysipp_logger = pysipp.utils.get_logger()
 
