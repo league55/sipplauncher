@@ -88,7 +88,7 @@ class PysippProcess(Process):
         # Therefore we need to initialize logging once again.
         sipplauncher.utils.Log.init_log(log_config_paths,
                                         get_stamped_id(),
-                                        quiet=True)   # don't report again that logging has been initialized
+                                        quiet=True)   # don't report again about logging has been initialized
 
         self.__pysipp_logger = pysipp.utils.get_logger()
 
