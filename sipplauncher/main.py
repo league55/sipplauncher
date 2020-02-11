@@ -36,8 +36,9 @@ def my_main_fun():
     # it's written for 'fork' start method (the default on Unix):
     # "Note that safely forking a multithreaded process is problematic".
     #
-    # The recommended way of avoiding deadlock (in https://bugs.python.org/issue6721)
-    # is using 'spawn' or 'forkserver' Process start method.
+    # The recommended way of avoiding deadlock is using 'spawn' or 'forkserver' Process start method.
+    # From https://bugs.python.org/issue6721:
+    # "multiprocessing: It has spawn (as of 3.4) and forkserver methods both of which can help avoid this issue".
     #
     # 'spawn' is known to be more slow than 'forkserver'.
     # From https://docs.python.org/3.6/library/multiprocessing.html#contexts-and-start-methods:
