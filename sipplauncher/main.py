@@ -17,6 +17,7 @@ from .utils.Signals import SignalException, capture_all_signals, check_signal
 from .utils.Utils import is_tls_transport
 from .utils.Defaults import (DEFAULT_SSL_KEY_LOG_LIB,
                              DEFAULT_TLS_PREMASTER_KEYS_FILE)
+import multiprocessing
 
 # import warnings
 # warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -25,6 +26,27 @@ logger = logging.getLogger("main")
 
 
 def my_main_fun():
+    # Issue #45: Deadlock on logging to stdout.
+    # We use multithreading and multiprocessing simultaneously.
+    # This sometimes causes deadlock in forked child process when it tries to log to file or stdout.
+    #
+    # The issue is well-known: https://bugs.python.org/issue6721
+    #
+    # In https://docs.python.org/3.6/library/multiprocessing.html#contexts-and-start-methods
+    # it's written for 'fork' start method (the default on Unix):
+    # "Note that safely forking a multithreaded process is problematic".
+    #
+    # The recommended way of avoiding deadlock is using 'spawn' or 'forkserver' Process start method.
+    # From https://bugs.python.org/issue6721:
+    # "multiprocessing: It has spawn (as of 3.4) and forkserver methods both of which can help avoid this issue".
+    #
+    # 'spawn' is known to be more slow than 'forkserver'.
+    # From https://docs.python.org/3.6/library/multiprocessing.html#contexts-and-start-methods:
+    # "Starting a process using this method is rather slow compared to using fork or forkserver."
+    #
+    # Therefore we choose 'forkserver' here.
+    multiprocessing.set_start_method('forkserver')
+
     # Issue #35: We should rebind signal handlers ASAP.
     # Otherwise deadlock is likely to happen on catching signal.
     # This was seen even with default Python signal handlers,

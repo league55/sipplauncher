@@ -19,6 +19,8 @@ from . import UA
 from .Scenario import Scenario
 from .utils.Signals import check_signal, SignalException
 from .utils.Utils import is_tls_transport
+from .utils.Defaults import log_config_paths
+from .utils.Init import get_stamped_id
 
 # Tried following combinations:
 #
@@ -78,18 +80,23 @@ class PysippProcess(Process):
                 # We don't want user to misinterpret results of such logging.
                 # Therefore we explicitly exit and log an error to main log.
                 raise Exception("Please specify class=sipplauncher.utils.Log.DynamicFileHandler in log config for pysipp module")
-        self.__pysipp_logger = pysipp_logger
 
     def __init_logging(self):
-        # https://bugs.python.org/issue6721
-        # "The python logging module uses a lock to surround many operations.
-        # This causes deadlocks in programs that use logging, fork and threading simultaneously."
-        # For example, we have Process P1.
-        # P1's thread T1 obtains logging lock L1 while logging.
-        # Then P1's thread T2 forks a new multiprocessing.Process P2, which inherits L1 in locked state.
-        # Then P2 tries to log, and stucks on L1, because noone will ever release it.
-        # To workaround this, we acquire L1 before forking, and release L1 immediately after both in P1 and P2.
-        logging._releaseLock()
+        # Issue #45: We're running in a fresh Process.
+        # Logging handles haven't been copied from parent process,
+        # because we're using 'forkserver' Process start method.
+        # Therefore we need to initialize logging once again.
+        sipplauncher.utils.Log.init_log(log_config_paths,
+                                        get_stamped_id(),
+                                        quiet=True)   # don't report again about logging has been initialized
+
+        # Issue #45: We're running in a fresh Process now.
+        # Therefore, we can initialize self.__pysipp_logger now.
+        # We can't initialize self.__pysipp_logger in __init__(), because `Logger` contains locks.
+        # `Multiprocessing`, when used in 'forkserver' start method, sends `Process` object to a Forkserver.
+        # Sending an embedded lock object to a Forkserver could cause deadlock.
+        # `Multiprocessing` raises an exception when we try to do it.
+        self.__pysipp_logger = pysipp.utils.get_logger()
 
         # Patch Pysipp logger to support DynamicFileHandler.
         # Patching should be done in the context of Process.run(),

@@ -305,14 +305,19 @@ class WrappedRainbowLoggingHandler(RainbowLoggingHandler):
 
         return message
 
-def init_log(log_config_paths, stamped_id):
+def init_log(log_config_paths, stamped_id, quiet=False):
     """ Initializes, validates and tweaks log formats to always attach the
     stamped_id param.
 
     :param log_config_path: path of the logging configuration file.
     :type name: str.
+
     :param stamped_id: id to stamp in all log formatters.
     :type state: str.
+
+    :param quiet: don't report anything to user during initialization.
+    :type: bool.
+
     :returns:  None.
     :raises: sipplauncher.utils.Exceptions.ErrorInitLog
 
@@ -405,10 +410,11 @@ def init_log(log_config_paths, stamped_id):
     sl = StreamToLogger(stderr_logger, logging.DEBUG)
     sys.stderr = sl
 
-    # Lets give some feedback
-    logger_config = logging.getLogger("config")
-    msg = 'Using log configuration file "%s"' % log_config_path
-    logger_config.info(msg)
+    if not quiet:
+        # Lets give some feedback
+        logger_config = logging.getLogger("config")
+        msg = 'Using log configuration file "%s"' % log_config_path
+        logger_config.info(msg)
 
     return
     
