@@ -11,7 +11,7 @@
 import os
 import sys
 
-VERSION = '0.0.13'
+VERSION = '0.0.13-beta'
 
 long_description = 'Execute your SIPp testsuite with just one command'
 
