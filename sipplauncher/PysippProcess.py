@@ -93,9 +93,9 @@ class PysippProcess(Process):
         # Issue #45: We're running in a fresh Process now.
         # We can initialize self.__pysipp_logger now.
         # We can't initialize self.__pysipp_logger in __init__(),
-        # because `Logger` contains unsafe handles (locks and file descriptors).
+        # because `Logger` contains locks.
         # `Multiprocessing`, when used in 'forkserver' start method,
-        # prevents us from creating Process objects whose members contain unsafe handles.
+        # prevents us from creating Process objects whose members contain locks.
         # Likely, to prevent us from deadlock when these objects are being transferred to a Forkserver.
         self.__pysipp_logger = pysipp.utils.get_logger()
 
