@@ -280,11 +280,37 @@ class DnsServer(DNSServer):
         """
         if not hasattr(cls, 'instance'):
             cls.instance = super().__new__(cls)
+            # Issue #44: perform initialization here and not in __init__().
+            # See the comment below, which explains this in detail.
+            super(DnsServer, cls.instance).__init__(resolver=Resolver(), logger=Logger())
+            cls.instance.start_thread()
         return cls.instance
 
     def __init__(self):
-        super().__init__(resolver=Resolver(), logger=Logger())
-        super().start_thread()
+        """
+        Issue #44: we need __init__() to do nothing.
+
+        When a client does this:
+        dns_server1 = DnsServer()
+        dns_server2 = DnsServer(),
+
+        we see the following magic methods invoked:
+        1. DnsServer.__new__()
+        2. DnsServer.__init__()
+        3. DnsServer.__new__()
+        4. DnsServer.__init__()
+
+        DnsServer.__new__() returns the reference to the same DnsServer object, because DnsServer is a singleton.
+        This is expected.
+
+        However, we see that __init__() is called twice for the same object.
+        Therefore, we need to perform actual DnsServer initialization inside __new__() and __init__() should do nothing.
+        Otherwise we'll re-initialize DnsServer singleton instance each time a client invokes `dns_server = DnsServer()`.
+        And this is not what we need.
+        We need to initialize DnsServer singleton only once, on first instantiation of DnsServer by a client.
+        Subsequent instantiations should re-use first DnsServer instance without re-initialization.
+        """
+        pass
 
     def add(self, run_id, file):
         """
