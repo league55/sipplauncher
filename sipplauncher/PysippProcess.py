@@ -12,6 +12,7 @@ import sys
 import os
 import logging
 import resource
+import copy
 from multiprocessing import Process
 
 import sipplauncher.utils.Log
@@ -59,7 +60,14 @@ class PysippProcess(Process):
 
         self.__uas = uas
         self.__folder = folder
-        self.__args = args
+
+        # Issue #51: We can't pass `CAOpenSSL` instance as a `Process` member to a Forkserver,
+        # because it contains `ca_cert/ca_key` members, which are not sendable via a Unix socket.
+        # We get this exception: "can't pickle _cffi_backend.CDataGCP objects" on sending `Process` to a Forkserver.
+        # And actually we don't need to pass `CAOpenSSL` instance to a forked child process - it's not used there.
+        # Therefore we can just remove it from the `args` Namespace.
+        self.__args = copy.copy(args)  # copy to not to remove `sipplauncher_ca` from the original `args` Namespace
+        self.__args.sipplauncher_ca = None
 
         pysipp_logger = pysipp.utils.get_logger()
         if pysipp_logger.propagate:
