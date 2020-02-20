@@ -8,7 +8,6 @@
 """
 
 import logging
-import json
 import binascii
 import sipplauncher.Test
 from dnslib.server import (DNSServer,
@@ -198,7 +197,7 @@ class Resolver(BaseResolver):
 
                 rname, rtype, args_ = line.split(maxsplit=2)
                 if args_.startswith('['):
-                    args = tuple(json.loads(args_))
+                    args = tuple(eval(args_))
                 else:
                     args = (args_,)
 
