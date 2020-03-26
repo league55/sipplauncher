@@ -93,6 +93,7 @@ def generate_parser():
     parser.add_argument("--group-stop-first-fail", help="stops after any test of the group fails", action="store_true")
     parser.add_argument("--total", type=int, help="total number of SIPp tests to run")
     parser.add_argument("--random", help="selects randomly tests from the testpool (instead of alphabetical consecutive ordering)", action="store_true")
+    parser.add_argument("--loop", help="Repeat tests in an endless loop (until interrupted by CTRL+C)", action="store_true")
     parser.add_argument("--dry-run", help="dry run, simulates an execution", action="store_true")
     parser.add_argument("--fail-expected", help="ok if the execution fails", action="store_true")
     parser.add_argument("--leave-temp", help="Leave temporary directories in which tests are executed", action="store_true")

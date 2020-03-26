@@ -91,7 +91,10 @@ def my_main_fun():
         logging.debug(args)
         _interfaces_cleaning(args)
         _setup_tls_key_interception(args)
+
         ret_code = Run.run(args)
+        while args.loop and ret_code == 0:
+            ret_code = Run.run(args)
 
         # Check pending signal just to display that we caught a signal.
         # Nothing useful besides that.

@@ -246,6 +246,7 @@ sipplauncher -h
 |--group-pause|GROUP_PAUSE|Pause between group executions.<br>Default: `0.8`.|
 |--group-stop-first-fail||Stops after any test of the group fails.|
 |--random||Selects randomly tests from the test pool (instead of alphabetical consecutive ordering).|
+|--loop||Repeat tests in an endless loop (until interrupted by CTRL+C).<br>It could be used together with `group-stop-first-fail` arg in order to repeat some test endlessly until it fails, to reproduce some rare issue.|
 |--dry-run||Dry run, simulates an execution without actual [SIPp scenarios](#sipp-scenarios) launch.|
 |--fail-expected||OK if the execution fails.|
 |--leave-temp||Don't remove [test run folder](#test-run-folder) after the test has finished.<br>By default, a [test run folder](#test-run-folder) is removed after the test has finished.|
