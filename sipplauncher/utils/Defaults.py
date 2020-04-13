@@ -50,6 +50,9 @@ DEFAULT_SIPP_INFO_FILE = "users.csv"
 # Issue #42: Templating engine
 DEFAULT_TESTSUITE_TEMPLATES = "TEMPLATES"
 
+# Issue #56: Global before.sh/after.sh
+DEFAULT_TESTSUITE_GLOBAL_TEST = "GLOBAL"
+
 DEFAULT_CA_CN = "ca.zaleos.net"
 
 DEFAULT_SSL_KEY_LOG_LIB = "/usr/local/lib/libsslkeylog.so"

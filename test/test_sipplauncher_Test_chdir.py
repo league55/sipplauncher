@@ -20,6 +20,7 @@ from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
 from sipplauncher.Test import SIPpTest
+from sipplauncher.GlobalTest import GlobalTest
 
 DUT_IP = "1.1.1.1"
 TEST_NAME = "my_test_name"
@@ -97,22 +98,9 @@ def test(mocker, mock_fs, args, expected):
     """Testing SIPpTest keyword replacement
     """
     cur_path = os.getcwd()
-
-    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test_chdir_")
-    sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
-
     logging.getLogger("pysipp").propagate = 0
-
-    test = SIPpTest(os.path.join(dirpath, TEST_NAME))
-
     parser = generate_parser()
     parsed_args = parser.parse_args(shlex.split(args))
-    parsed_args.testsuite = dirpath
-    check_and_patch_args(parsed_args)
-
-    test.pre_run(TEST_RUN_ID, parsed_args)
-    test.run(TEST_RUN_ID, parsed_args)
-    test.post_run(TEST_RUN_ID, parsed_args)
 
     def check_folder(fs_path, root):
         for a, b in iter(root.items()):
@@ -124,8 +112,37 @@ def test(mocker, mock_fs, args, expected):
             else:
                 assert(not os.path.isfile(tmp_fs_path))
 
+    # SIPpTest
+
+    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test_chdir_")
+    sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
+    parsed_args.testsuite = dirpath
+    check_and_patch_args(parsed_args)
+
+    test = SIPpTest(os.path.join(dirpath, TEST_NAME))
+    test.pre_run(TEST_RUN_ID, parsed_args)
+    test.run(TEST_RUN_ID, parsed_args)
+    test.post_run(TEST_RUN_ID, parsed_args)
+
     check_folder(test._SIPpTest__temp_folder, expected)
-
     shutil.rmtree(dirpath)
+    assert(os.getcwd() == cur_path) # We should return to the current working directory
 
+    # GlobalTest
+
+    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test_chdir_")
+    sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
+    parsed_args.testsuite = dirpath
+    check_and_patch_args(parsed_args)
+
+    global_test = GlobalTest(os.path.join(dirpath, TEST_NAME))
+    # Unlike SIPpTest, GlobalTest might raise an exception.
+    try:
+        global_test.pre_run(TEST_RUN_ID, parsed_args)
+    except Exception as e:
+        pass
+    global_test.post_run(TEST_RUN_ID, parsed_args)
+
+    check_folder(global_test._SIPpTest__temp_folder, expected)
+    shutil.rmtree(dirpath)
     assert(os.getcwd() == cur_path) # We should return to the current working directory

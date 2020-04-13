@@ -234,7 +234,11 @@ def test_test_pool(mock_fs, pattern_exclude, pattern_only, expected):
     sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
 
     with sipplauncher.utils.Utils.cd(dirpath):
-        args = argparse.Namespace(testsuite="folder_root", template_folder=None, pattern_exclude=pattern_exclude, pattern_only=pattern_only)
+        args = argparse.Namespace(testsuite="folder_root",
+                                  template_folder=None,
+                                  global_test_folder=None,
+                                  pattern_exclude=pattern_exclude,
+                                  pattern_only=pattern_only)
         if isinstance(expected, Exception):
             with pytest.raises(type(expected)):
                 tests = TestPool.collect(args)

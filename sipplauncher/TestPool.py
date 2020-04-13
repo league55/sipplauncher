@@ -38,6 +38,12 @@ class TestPool(object):
         if not os.path.isdir(args.testsuite):
             raise TestPool.CollectException('"{0}" is not a directory'.format(args.testsuite))
 
+        skip_folders = []
+        if args.template_folder:
+            skip_folders.append(os.path.abspath(args.template_folder))
+        if args.global_test_folder:
+            skip_folders.append(os.path.abspath(args.global_test_folder))
+
         test_pool = []
 
         logging.debug("Looking for tests at '{0}'".format(args.testsuite))
@@ -45,11 +51,10 @@ class TestPool(object):
         for dir in sorted(dirs):
             test_folder = os.path.join(args.testsuite, dir)
 
-            if args.template_folder:
-                if os.path.abspath(test_folder) == os.path.abspath(args.template_folder):
-                    # Don't treat folder with templates as a regular test.
-                    # Skip it.
-                    continue
+            if os.path.abspath(test_folder) in skip_folders:
+                # Don't treat special folder as a regular test.
+                # Skip it.
+                continue
 
             def is_test_allowed(test_name):
                 def does_test_match_regex_array(regex_array, test_name):

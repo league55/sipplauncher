@@ -22,6 +22,7 @@ from .Defaults import (long_description,
                       DEFAULT_NETWORK_MASK,
                       DEFAULT_TESTSUITE,
                       DEFAULT_TESTSUITE_TEMPLATES,
+                      DEFAULT_TESTSUITE_GLOBAL_TEST,
                       DEFAULT_SIPP_INFO_FILE)
 
 from .Utils import (which, is_tls_transport)
@@ -82,6 +83,7 @@ def generate_parser():
 
     # Other args
     parser.add_argument("--template-folder", help="path to folder with templates. Default: \"<testsuite>/{0}\"".format(DEFAULT_TESTSUITE_TEMPLATES))
+    parser.add_argument("--global-test-folder", help="path to the folder which contains global provisioning or checking scripts. Default: \"<testsuite>/{0}\"".format(DEFAULT_TESTSUITE_GLOBAL_TEST))
     parser.add_argument("--pattern-exclude", action="append", help="regular expression to exclude tests (if used with \"only\" arg, and a test name matches both, the test is excluded)")
     parser.add_argument("--pattern-only", action="append", help="regular expression to specify the only tests which should be run (if used with \"exclude\" arg, and a test name matches both, the test is excluded)")
     parser.add_argument("--network-mask", type=int, default=DEFAULT_NETWORK_MASK,
@@ -149,6 +151,13 @@ def check_and_patch_args(args):
         template_folder = os.path.join(args.testsuite, DEFAULT_TESTSUITE_TEMPLATES)
         if os.path.isdir(template_folder):
             args.template_folder = template_folder
+
+    if args.global_test_folder:
+        _check_is_dir(args.global_test_folder)
+    else:
+        global_test_folder = os.path.join(args.testsuite, DEFAULT_TESTSUITE_GLOBAL_TEST)
+        if os.path.isdir(global_test_folder):
+            args.global_test_folder = global_test_folder
 
     if not args.sipp_info_file:
         info_file = os.path.join(args.testsuite, DEFAULT_SIPP_INFO_FILE)

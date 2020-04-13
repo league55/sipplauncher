@@ -19,6 +19,7 @@ import random
 from sipplauncher.TestPool import (TestPool)
 from .utils.Signals import check_signal
 from .utils.Utils import is_pcap
+from .GlobalTest import GlobalTest
 
 
 import threading
@@ -71,6 +72,12 @@ def run(args):
         # Fancy logging output
         _sep()
         needs_group_sep_printed = False
+
+        global_test = None
+        if args.global_test_folder:
+            global_test = GlobalTest(args.global_test_folder)
+            global_test.pre_run(0, args)
+            _sep()
 
         while count_total < total:
             # Issue #35: This is an interruption point.
@@ -195,6 +202,12 @@ def run(args):
                 time.sleep(args.group_pause)
 
             count_group += 1
+
+        if global_test:
+            _sep()
+            global_test.post_run(0, args)
+            if global_test.failed():
+                ret_code = 1
 
         # Wrap up timing
         end = time.time()

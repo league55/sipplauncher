@@ -238,11 +238,11 @@ def test(mocker, mock_fs, args, expected_states):
 
     states = []
 
-    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._SIPpTest__set_state):
+    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._set_state):
         states.append((self.key, state))
         orig_set_state(self, state)
 
-    mocker.patch('sipplauncher.Test.SIPpTest._SIPpTest__set_state', new=my_test_set_state)
+    mocker.patch('sipplauncher.Test.SIPpTest._set_state', new=my_test_set_state)
     logging.getLogger("pysipp").propagate = 0
 
     parser = generate_parser()
@@ -363,7 +363,7 @@ def test_exception(mocker, mock_fs, args, expected_exception_at, expected_states
 
     states = []
 
-    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._SIPpTest__set_state):
+    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._set_state):
         states.append((self.key, state))
         orig_set_state(self, state)
 
@@ -374,8 +374,8 @@ def test_exception(mocker, mock_fs, args, expected_exception_at, expected_states
         if self.key == expected_exception_at[0] and script == expected_exception_at[1]:
             raise MockException
 
-    mocker.patch('sipplauncher.Test.SIPpTest._SIPpTest__set_state', new=my_test_set_state)
-    mocker.patch('sipplauncher.Test.SIPpTest._SIPpTest__run_script', new=my_run_script)
+    mocker.patch('sipplauncher.Test.SIPpTest._set_state', new=my_test_set_state)
+    mocker.patch('sipplauncher.Test.SIPpTest._run_script', new=my_run_script)
     logging.getLogger("pysipp").propagate = 0
 
     parser = generate_parser()
