@@ -33,7 +33,7 @@ develop:
 lint:
 	# flake8 --ignore F811,F401,E402,E501,E731 sipplauncher test
 	# flake8 --ignore F401,E501 test
-	flake8 --ignore E402,E731 --max-line-length=99 sipplauncher
+	flake8 --ignore E402,E731,W503 --max-line-length=99 sipplauncher
 
 fix-autopep8:
 	find sipplauncher/ -name '*.py' -exec autopep8 --in-place --max-line-length 80 '{}' \;
