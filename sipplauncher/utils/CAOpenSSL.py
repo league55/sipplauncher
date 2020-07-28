@@ -18,7 +18,7 @@ from OpenSSL import crypto, SSL
 from time import gmtime, mktime
 from .Defaults import DEFAULT_CA_CN
 
-BYTES=1024
+BYTES=2048
 TIME_UNIT=24 * 60 * 60
 HASH_ALGORITHM='sha256'
 SERIAL_NUMBER=1000
