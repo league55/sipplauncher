@@ -9,6 +9,7 @@
 
 import logging
 import threading
+import os
 import pyroute2
 from scapy.sendrecv import AsyncSniffer
 from scapy.utils import wrpcap
