@@ -9,6 +9,7 @@
 
 from jinja2 import TemplateError
 from functools import partial
+import time
 
 from .Test import SIPpTest
 import sipplauncher.utils.Utils

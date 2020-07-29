@@ -8,6 +8,7 @@
 """
 
 from enum import Enum
+import os
 from . import Scenario
 
 class UA:

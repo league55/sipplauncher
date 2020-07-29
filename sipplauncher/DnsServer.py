@@ -10,6 +10,7 @@
 import logging
 import binascii
 import sipplauncher.Test
+import os
 from dnslib.server import (DNSServer,
                            BaseResolver)
 from dnslib import (DNSLabel,
