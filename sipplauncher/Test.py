@@ -28,6 +28,7 @@ from . import Network
 # because in unit-tests we're mocking these functions
 # And if we import as aliases, mocking doesn't work.
 import sipplauncher.utils.Utils
+import sipplauncher.utils.Filters
 from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
                                          DEFAULT_SCENARIO_FILENAME_REGEX,
                                          DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX,
@@ -238,6 +239,8 @@ class SIPpTest(object):
 
             j2_env = Environment(loader=FileSystemLoader(folders),
                                  undefined=StrictUndefined) # to raise exception when jinja is unable to replace undefined keyword
+            # Inject custom filters
+            self._inject_custom_template_filters(j2_env)
             template = j2_env.get_template(file)
             rendered_content = template.render(**kwargs)
 
@@ -245,6 +248,10 @@ class SIPpTest(object):
             if rendered_content != content:
                 with open(path, 'w') as f:
                     f.write(rendered_content)
+
+    def _inject_custom_template_filters(self, j2_env):
+        j2_env.filters['b64encode'] = sipplauncher.utils.Filters.base64encode
+        j2_env.filters['b64decode'] = sipplauncher.utils.Filters.base64decode
 
     def __gen_certs_keys(self, args):
         if args.sipplauncher_ca:

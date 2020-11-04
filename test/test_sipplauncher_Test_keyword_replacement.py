@@ -58,6 +58,20 @@ TEST_RUN_ID = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
                 "dummy.txt": "{{placeholder1}}",
             },
         ),
+        # custom filter test
+        (
+            {
+                TEST_NAME: {
+                    "uac_ua0.xml": "{{placeholder1 | b64encode}}",
+                    "uas_ua1.xml": "{{placeholder2 | b64decode}}",
+                },
+            },
+            "--dut {0} --keyword-replacement-values '{1}'".format(DUT_IP, '{"placeholder1": "replaced1", "placeholder2" : "cmVwbGFjZWQx"}'),
+            {
+                "uac_ua0.xml": "cmVwbGFjZWQx",
+                "uas_ua1.xml": "replaced1",
+            },
+        ),
         # test several replacements of the same key
         (
             {
