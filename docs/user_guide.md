@@ -292,6 +292,26 @@ To run only this test:
 sipplauncher --dut 10.22.22.24 --testsuite <path_to_testsuite> --pattern-only normal-0000
 ```
 
+### Run a single test concurrently (SIPp concurrency)
+
+Let's assume, test suite contains a test named `normal-0000`.
+To run this test concurrently in the scope of a single sipplauncher test run (utilising SIPp's capability to generate multiple calls from a single test definition):
+
+
+```bash
+sipplauncher --dut 10.22.22.24 --testsuite <path_to_testsuite> --pattern-only normal-0000 --sipp-max-calls 3 --sipp-call-rate 3 --sipp-concurrent-calls-limit 3
+```
+
+### Run a single test concurrently (sipplauncher concurrency)
+
+Let's assume, test suite contains a test named `normal-0000`.
+To run this test concurrently as number of unique sipplauncher test runs:
+
+
+```bash
+sipplauncher --dut 10.22.22.24 --testsuite <path_to_testsuite> --pattern-only normal-0000 --group 3 --total 3
+```
+
 ---
 
 ## Test run folder
