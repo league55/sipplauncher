@@ -1,4 +1,6 @@
 wheel>=0.22
+# https://github.com/pyca/cryptography/issues/5753
+cryptography==3.2
 ipaddress
 pyroute2
 scapy
