@@ -355,7 +355,7 @@ class SIPpTest(object):
         else:
             self._set_state(SIPpTest.State.STARTING)
             self._print_run_state(run_id_prefix)
-            p = PysippProcess(self.__uas, self.__temp_folder, args)
+            p = PysippProcess(self.__uas, self.__temp_folder, self.run_id, args)
             p.start()
             p.join()
             if p.exitcode != 0:
