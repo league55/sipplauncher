@@ -44,7 +44,7 @@ from .utils.Init import get_stamped_id
 # 5. Run SIPpTest as thread + invocation of pysipp as Process:
 # - all's fine!
 class PysippProcess(Process):
-    def __init__(self, uas, folder, test_id, args):
+    def __init__(self, uas, folder, args):
         """
         :param uas: set of UA
         :type uas: set(UA)
@@ -60,7 +60,6 @@ class PysippProcess(Process):
 
         self.__uas = uas
         self.__folder = folder
-        self.__test_id = test_id
 
         # Issue #51: We can't pass `CAOpenSSL` instance as a `Process` member to a Forkserver,
         # because it contains `ca_cert/ca_key` members, which are not sendable via a Unix socket.
@@ -176,8 +175,6 @@ class PysippProcess(Process):
                 "trace_error": True,
                 "trace_calldebug": True,
                 "trace_error_codes": True,
-                # Issue #66: Need to add test-run-id to Call-Id
-                "cid_str": "{0}///%u-%p@%s".format(self.__test_id),
             }
 
             # Issue #23: We need to adjust SIPp's "max_socket" argument to pass SIPp's internal check.
