@@ -191,6 +191,12 @@ class SIPpTest(object):
                 handler.set_folder(self.__temp_folder)
                 l.addHandler(handler)
 
+    def _generate_number(self, the_string):
+        ret = ""
+        for character in the_string:
+            ret += "%02d" % (ord(character) - ord("a"))
+        return ret
+
     def _replace_keywords(self, args):
         """ Loops over files in temp folder and replaces keywords in files.
 
@@ -206,6 +212,7 @@ class SIPpTest(object):
             "test": {
                 "name": self.key,
                 "run_id": self.run_id,
+                "run_id_number": _generate_number(self.run_id),
             },
             "custom_transport": "", # TODO: remove this
         }
