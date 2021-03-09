@@ -15,5 +15,3 @@ dist/
 .DS_Store
 site/
 env/
-
-.vscode/
