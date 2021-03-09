@@ -206,6 +206,7 @@ class SIPpTest(object):
             "test": {
                 "name": self.key,
                 "run_id": self.run_id,
+                "run_id_number": self.run_id_number,
             },
             "custom_transport": "", # TODO: remove this
         }
@@ -278,6 +279,7 @@ class SIPpTest(object):
         # User could check test's logs for exception details.
         start = time.time()
         self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
+        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._set_state(SIPpTest.State.PREPARING)
         self._print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)

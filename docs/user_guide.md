@@ -370,7 +370,8 @@ To define a keyword in a [script](#scripts) or [SIPp scenario](#sipp-scenarios),
 |---|---|
 |dut.host|the value, passed via `--dut` command-line argument.|
 |test.name|the [Test](#tests) subfolder name.|
-|test.run_id|the [Test](#tests) random run ID.|
+|test.run_id|the [Test](#tests) random run ID (size 6).|
+|test.run_id_number|another random id (size 12) composed only of integers/digits.|
 |ua[0-9].host|[Dynamically assigned IP address](#dynamic-ip-address-assignment) for the [test's](#tests) SIPp instance `ua[0-9]`.|
 
 ## Dynamic IP address assignment
