@@ -212,7 +212,7 @@ class SIPpTest(object):
             "test": {
                 "name": self.key,
                 "run_id": self.run_id,
-                "run_id_number": _generate_number(self.run_id),
+                "run_id_number": self._generate_number(self.run_id),
             },
             "custom_transport": "", # TODO: remove this
         }
