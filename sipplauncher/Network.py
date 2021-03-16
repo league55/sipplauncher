@@ -6,6 +6,7 @@ import random
 import ipaddress
 from scapy.sendrecv import srp
 from scapy.layers.l2 import Ether, ARP
+from scapy.error import Scapy_Exception
 import pyroute2
 from socket import AF_INET
 from . import Sniffer
@@ -184,7 +185,11 @@ class SIPpNetwork():
         self.__sniffer.start(filter, folder)
 
     def sniffer_stop(self):
-        self.__sniffer.stop()
+        try:
+            self.__sniffer.stop()
+        except Scapy_Exception as e:
+            logger.error('Error stopping Sniffer:"{0}"'.format(e))
+            pass
 
     def shutdown(self):
         # Deleting interface adapter
