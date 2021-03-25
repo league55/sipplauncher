@@ -261,6 +261,7 @@ sipplauncher -h
 |--sipp-recv-timeout|SIPP_RECV_TIMEOUT|SIPp `-recv_timeout` argument.|
 |--sipp-tls-version|One of:  1.0, 1.1, 1.2|SIPp `-tls_version` argument.<br>Please see [TLS](#tls).|
 |--sipp-concurrent-calls-limit|Number|Maximum number of simultaneous calls. Default: 1. SIPp `-l` param. |
+|--default_behaviors|DEFAULT_BEHAVIORS|SIPp `-default_behaviors` argument.|
 
 ---
 

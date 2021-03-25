@@ -193,6 +193,9 @@ class PysippProcess(Process):
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
 
+            if self.__args.default_behaviors:
+                kwargs["default_behaviors"] = self.__args.default_behaviors
+
             # TLS
             if ua.get_tls_cert():
                 kwargs["tls_cert"] = ua.get_tls_cert()
