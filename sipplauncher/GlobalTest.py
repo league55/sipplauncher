@@ -42,8 +42,6 @@ class GlobalTest(SIPpTest):
         Unlike `SIPpTest`, `GlobalTest` should terminate immediately if any exception occurs.
         """
         start = time.time()
-        self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
-        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._set_state(SIPpTest.State.PREPARING)
         self._print_run_state(run_id_prefix)
         self._create_temp_folder()

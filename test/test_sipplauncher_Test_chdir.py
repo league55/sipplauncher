@@ -19,7 +19,7 @@ from pytest_mock import mocker
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest
+from sipplauncher.Test import SIPpTest, SIPpTestTemplate
 from sipplauncher.GlobalTest import GlobalTest
 
 DUT_IP = "1.1.1.1"
@@ -119,7 +119,7 @@ def test(mocker, mock_fs, args, expected):
     parsed_args.testsuite = dirpath
     check_and_patch_args(parsed_args)
 
-    test = SIPpTest(os.path.join(dirpath, TEST_NAME))
+    test = SIPpTestTemplate(os.path.join(dirpath, TEST_NAME)).build_SIPpTest()
     test.pre_run(TEST_RUN_ID, parsed_args)
     test.run(TEST_RUN_ID, parsed_args)
     test.post_run(TEST_RUN_ID, parsed_args)

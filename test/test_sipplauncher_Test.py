@@ -18,7 +18,7 @@ import shlex
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest
+from sipplauncher.Test import SIPpTest, SIPpTestTemplate
 from sipplauncher.utils.Defaults import (DEFAULT_SCRIPT_TIMEOUT,
                                          DEFAULT_TESTSUITE_TEMPLATES,
                                          DEFAULT_DNS_FILE)
@@ -367,7 +367,7 @@ def test(mocker, mock_fs, args, expected):
     logging.getLogger("pysipp").propagate = 0
 
     def do_test(dirpath, args, with_except):
-        test = SIPpTest(os.path.join(dirpath, TEST_NAME))
+        test = SIPpTestTemplate(os.path.join(dirpath, TEST_NAME)).build_SIPpTest()
         test.pre_run("", args)
         try:
             if with_except:

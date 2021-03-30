@@ -42,6 +42,20 @@ from .DnsServer import DnsServer
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_part_regex = re.compile(DEFAULT_SCENARIO_PART_FILENAME_REGEX)
 
+
+
+class SIPpTestTemplate(object):
+
+    def __init__(self, folder):
+        self.key = os.path.basename(folder)
+        self.folder = folder
+
+
+    def build_SIPpTest(self):
+        return SIPpTest(self)
+
+
+
 class SIPpTest(object):
     # Expected state transitions:
     # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
@@ -70,19 +84,20 @@ class SIPpTest(object):
     class ScriptRunException(Exception):
         pass
 
-    def __init__(self, folder):
-        self.key = os.path.basename(folder)
+    def __init__(self, template):
+        self.template = template
         self._set_state(SIPpTest.State.CREATED)
+        self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
+        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._successful = False
-        self.__folder = folder
         self.__dns_server = None
         self.__uas = self._get_uas()
 
-        logging.debug('Created SIPpTest "{0}"'.format(self.key))
+        logging.debug('Created SIPpTest "{0}"'.format(self.template.key))
 
     def _get_uas(self):
         uas = set()
-        root, dirs, files = next(os.walk(self.__folder))
+        root, dirs, files = next(os.walk(self.template.folder))
         for file in files:
             basename = os.path.basename(file)
 
@@ -115,7 +130,7 @@ class SIPpTest(object):
 
         uas = sorted(uas, key = lambda x: x.get_name())
         if not uas:
-            raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.key))
+            raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.template.key))
         return uas
 
     def _set_state(self, state):
@@ -173,9 +188,9 @@ class SIPpTest(object):
         return logging.getLogger(__name__ + "." + self.run_id)
 
     def _create_temp_folder(self):
-        self.__temp_folder = os.path.join(DEFAULT_TEMP_FOLDER, self.key, self.run_id)
-        logging.debug("Copying {0} to {1}".format(self.__folder, self.__temp_folder))
-        shutil.copytree(self.__folder, self.__temp_folder)
+        self.__temp_folder = os.path.join(DEFAULT_TEMP_FOLDER, self.template.key, self.run_id)
+        logging.debug("Copying {0} to {1}".format(self.template.folder, self.__temp_folder))
+        shutil.copytree(self.template.folder, self.__temp_folder)
 
     def _init_logger(self):
         # get base logger instance according to options from config
@@ -204,7 +219,7 @@ class SIPpTest(object):
                 "host": args.dut,
             },
             "test": {
-                "name": self.key,
+                "name": self.template.key,
                 "run_id": self.run_id,
                 "run_id_number": self.run_id_number,
             },
@@ -278,8 +293,6 @@ class SIPpTest(object):
         # User should see NOT READY state in this case and testing should continue for further tests.
         # User could check test's logs for exception details.
         start = time.time()
-        self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
-        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._set_state(SIPpTest.State.PREPARING)
         self._print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
@@ -340,7 +353,7 @@ class SIPpTest(object):
 
     def _print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
-        msg = '%12s %24s (%s-%s)' % (self.__state.value, self.key, run_id_prefix, self.run_id)
+        msg = '%12s %24s (%s-%s)' % (self.__state.value, self.template.key, run_id_prefix, self.run_id)
         msg += extra if extra is not None else ''
         logging.info(msg)
 
