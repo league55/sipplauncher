@@ -18,16 +18,16 @@ class UA:
         """
         pass
 
-    def __init__(self, name, run_id, scenario):
+    def __init__(self, name, part_id, scenario):
         """
-        :param run_id: alphanumeric Run ID, on which the scenario should be run
-        :type run_id: str
+        :param part_id: alphanumeric Run ID, on which the scenario should be run (in case of multiple files scenarios for same UA)
+        :type part_id: str
 
         :param scenario: scenario to be run on specified Run ID
         :type scenario: Scenario
         """
         self.__name = name
-        self.__run_id_map = {run_id: scenario}
+        self.__part_id_map = {part_id: scenario}
         self.ip = ""
         self.__tls_cert = None
         self.__tls_key = None
@@ -45,30 +45,30 @@ class UA:
         """
         return self.__name
 
-    def set_scenario(self, run_id, scenario):
+    def set_scenario(self, part_id, scenario):
         """
-        :param run_id: alphanumeric Run ID, on which the scenario should be run
-        :type run_id: str
+        :param part_id: alphanumeric Run ID, on which the scenario should be run
+        :type part_id: str
 
         :param scenario: scenario to be run on specified Run ID
         :type scenario: Scenario
         """
-        if run_id in self.__run_id_map:
+        if part_id in self.__part_id_map:
             msg = "{0}: Unable to set scenario {1} for run ID '{2}' - {3} is already set".format(self.__name,
                                                                                                  scenario.get_filename(),
-                                                                                                 run_id,
-                                                                                                 self.__run_id_map[run_id].get_filename())
+                                                                                                 part_id,
+                                                                                                 self.__part_id_map[part_id].get_filename())
             raise UA.DuplicateScenarioException(msg)
-        self.__run_id_map[run_id] = scenario
+        self.__part_id_map[part_id] = scenario
 
-    def get_scenario(self, run_id):
+    def get_scenario(self, part_id):
         """
-        :returns: Scenario for the giver run_id
+        :returns: Scenario for the giver part_id
         :rtype: Scenario
         """
         scen = None
-        if run_id in self.__run_id_map:
-            scen = self.__run_id_map[run_id]
+        if part_id in self.__part_id_map:
+            scen = self.__part_id_map[part_id]
         return scen
 
     def get_filenames(self):
@@ -77,17 +77,17 @@ class UA:
         :rtype: set(str)
         """
         filenames = set()
-        scens = self.__run_id_map.values()
+        scens = self.__part_id_map.values()
         for scen in scens:
             filenames.add(scen.get_filename())
         return filenames
 
-    def get_run_ids(self):
+    def get_part_ids(self):
         """
         :returns: all the Run IDs on which the UA should be run
         :rtype: set(str)
         """
-        return self.__run_id_map.keys()
+        return self.__part_id_map.keys()
 
     def gen_cert_key(self, cert_gen, folder):
         """

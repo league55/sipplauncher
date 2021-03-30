@@ -31,7 +31,7 @@ import sipplauncher.utils.Utils
 import sipplauncher.utils.Filters
 from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
                                          DEFAULT_SCENARIO_FILENAME_REGEX,
-                                         DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX,
+                                         DEFAULT_SCENARIO_PART_FILENAME_REGEX,
                                          DEFAULT_SCRIPT_TIMEOUT,
                                          DEFAULT_DNS_FILE)
 from .UA import UA
@@ -40,7 +40,7 @@ from .Scenario import Scenario
 from .DnsServer import DnsServer
 
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
-scenario_run_id_regex = re.compile(DEFAULT_SCENARIO_RUN_ID_FILENAME_REGEX)
+scenario_part_regex = re.compile(DEFAULT_SCENARIO_PART_FILENAME_REGEX)
 
 class SIPpTest(object):
     # Expected state transitions:
@@ -90,14 +90,14 @@ class SIPpTest(object):
             if match:
                 # Scenario filename matched simple format, without Run ID
                 ua_name = match.group(2)
-                run_id = ""
+                part_id = ""
                 role = Scenario.Role[match.group(1)]
             else:
-                match = scenario_run_id_regex.match(basename)
+                match = scenario_part_regex.match(basename)
                 if match:
                     # Scenario filename matched complex format, with Run ID
                     ua_name = match.group(3)
-                    run_id = match.group(1)
+                    part_id = match.group(1)
                     role = Scenario.Role[match.group(2)]
                 else:
                     continue
@@ -108,10 +108,10 @@ class SIPpTest(object):
                 if ua.get_name() == ua_name:
                     # The UA is already in the set.
                     # Just add the new Scenario to the UA for the given Run ID.
-                    ua.set_scenario(run_id, scen)
+                    ua.set_scenario(part_id, scen)
                     break
             else:
-                uas.add(UA(ua_name, run_id, scen))
+                uas.add(UA(ua_name, part_id, scen))
 
         uas = sorted(uas, key = lambda x: x.get_name())
         if not uas:

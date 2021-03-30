@@ -225,7 +225,7 @@ class PysippProcess(Process):
         # Collect all possible Run IDs among UAs
         run_ids = set()
         for ua in self.__uas:
-            run_ids |= ua.get_run_ids()
+            run_ids |= ua.get_part_ids()
         run_ids = sorted(run_ids)
 
         # Change directory to make extra sipp logs and sipp coredump appear in the test directory.
