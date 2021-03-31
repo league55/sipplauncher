@@ -19,7 +19,7 @@ import random
 from sipplauncher.TestPool import (TestPool)
 from .utils.Signals import check_signal
 from .utils.Utils import is_pcap
-from .GlobalTest import GlobalTest
+from .Test import SIPpTestTemplate
 
 
 import threading
@@ -75,7 +75,7 @@ def run(args):
 
         global_test = None
         if args.global_test_folder:
-            global_test = GlobalTest(args.global_test_folder)
+            global_test = SIPpTestTemplate(args.global_test_folder).build_GlobalTest()
             global_test.pre_run(0, args)
             _sep()
 

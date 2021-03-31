@@ -112,7 +112,7 @@ def generate_parser():
     parser.add_argument("--sipp-recv-timeout", help="SIPp -recv_timeout param", type=int, default=5000)
     parser.add_argument("--sipp-tls-version", help="SIPp -tls_version param", choices=['1.0', '1.1', '1.2'], default=None)
     parser.add_argument("--sipp-concurrent-calls-limit", help="Maximum number of simultaneous calls. SIPp -l param.", type=int, default=1)
-    parser.add_argument("--default_behaviors", help="Set the default behaviors that SIPp will use. Possbile values are: all, none, bye, abortunexp, pingreply", default=None)
+    parser.add_argument("--default_behaviors", help="Set the default behaviors that SIPp will use. Possible values are: all, none, bye, abortunexp, pingreply", default=None)
 
     return parser
 
