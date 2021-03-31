@@ -3,7 +3,7 @@ wheel>=0.22
 cryptography==3.2
 ipaddress
 pyroute2
-scapy
+scapy==2.4.4
 git+http://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
 git+git://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
 jinja2
