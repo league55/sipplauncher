@@ -13,6 +13,7 @@ import os
 import shutil
 import subprocess
 import re
+import csv
 import string
 import copy
 import glob
@@ -132,6 +133,9 @@ class SIPpTest(object):
         if not uas:
             raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.template.key))
         return uas
+
+    def _get_uac(self):
+        return next(filter(lambda x: x.is_uac(), self.__uas), None)
 
     def _set_state(self, state):
         """ Setter for state which checks for valid state transition
@@ -403,7 +407,34 @@ class SIPpTest(object):
                 end = time.time()
                 elapsed = end - start
                 elapsed_str=' - took %.0fs' % (elapsed)
-                self._print_run_state(run_id_prefix, extra=elapsed_str)
+
+                cps_str = ' ({0}{1} cps)'.format('*' if self.__state != SIPpTest.State.SUCCESS else ''
+                                                 , self._collect_cps())
+
+                extra_str = elapsed_str + cps_str
+                self._print_run_state(run_id_prefix, extra=extra_str)
+
+
+    def _collect_cps(self):
+        # We just display the CPS value for first uac. Some uas may not complete calls (when testing failure's, so cps rate could be blurred)
+        uac = self._get_uac()
+        if uac is not None:
+            cps_acum = 0
+            cps_hits = 0
+            for uac_scenario in uac.get_scenarios():
+                current_cps = 0
+                with open(os.path.join(self.__temp_folder, uac_scenario.get_tracefile()), newline='') as csvfile:
+                    reader = csv.DictReader(csvfile, dialect='unix', delimiter=';')
+                    for row in reader:
+                        current_cps = row.get('CallRate(C)', 0)  # We just want to collect the result of the last row
+                self._get_logger().debug('current CPS for scenario {0} is:{1}'.format(uac_scenario, current_cps))
+
+                # In case of part scenarios we do the average of all scenarios
+                cps_hits += 1
+                cps_acum += float(current_cps)
+            self._get_logger().debug('Final CPS for scenario {0} is:{1}'.format(uac_scenario, cps_acum / cps_hits))
+
+            return round(cps_acum / cps_hits, 2)
 
     def _get_cleanup_handlers(self, args):
         cleanup_handlers = []

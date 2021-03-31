@@ -71,6 +71,13 @@ class UA:
             scen = self.__part_id_map[part_id]
         return scen
 
+    def get_scenarios(self):
+        """
+        :returns: List of Scenarios
+        :rtype: List
+        """
+        return list(self.__part_id_map.values());
+
     def get_filenames(self):
         """
         :returns: filenames of scenarios for all the Run IDs on which the UA is run
@@ -115,3 +122,10 @@ class UA:
         :rtype: str
         """
         return self.__tls_key
+
+
+    def is_uac(self):
+        """
+        :return: bool
+        """
+        return next(iter(self.__part_id_map.values())).is_uac()

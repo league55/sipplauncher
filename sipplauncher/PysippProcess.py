@@ -126,8 +126,14 @@ class PysippProcess(Process):
             # This is a copy-paste from pysipp.command.cmdstrtype()
             if isinstance(item, tuple):
                 fmtstr, descrtype = item
+            elif isinstance(item, pysipp.command.Field):
+                fieldname = item.name
+                pysipp.command.SippCmd._specparams[fieldname] = item
+                setattr(pysipp.command.SippCmd, fieldname, item)
+                return
             else:
                 fmtstr, descrtype = item, pysipp.command.Field
+
             fieldname = list(pysipp.command.iter_format(fmtstr))[0][1]
             descr = descrtype(fieldname, fmtstr)
             pysipp.command.SippCmd._specparams[fieldname] = descr
@@ -142,6 +148,11 @@ class PysippProcess(Process):
 
         # Issue #23: Need for TCP tests to work
         add_arg(' -max_socket {max_socket}')
+
+        # Monitor stats
+        add_arg((' -trace_stat {trace_stat}', pysipp.command.BoolField))
+        add_arg(' -stf {trace_file}')
+        add_arg(' -fd {trace_frequency}')
 
     def __run_scenario(self, run_id, call_count):
         """
@@ -189,6 +200,9 @@ class PysippProcess(Process):
             if soft <= self.__args.sipp_concurrent_calls_limit:
                 raise Exception("Open files limit {0} is too small. Please increase the limit to at least {1} (ulimit -n {1})".format(soft, sipp_concurrent_calls_limit + 1))
             kwargs["max_socket"] = soft - self.__args.sipp_concurrent_calls_limit
+            kwargs["trace_stat"] = True
+            kwargs["trace_file"] = scen.get_tracefile()
+            kwargs["trace_frequency"] = "60"
 
             if self.__args.sipp_info_file:
                 kwargs["info_file"] = self.__args.sipp_info_file
