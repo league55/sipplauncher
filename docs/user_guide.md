@@ -52,6 +52,8 @@ Therefore, a test suite should contain:
 
 A test's name is a subfolder name: `normal-0000`, `normal-0001`, etc.
 
+> **_NOTE:_** Sipplauncher supports a special test for performing global configuration/checks. Default reserved name for this test is `GLOBAL` but it can be customised via [`--global-test-folder`](#optional-arguments) command-line argument. This test is not allowed to have any SIPp logic but can contain `before.sh`/`after.sh` [scripts](#scripts). Global `before.sh` will run once before the very first test and global `after.sh` will run once after the last test.
+
 Each test folder contains all the information needed for a test to run:
 
 #### SIPp scenarios
@@ -167,6 +169,8 @@ When preparing a test to run, the keywords inside all test's scripts are [replac
 If `before.sh` exits with non-zero exit code, a test execution stops.
 If either `before.sh` or `after.sh` exits with non-zero exit code, the test is considered failed.
 
+> **_NOTE:_** Special purpose global `before.sh`/`after.sh` scripts are [supported](#tests).
+
 #### DNS zone description file
 
 A file named `dns.txt` is considered the DNS zone description file.
@@ -262,6 +266,7 @@ sipplauncher -h
 |--sipp-tls-version|One of:  1.0, 1.1, 1.2|SIPp `-tls_version` argument.<br>Please see [TLS](#tls).|
 |--sipp-concurrent-calls-limit|Number|Maximum number of simultaneous calls. Default: 1. SIPp `-l` param. |
 |--default_behaviors|DEFAULT_BEHAVIORS|SIPp `-default_behaviors` argument.|
+|--global-test-folder|GLOBAL_TEST_FOLDER|Path to the folder which contains global provisioning or checking scripts.<br>Default: `GLOBAL`.|
 
 ---
 
