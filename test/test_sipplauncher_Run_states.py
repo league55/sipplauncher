@@ -7,6 +7,7 @@
 
 """
 
+import os
 import pytest
 import tempfile
 import sys
@@ -32,6 +33,32 @@ ACK SIP/2.0
 </send>
 <pause milliseconds="1000" />
 </scenario>"""
+
+def _test_helper(mocker, mock_fs, args, expected_states):
+    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test")
+    gen_file_struct(dirpath, mock_fs)
+
+    states = []
+
+    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._set_state):
+        states.append((self.key, state))
+        orig_set_state(self, state)
+
+    mocker.patch('sipplauncher.Test.SIPpTest._set_state', new=my_test_set_state)
+    logging.getLogger("pysipp").propagate = 0
+
+    parser = generate_parser()
+    parsed_args = parser.parse_args(shlex.split(args))
+    parsed_args.testsuite = dirpath
+    check_and_patch_args(parsed_args)
+
+    run(parsed_args)
+
+    assert(states == expected_states)
+
+    shutil.rmtree(dirpath)
+
+
 
 @pytest.mark.parametrize(
     "mock_fs,args,expected_states", [
@@ -93,32 +120,6 @@ ACK SIP/2.0
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN)],
         ),
-        # 2 concurrent tests
-        (
-            {
-                "{0}_1".format(TEST_NAME): {
-                    "uac_ua0.xml": None,
-                },
-                "{0}_2".format(TEST_NAME): {
-                    "uas_ua0.xml": VALID_XML,
-                },
-            },
-            "--dut {0} --group 2".format(DUT_IP),
-            [("{0}_1".format(TEST_NAME), SIPpTest.State.CREATED),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.CREATED),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.PREPARING),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.READY),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.PREPARING),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.READY),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.STARTING),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.STARTING),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.FAIL),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.SUCCESS),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
-             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEANING),
-             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEAN)],
-        ),
         # before.sh failure
         (
             {
@@ -171,6 +172,47 @@ ACK SIP/2.0
              ("{0}_2".format(TEST_NAME), SIPpTest.State.FAIL),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
              ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN)],
+        ),
+    ]
+)
+def test_sequential(mocker, mock_fs, args, expected_states):
+    """Testing SIPpTest basic sanity
+    """
+    _test_helper(mocker, mock_fs, args, expected_states)
+    
+
+
+@pytest.mark.skipif(
+    'CI' in os.environ,
+    reason="Group tests sometimes fail due to slightly different state order produced by concurrently executing states. Not reliable enough for CI"
+)
+@pytest.mark.parametrize(
+    "mock_fs,args,expected_states", [
+        # 2 concurrent tests
+        (
+            {
+                "{0}_1".format(TEST_NAME): {
+                    "uac_ua0.xml": None,
+                },
+                "{0}_2".format(TEST_NAME): {
+                    "uas_ua0.xml": VALID_XML,
+                },
+            },
+            "--dut {0} --group 2".format(DUT_IP),
+            [("{0}_1".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CREATED),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.READY),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.PREPARING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.READY),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.STARTING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.STARTING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.FAIL),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.SUCCESS),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEANING),
+             ("{0}_2".format(TEST_NAME), SIPpTest.State.CLEAN),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEANING),
+             ("{0}_1".format(TEST_NAME), SIPpTest.State.CLEAN)],
         ),
         # 2 concurrent tests, before.sh failure
         (
@@ -230,33 +272,16 @@ ACK SIP/2.0
         ),
     ]
 )
-def test(mocker, mock_fs, args, expected_states):
+def test_group(mocker, mock_fs, args, expected_states):
     """Testing SIPpTest basic sanity
     """
-    dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test")
-    gen_file_struct(dirpath, mock_fs)
+    _test_helper(mocker, mock_fs, args, expected_states)
+    
 
-    states = []
-
-    def my_test_set_state(self, state, orig_set_state=sipplauncher.Test.SIPpTest._set_state):
-        states.append((self.key, state))
-        orig_set_state(self, state)
-
-    mocker.patch('sipplauncher.Test.SIPpTest._set_state', new=my_test_set_state)
-    logging.getLogger("pysipp").propagate = 0
-
-    parser = generate_parser()
-    parsed_args = parser.parse_args(shlex.split(args))
-    parsed_args.testsuite = dirpath
-    check_and_patch_args(parsed_args)
-
-    run(parsed_args)
-
-    assert(states == expected_states)
-
-    shutil.rmtree(dirpath)
-
-
+@pytest.mark.skipif(
+    'CI' in os.environ,
+    reason="Group tests sometimes fail due to slightly different state order produced by concurrently executing states. Not reliable enough for CI"
+)
 @pytest.mark.parametrize(
     "mock_fs,args,expected_exception_at,expected_states", [
         # 2 concurrent tests + 1 consecutive, exception in 1st test before.sh

@@ -43,23 +43,6 @@ from .DnsServer import DnsServer
 scenario_regex = re.compile(DEFAULT_SCENARIO_FILENAME_REGEX)
 scenario_part_regex = re.compile(DEFAULT_SCENARIO_PART_FILENAME_REGEX)
 
-
-
-class SIPpTestTemplate(object):
-
-    def __init__(self, folder):
-        self.key = os.path.basename(folder)
-        self.folder = folder
-
-
-    def build_SIPpTest(self):
-        return SIPpTest(self)
-
-    def build_GlobalTest(self):
-        return GlobalTest(self)
-
-
-
 class SIPpTest(object):
     # Expected state transitions:
     # 1. CREATED -> PREPARING -> READY -> DRY_RUNNING -> SUCCESS -> CLEANING -> CLEAN
@@ -88,20 +71,19 @@ class SIPpTest(object):
     class ScriptRunException(Exception):
         pass
 
-    def __init__(self, template):
-        self.template = template
+    def __init__(self, folder):
+        self.key = os.path.basename(folder)
         self._set_state(SIPpTest.State.CREATED)
-        self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
-        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._successful = False
+        self.__folder = folder
         self.__dns_server = None
         self.__uas = self._get_uas()
 
-        logging.debug('Created SIPpTest "{0}"'.format(self.template.key))
+        logging.debug('Created SIPpTest "{0}"'.format(self.key))
 
     def _get_uas(self):
         uas = set()
-        root, dirs, files = next(os.walk(self.template.folder))
+        root, dirs, files = next(os.walk(self.__folder))
         for file in files:
             basename = os.path.basename(file)
 
@@ -134,7 +116,7 @@ class SIPpTest(object):
 
         uas = sorted(uas, key = lambda x: x.get_name())
         if not uas:
-            raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.template.key))
+            raise SIPpTest.InitException('Test folder "{0}" doesnt contain UA scenarios'.format(self.key))
         return uas
 
     def _get_uac(self):
@@ -195,9 +177,9 @@ class SIPpTest(object):
         return logging.getLogger(__name__ + "." + self.run_id)
 
     def _create_temp_folder(self):
-        self.__temp_folder = os.path.join(DEFAULT_TEMP_FOLDER, self.template.key, self.run_id)
-        logging.debug("Copying {0} to {1}".format(self.template.folder, self.__temp_folder))
-        shutil.copytree(self.template.folder, self.__temp_folder)
+        self.__temp_folder = os.path.join(DEFAULT_TEMP_FOLDER, self.key, self.run_id)
+        logging.debug("Copying {0} to {1}".format(self.__folder, self.__temp_folder))
+        shutil.copytree(self.__folder, self.__temp_folder)
 
     def _init_logger(self):
         # get base logger instance according to options from config
@@ -226,7 +208,7 @@ class SIPpTest(object):
                 "host": args.dut,
             },
             "test": {
-                "name": self.template.key,
+                "name": self.key,
                 "run_id": self.run_id,
                 "run_id_number": self.run_id_number,
             },
@@ -300,6 +282,8 @@ class SIPpTest(object):
         # User should see NOT READY state in this case and testing should continue for further tests.
         # User could check test's logs for exception details.
         start = time.time()
+        self.run_id = sipplauncher.utils.Utils.generate_id(n=6, just_letters=True)
+        self.run_id_number = sipplauncher.utils.Utils.generate_id(n=12, just_digits=True)
         self._set_state(SIPpTest.State.PREPARING)
         self._print_run_state(run_id_prefix)
         self.network = Network.SIPpNetwork(args.dut, args.network_mask, self.run_id)
@@ -360,7 +344,7 @@ class SIPpTest(object):
 
     def _print_run_state(self, run_id_prefix, extra=None):
         """ Helper to print the test and status"""
-        msg = '%12s %24s (%s-%s)' % (self.__state.value, self.template.key, run_id_prefix, self.run_id)
+        msg = '%12s %24s (%s-%s)' % (self.__state.value, self.key, run_id_prefix, self.run_id)
         msg += extra if extra is not None else ''
         logging.info(msg)
 
@@ -425,19 +409,24 @@ class SIPpTest(object):
             cps_acum = 0
             cps_hits = 0
             for uac_scenario in uac.get_scenarios():
-                current_cps = 0
-                with open(os.path.join(self.__temp_folder, uac_scenario.get_tracefile()), newline='') as csvfile:
-                    reader = csv.DictReader(csvfile, dialect='unix', delimiter=';')
-                    for row in reader:
-                        current_cps = row.get('CallRate(C)', 0)  # We just want to collect the result of the last row
-                self._get_logger().debug('current CPS for scenario {0} is:{1}'.format(uac_scenario, current_cps))
+                csvfile_path = os.path.join(self.__temp_folder, uac_scenario.get_tracefile())
+                # When running PysippProcess tests CSV does not exist => skipping CPS calculation
+                if os.path.exists(csvfile_path):
+                    current_cps = 0
+                    with open(csvfile_path, newline='') as csvfile:
+                        reader = csv.DictReader(csvfile, dialect='unix', delimiter=';')
+                        for row in reader:
+                            current_cps = row.get('CallRate(C)', 0)  # We just want to collect the result of the last row
+                    self._get_logger().debug('current CPS for scenario {0} is:{1}'.format(uac_scenario, current_cps))
 
-                # In case of part scenarios we do the average of all scenarios
-                cps_hits += 1
-                cps_acum += float(current_cps)
-            self._get_logger().debug('Final CPS for scenario {0} is:{1}'.format(uac_scenario, cps_acum / cps_hits))
+                    cps_hits += 1
+                    cps_acum += float(current_cps)
 
-            return round(cps_acum / cps_hits, 2)
+            # In case of part scenarios we do the average of all scenarios
+            final_cps = 0 if cps_hits == 0 or cps_acum == 0 else round(cps_acum / cps_hits, 2)
+            self._get_logger().debug('Final CPS for scenario {0} is:{1}'.format(uac_scenario, final_cps))
+
+            return final_cps
 
     def _get_cleanup_handlers(self, args):
         cleanup_handlers = []
@@ -486,60 +475,3 @@ class SIPpTest(object):
     def failed(self):
         """ Returns whether a test failed"""
         return not self._successful
-
-
-class GlobalTest(SIPpTest):
-    """
-    This is a special subclass which contains a limited funcionality of a SIPpTest.
-
-    This test is used to:
-    1. run the `before.sh` script before all the other SIPpTests have been launched
-    2. run the `after.sh` script after all the other SIPpTests have been finished
-
-    The purpose of this class is to either perform a global initialization/cleanup,
-    or to perform a global check for the consistent state of a DUT,
-    which might be not feasible to do in each SIPpTest's `after.sh` for timing considerations.
-
-    Due to subclassing, we get the useful functionality of a SIPpTest, like:
-    - template engine
-    - keyword substitution
-    - temporary folder creation and logging to it
-    """
-    def _get_uas(self):
-        # We don't need to support UA scenarios
-        return set()
-
-    def pre_run(self, run_id_prefix, args):
-        """
-        We overwrite `SIPpTest.pre_run()` with a shorter pre-run procedure.
-        Also there are other small differences, like raising an exception.
-        Unlike `SIPpTest`, `GlobalTest` should terminate immediately if any exception occurs.
-        """
-        start = time.time()
-        self._set_state(SIPpTest.State.PREPARING)
-        self._print_run_state(run_id_prefix)
-        self._create_temp_folder()
-        self._init_logger()
-        try:
-            self._replace_keywords(args)
-            self._run_script("before.sh", args)
-        except BaseException as e:
-            self._set_state(SIPpTest.State.NOT_READY)
-            end = time.time()
-            elapsed = end - start
-            elapsed_str=' - took %.0fs' % (elapsed)
-            self._print_run_state(run_id_prefix, extra=elapsed_str)
-            if isinstance(e, (TemplateError, SIPpTest.ScriptRunException)):
-                # Logging is activated. Safe to print to temp folder.
-                self._get_logger().debug(e, exc_info = True)
-            raise
-        else:
-            # No exceptions during initialization.
-            self._set_state(SIPpTest.State.READY)
-            self._successful = True
-
-    def _get_cleanup_handlers(self, args):
-        cleanup_handlers = []
-        cleanup_handlers.append(partial(SIPpTest._run_script, self, "after.sh", args))
-        cleanup_handlers.append(partial(SIPpTest._remove_temp_folder, self, args))
-        return cleanup_handlers

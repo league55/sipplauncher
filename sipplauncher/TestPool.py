@@ -8,7 +8,7 @@
 """
 
 import glob
-from sipplauncher.Test import SIPpTestTemplate
+from sipplauncher.Test import SIPpTest
 import logging
 import re
 import os
@@ -78,7 +78,7 @@ class TestPool(object):
                 # Not allowed by pattern-exclude or pattern-only option
                 continue
 
-            test_pool.append(SIPpTestTemplate(test_folder))
+            test_pool.append(SIPpTest(test_folder))
 
         if not test_pool:
             raise TestPool.CollectException("No tests found")

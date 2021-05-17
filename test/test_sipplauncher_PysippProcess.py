@@ -21,7 +21,7 @@ from multiprocessing import Queue
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest, SIPpTestTemplate
+from sipplauncher.Test import SIPpTest
 
 DUT_IP = "1.1.1.1"
 TEST_NAME = "my_test_name"
@@ -216,7 +216,7 @@ def test(mocker, mock_fs, args, expected):
     # Exception is not expected
     check_and_patch_args(parsed_args)
 
-    test = SIPpTestTemplate(os.path.join(dirpath, TEST_NAME)).build_SIPpTest()
+    test = SIPpTest(os.path.join(dirpath, TEST_NAME))
     test.pre_run("", parsed_args)
     try:
         test.run("", parsed_args)

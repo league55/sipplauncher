@@ -1,0 +1,48 @@
+name: Dev workflow
+
+on:
+  push:
+    branches:    
+      - 'develop'
+      - 'feature/**'
+
+jobs:
+  build-and-test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install all
+      run: |
+        make install-all
+    - name: Install test requirements
+      run: |
+        make install-reqs-test
+    - name: Run tests
+      run: |
+        export PYTHON=`which python3`
+        sudo -E make test
+    # - name: Tweak test output permissions
+    #   if: ${{ always() }}
+    #   run: |
+    #     sudo chown -R runner:docker /tmp/sipplauncher_test*
+    #     sudo chmod -R 777 /tmp/sipplauncher_test*
+    # - name: What user jobs run under
+    #   if: ${{ always() }}
+    #   run: |
+    #     whoami
+    #     sudo ls -la /tmp
+    # - uses: actions/upload-artifact@v2
+    #   if: ${{ always() }}
+    #   with:
+    #     name: test-scenario-data
+    #     path: /tmp/sipplauncher_test*/**
+    #     retention-days: 2

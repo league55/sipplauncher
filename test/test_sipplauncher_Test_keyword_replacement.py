@@ -20,7 +20,7 @@ from pytest_mock import mocker
 from sipplauncher.utils.Utils import gen_file_struct
 from sipplauncher.utils.Init import (generate_parser,
                                      check_and_patch_args)
-from sipplauncher.Test import SIPpTest, SIPpTestTemplate
+from sipplauncher.Test import SIPpTest
 from sipplauncher.utils.Defaults import (DEFAULT_TESTSUITE_TEMPLATES,
                                          DEFAULT_DNS_FILE)
 
@@ -268,7 +268,7 @@ def test(mocker, mock_fs, args, expected):
     dirpath = tempfile.mkdtemp(prefix="sipplauncher_test_Test_keyword_replacement_")
     sipplauncher.utils.Utils.gen_file_struct(dirpath, mock_fs)
 
-    test = SIPpTestTemplate(os.path.join(dirpath, TEST_NAME)).build_SIPpTest()
+    test = SIPpTest(os.path.join(dirpath, TEST_NAME))
 
     def gen_ua_ip():
         for ip in UA_IP:

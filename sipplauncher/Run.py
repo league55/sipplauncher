@@ -19,7 +19,7 @@ import random
 from sipplauncher.TestPool import (TestPool)
 from .utils.Signals import check_signal
 from .utils.Utils import is_pcap
-from .Test import SIPpTestTemplate
+from .GlobalTest import GlobalTest
 
 
 import threading
@@ -75,7 +75,7 @@ def run(args):
 
         global_test = None
         if args.global_test_folder:
-            global_test = SIPpTestTemplate(args.global_test_folder).build_GlobalTest()
+            global_test = GlobalTest(args.global_test_folder)
             global_test.pre_run(0, args)
             _sep()
 
@@ -111,8 +111,12 @@ def run(args):
                 else:
                     test_from_testpool = test_pool[count_total % len(test_pool)]
 
-                # Getting one instance per test on testpool.
-                test = test_from_testpool.build_SIPpTest()
+                # Getting a local copy of the test from the testpool.
+                # Issue #43: We need deepcopy, because shallow copy leaves shared references inside SIPpTest.
+                # For example, if --random arg is supplied, we might make 2 copies of the same SIPpTest, chosen randomly.
+                # And if shallow copy is used, these 2 SIPpTest instances will share a reference to Network object inside.
+                # This will make them using the same UA IP address, which is completely wrong.
+                test = copy.deepcopy(test_from_testpool)
 
                 thread = threading.Thread(target=test.run, args=(count_total, args))
 

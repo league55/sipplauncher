@@ -36,7 +36,7 @@ SIPP_MOCK_RUN_TIME = 6 # sec
 # - actual Python code execution
 # This was tested on Virtualbox VM.
 # On physical server this may be faster.
-SIPPLAUNCHER_RUN_TIME_OK = 2 # sec
+SIPPLAUNCHER_RUN_TIME_OK = 3 # sec
 # Maximum duration which the sipplaucncher code should run in FAIL case.
 SIPPLAUNCHER_RUN_TIME_FAIL = 0.1 # sec
 

@@ -3,7 +3,7 @@
 #
 
 
-PYTHON=`which python3`
+PYTHON ?= `which python3`
 export PVERSION := $(shell grep '^VERSION' sipplauncher/utils/Defaults.py | cut -d "=" -f 2 | sed "s,',,g" | sed -e 's/^[[:space:]]*//')
 
 ifdef CIRCLE_BRANCH
@@ -91,7 +91,7 @@ $(PYTHON_TARGETS_UNINSTALL_OBJ): clean
 	$(call f_python_uninstall,$(subst uninstall-,,$@))
 
 install-all: $(PYTHON_TARGETS_INSTALL_OBJ) libsslkeylog.so
-	install libsslkeylog.so /usr/local/lib/
+	sudo install libsslkeylog.so /usr/local/lib/
 
 uninstall-all: $(PYTHON_TARGETS_UNINSTALL_OBJ)
 	rm /usr/local/lib/libsslkeylog.so
