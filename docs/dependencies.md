@@ -16,3 +16,4 @@
 |[flake8](https://pypi.org/project/flake8/)|>=3.7.9|Open Source ([MIT](https://opensource.org/licenses/MIT))|
 |[autopep8](https://pypi.org/project/autopep8/)|>=1.4.4|Open Source ([MIT](https://opensource.org/licenses/MIT))|
 |[pytest-mock](https://pypi.org/project/pytest-mock/)|>=1.6.3|Open Source ([MIT](https://opensource.org/licenses/MIT))|
+
