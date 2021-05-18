@@ -13,7 +13,7 @@
         <meta name="description" content="Automate your VoIP testing">
       
       
-        <link rel="canonical" href="https://sipplauncher.zaleos.net/contribution_guide/">
+        <link rel="canonical" href="https://sipplauncher.zaleos.net/dependencies/">
       
       
         <meta name="author" content="Zaleos">
@@ -42,7 +42,7 @@
     
     
       
-        <title>Contribution Guide - sipplauncher</title>
+        <title>Dependencies - sipplauncher</title>
       
     
     
@@ -91,10 +91,6 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#getting-started" tabindex="0" class="md-skip">
-        Skip to content
-      </a>
-    
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
@@ -117,7 +113,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Contribution Guide
+                Dependencies
               
             </span>
           
@@ -262,6 +258,18 @@
       
       
 
+
+  <li class="md-nav__item">
+    <a href="../contribution_guide/" title="Contribution Guide" class="md-nav__link">
+      Contribution Guide
+    </a>
+  </li>
+
+    
+      
+      
+      
+
   
 
 
@@ -270,63 +278,10 @@
     <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Contribution Guide
-      </label>
-    
-    <a href="./" title="Contribution Guide" class="md-nav__link md-nav__link--active">
-      Contribution Guide
-    </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    Getting started
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#making-functional-changes" class="md-nav__link">
-    Making functional changes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#making-trivial-changes" class="md-nav__link">
-    Making trivial changes
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-    
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../dependencies/" title="Dependencies" class="md-nav__link">
+    <a href="./" title="Dependencies" class="md-nav__link md-nav__link--active">
       Dependencies
     </a>
+    
   </li>
 
     
@@ -337,170 +292,107 @@
               </div>
             
             
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary">
-  
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#getting-started" class="md-nav__link">
-    Getting started
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#making-functional-changes" class="md-nav__link">
-    Making functional changes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#making-trivial-changes" class="md-nav__link">
-    Making trivial changes
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/zaleos/sipplauncher/edit/master/docs/contribution_guide.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/zaleos/sipplauncher/edit/master/docs/dependencies.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                  <h1>Contribution Guide</h1>
+                  <h1>Dependencies</h1>
                 
-                <h2 id="getting-started">Getting started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h2>
-<p>Make sure you have a Github account.</p>
-<h2 id="making-functional-changes">Making functional changes<a class="headerlink" href="#making-functional-changes" title="Permanent link">&para;</a></h2>
-<p>These are the changes that alter the functional behavior of the product.</p>
-<p><strong>Workflow</strong>:</p>
-<ol>
-<li>Submit a Github issue if one does not already exist.<ul>
-<li>Make sure you fill in the earliest version that you know has the issue.</li>
-<li>An issue should contain these sections:<ul>
-<li><em>Description</em>.
-  Describe the issue including steps to reproduce when it is a bug.</li>
-<li><em>Acceptance Criteria</em>.
-  Describe the expected behavior.</li>
-</ul>
-</li>
-<li>An issue might contain these sections:<ul>
-<li><em>Task breakdown</em>.
-  These are the steps the task implementation should be split into.
-  Each step could be merged via separate Merge Request.</li>
-</ul>
-</li>
-<li>An issue is not necessary for <a href="#making-trivial-changes">Trivial changes</a></li>
-</ul>
-</li>
-<li>Create a working branch from the branch you want to base your work on.<ul>
-<li>This is usually the <code>develop</code> branch.</li>
-<li>Only target release branches if you are certain your fix must be on that
-    branch.</li>
-<li>Please avoid working directly on the <code>master</code>  or <code>develop</code> branch.</li>
-<li>Please name your branch, using pattern <code>issues/&lt;ID&gt;</code>.</li>
-</ul>
-</li>
-<li>Make commits of logical and atomic units to your working branch.</li>
-<li>Make sure you have added the necessary unit-tests for your changes.
-   Not all cases require adding unit-tests.
-   It's up to you and your experience to decide when to add them.
-   Our reviewers might request you to add them.</li>
-<li>
-<p>Check that all unit-tests pass successfully, both new unit-tests and already existing ones.</p>
-<p>From sipplauncher directory run:</p>
-<div class="codehilite"><pre><span></span><code>    make install-all
-    make install-reqs-test
-    make test
-</code></pre></div>
-
-</li>
-<li>
-<p>Add your feature description to documentation, if this is relevant.
-   Documentation is located at <code>sipplauncher/docs</code> folder.</p>
-<p>You'll be able to preview your documentation changes in the browser location <code>http://&lt;ip_address&gt;:8000/</code>.
-   For this, run documentation server from sipplauncher directory:</p>
-<div class="codehilite"><pre><span></span><code>   make install-reqs-docs
-   make docs_serve
-</code></pre></div>
-
-</li>
-<li>
-<p>Add initial Merge Request of your branch into the target branch.
-   Merge Request should be named <code>WIP: Issue #&lt;issue_number&gt;: &lt;issue_description&gt;</code>.
-   WIP (Work in progress) notifies other developers, that it's too early to review or merge it.</p>
-</li>
-<li>Review your Merge Request.
-   Try to put yourself at the place of the reviewer.
-   Will the changes proposed there be easily understandable for the reviewer?</li>
-<li>
-<p>Make your Merge Request as small as possible.
-   It's very hard for a reviewer to review a big diff, which contains lots of irrelevant changes.
-   And usually this way new bugs enter the software - they simply leave unnoticed in tons of new code.
-   Therefore, it's essential to make Merge Request as small as possible.
-   To achieve this:</p>
-<ul>
-<li>Decouple <a href="#making-trivial-changes">Trivial changes</a> and merge them via separate Merge requests</li>
-<li>Remove irrelevant changes from Merge Request.
-     We understand that it might be tempting to fix everything as you go.
-     But please don't do this!
-     The changes in your Merge Request should relate only to the description of the Github issue.
-     If you see something bad in adjacent code, please open an issue in Github and work on it later.</li>
-</ul>
-</li>
-<li>
-<p>Remove the <code>WIP:</code> prefix from the Merge Request.</p>
-</li>
-<li>Ask the project maintainer (or some other developer working on the project) to review the Merge Request.</li>
-<li>Please be polite to a reviewer.
-    Remember that reviewing another person's code is usually harder than writing your own.</li>
-<li>If you have an insurmountable dispute with a reviewer, please add a 3rd person to your discussion to judge.</li>
-<li>After the Merge Request has been approved by at least 1 person, merge the code.</li>
-<li>Close the Github issue.</li>
-</ol>
-<h2 id="making-trivial-changes">Making trivial changes<a class="headerlink" href="#making-trivial-changes" title="Permanent link">&para;</a></h2>
-<p>These are the changes that don't alter the functional behavior of the product.</p>
-<p>They are one of the following:</p>
-<ul>
-<li>Adding, changing or deleting a comment.</li>
-<li>Removing unused variables.</li>
-<li>Changing code formatting (changing text intentation, adding or removing white-spaces, etc).</li>
-<li>Changing logging content, adding or removing logging.</li>
-<li>Changing function or class names.</li>
-<li>Other small changes (several lines of code) that don't change the functional behavior of the product.</li>
-</ul>
-<p>The <strong>workflow</strong> for trivial changes contains only several action items from the <a href="#making-functional-changes">full workflow</a>:</p>
-<ol>
-<li>Create a working branch from the branch you want to base your work on.</li>
-<li>Make commit.
-   Start the first line of a commit with <code>trivial: &lt;issue_description&gt;</code>.</li>
-<li>Check that all existing unit-tests pass successfully.</li>
-<li>Add Merge Request of your branch into the target branch.
-   Merge Request should be named <code>trivial: &lt;issue_description&gt;</code>.</li>
-<li>Merge it.</li>
-</ol>
-<p>Code review is not required for such changes to be merged.</p>
+                <table>
+<thead>
+<tr>
+<th>Dependency</th>
+<th>Version</th>
+<th>License</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://pypi.org/project/wheel/">wheel</a></td>
+<td>&gt;=0.33.6</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/ipaddress/">ipaddress</a></td>
+<td>&gt;=1.0.23</td>
+<td>Open Source (<a href="https://docs.python.org/3/license.html">PSF</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/pyroute2/">pyroute2</a></td>
+<td>&gt;=0.5.7</td>
+<td>Open Source (<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2+</a> and <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache v2</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/scapy/">scapy</a></td>
+<td>&gt;=2.4.3</td>
+<td>Open Source (<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2</a>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/SIPp/pysipp">pysipp</a></td>
+<td>Git revision b734f39</td>
+<td>Open Source (<a href="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPLv2</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/pyOpenSSL/">pyOpenSSL</a></td>
+<td>&gt;=19.1.0</td>
+<td>Open Source (<a href="https://www.apache.org/licenses/LICENSE-2.0">Apache v2</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/dnslib/">dnslib</a></td>
+<td>&gt;=0.9.10</td>
+<td>Open Source (<a href="https://opensource.org/licenses/BSD-2-Clause">BSD</a>)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/samuelcolvin/dnserver">dnserver</a></td>
+<td>embedded</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://git.lekensteyn.nl/peter/wireshark-notes/tree/src/sslkeylog.c">sslkeylog</a></td>
+<td>embedded</td>
+<td>Open Source (<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3+</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/mkdocs/">mkdocs</a></td>
+<td>&gt;=1.0.4</td>
+<td>Open Source (<a href="https://opensource.org/licenses/BSD-2-Clause">BSD</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/mkdocs-material/">mkdocs-material</a></td>
+<td>&gt;=4.6.0</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/mkdocs-git-revision-date-plugin/">mkdocs-git-revision-date-plugin</a></td>
+<td>&gt;=0.2</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/pytest/">pytest</a></td>
+<td>3.2.5&lt;= and &lt;=3.3.0</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/flake8/">flake8</a></td>
+<td>&gt;=3.7.9</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/autopep8/">autopep8</a></td>
+<td>&gt;=1.4.4</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+<tr>
+<td><a href="https://pypi.org/project/pytest-mock/">pytest-mock</a></td>
+<td>&gt;=1.6.3</td>
+<td>Open Source (<a href="https://opensource.org/licenses/MIT">MIT</a>)</td>
+</tr>
+</tbody>
+</table>
                 
                   
                 
@@ -532,7 +424,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../developer_guide/" title="Developer Guide" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../contribution_guide/" title="Contribution Guide" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -541,25 +433,11 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Developer Guide
+                Contribution Guide
               </span>
             </div>
           </a>
         
-        
-          <a href="../dependencies/" title="Dependencies" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Dependencies
-              </span>
-            </div>
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
-            </div>
-          </a>
         
       </nav>
     </div>

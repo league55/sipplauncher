@@ -38,7 +38,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="assets/images/favicon.ico">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.6.0">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-4.6.3">
     
     
       
@@ -46,7 +46,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/application.1b62728e.css">
+      <link rel="stylesheet" href="assets/stylesheets/application.adb8469c.css">
       
         <link rel="stylesheet" href="assets/stylesheets/application-palette.a8b3c06d.css">
       
@@ -57,7 +57,7 @@
       
     
     
-      <script src="assets/javascripts/modernizr.268332fc.js"></script>
+      <script src="assets/javascripts/modernizr.86422ebf.js"></script>
     
     
       
@@ -91,7 +91,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#overview" tabindex="1" class="md-skip">
+      <a href="#overview" tabindex="0" class="md-skip">
         Skip to content
       </a>
     
@@ -100,7 +100,7 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="https://sipplauncher.zaleos.net" title="sipplauncher" class="md-header-nav__button md-logo">
+        <a href="https://sipplauncher.zaleos.net" title="sipplauncher" aria-label="sipplauncher" class="md-header-nav__button md-logo">
           
             <i class="md-icon">code</i>
           
@@ -131,7 +131,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <input type="text" class="md-search__input" aria-label="search" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
       <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
         &#xE5CD;
@@ -372,6 +372,18 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="dependencies/" title="Dependencies" class="md-nav__link">
+      Dependencies
+    </a>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -499,7 +511,10 @@
 <li><a href="user_guide/#dynamic-ip-address-assignment">Dynamically</a> creates networking pseudo-interfaces, to which SIPp instances will be bound.</li>
 <li>Each test execution will generate a <a href="user_guide/#pcap-capturing">.pcap file</a> if desired.</li>
 <li>Ability to provision and/or clean-up Device Under Test (DUT) using <a href="user_guide/#scripts">BASH scripts</a>.</li>
+<li><a href="user_guide/#embedded-dns-server">Embeds DNS server</a> to support DNS mocking for the <a href="user_guide/#dynamic-ip-address-assignment">dynamically</a> assigned IP addresses.</li>
+<li>Provides information calls per second accumulated (cps) for each scenario</li>
 </ul>
+<p><img alt="" src="assets/images/sipplauncher.png" /></p>
 <p>Supported transports:</p>
 <ul>
 <li>UDP</li>
@@ -535,33 +550,29 @@ However, to avoid impact on your LAN, it's recommended to run <strong>Sipplaunch
 <h3 id="install-prerequisites">Install prerequisites<a class="headerlink" href="#install-prerequisites" title="Permanent link">&para;</a></h3>
 <p>This part is dependant on the selected platform:</p>
 <p>For CentOS-7:</p>
-<div class="codehilite"><pre><span></span>yum install -y wget git make which tcpdump openssl-devel gcc python3-pip
+<div class="codehilite"><pre><span></span><code>yum install -y wget git make which tcpdump openssl-devel gcc python3-pip
 wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -ivh epel-release-latest-7.noarch.rpm
 yum install -y sipp
-</pre></div>
-
+</code></pre></div>
 
 <p>For Ubuntu-18.04.3:</p>
-<div class="codehilite"><pre><span></span>apt-get update -qy
+<div class="codehilite"><pre><span></span><code>apt-get update -qy
 apt-get install -y git sip-tester tcpdump libssl-dev gcc python3-pip
-</pre></div>
-
+</code></pre></div>
 
 <h3 id="install-sipplauncher">Install <strong>Sipplauncher</strong><a class="headerlink" href="#install-sipplauncher" title="Permanent link">&para;</a></h3>
 <p>This part is common for all platforms:</p>
-<div class="codehilite"><pre><span></span>git clone https://github.com/zaleos/sipplauncher.git -b develop
+<div class="codehilite"><pre><span></span><code>git clone https://github.com/zaleos/sipplauncher.git -b develop
 <span class="nb">cd</span> sipplauncher
 make install-reqs
 make install-all
-</pre></div>
-
+</code></pre></div>
 
 <h3 id="perform-self-testing">Perform self-testing<a class="headerlink" href="#perform-self-testing" title="Permanent link">&para;</a></h3>
-<div class="codehilite"><pre><span></span>make install-reqs-test
+<div class="codehilite"><pre><span></span><code>make install-reqs-test
 make <span class="nb">test</span>
-</pre></div>
-
+</code></pre></div>
 
 <p>All tests should pass without error.</p>
 <hr />
@@ -569,35 +580,11 @@ make <span class="nb">test</span>
 <p>Now let's try running the <a href="user_guide/#test-suite-folder-layout">embedded mock test suite</a>.
 Let's assume that DUT's IP address is <code>10.22.22.24</code>.</p>
 <p>Go to <strong>Sipplauncher</strong> directory and run:</p>
-<div class="codehilite"><pre><span></span>sipplauncher --dut <span class="m">10</span>.22.22.24 --testsuite tmp-testsuite
-</pre></div>
-
+<div class="codehilite"><pre><span></span><code>sipplauncher --dut <span class="m">10</span>.22.22.24 --testsuite tmp-testsuite
+</code></pre></div>
 
 <p>You should see similar output:</p>
-<div class="codehilite"><pre><span></span>sipplauncher <span class="m">0</span>.0.1 Using log configuration file <span class="s2">&quot;/usr/local/etc/sipplauncher/sipplauncher.configlog.conf&quot;</span>
-sipplauncher <span class="m">0</span>.0.1 Auto-selected transport: u1
-sipplauncher <span class="m">0</span>.0.1 Ready to run <span class="m">4</span> tests <span class="o">(</span>in groups of <span class="m">1</span><span class="o">)</span>
-sipplauncher <span class="m">0</span>.0.1 <span class="o">================================================================================</span>
-sipplauncher <span class="m">0</span>.0.1     STARTING              normal-0000 <span class="o">(</span><span class="m">0</span>-qsdqei<span class="o">)</span>
-sipplauncher <span class="m">0</span>.0.1         FAIL              normal-0000 <span class="o">(</span><span class="m">0</span>-qsdqei<span class="o">)</span> - took 7s
-sipplauncher <span class="m">0</span>.0.1 --------------------------------------------------------------------------------
-sipplauncher <span class="m">0</span>.0.1     STARTING              normal-0001 <span class="o">(</span><span class="m">1</span>-vqtahr<span class="o">)</span>
-sipplauncher <span class="m">0</span>.0.1         FAIL              normal-0001 <span class="o">(</span><span class="m">1</span>-vqtahr<span class="o">)</span> - took 6s
-sipplauncher <span class="m">0</span>.0.1 --------------------------------------------------------------------------------
-sipplauncher <span class="m">0</span>.0.1     STARTING             options-0000 <span class="o">(</span><span class="m">2</span>-bcumqk<span class="o">)</span>
-sipplauncher <span class="m">0</span>.0.1         FAIL             options-0000 <span class="o">(</span><span class="m">2</span>-bcumqk<span class="o">)</span> - took 6s
-sipplauncher <span class="m">0</span>.0.1 --------------------------------------------------------------------------------
-sipplauncher <span class="m">0</span>.0.1     STARTING             options-0001 <span class="o">(</span><span class="m">3</span>-ymspvk<span class="o">)</span>
-sipplauncher <span class="m">0</span>.0.1         FAIL             options-0001 <span class="o">(</span><span class="m">3</span>-ymspvk<span class="o">)</span> - took 6s
-sipplauncher <span class="m">0</span>.0.1 <span class="o">================================================================================</span>
-sipplauncher <span class="m">0</span>.0.1 TOTAL: <span class="m">4</span>
-sipplauncher <span class="m">0</span>.0.1 SUCCESS: <span class="m">0</span>
-sipplauncher <span class="m">0</span>.0.1 FAILED: <span class="m">4</span>
-sipplauncher <span class="m">0</span>.0.1 <span class="o">================================================================================</span>
-sipplauncher <span class="m">0</span>.0.1 Total <span class="nb">time</span> elapsed 38s
-</pre></div>
-
-
+<p><img alt="" src="assets/images/sipplauncher.gif" /></p>
 <p>This means, test suite run has succeded.
 Individual tests have failed, but this is expected, because these are mock tests, not tied to your DUT.</p>
 <p>To have a real working test suite for your DUT, you should write it.
@@ -612,7 +599,7 @@ You can take the <a href="user_guide/#test-suite-folder-layout">embedded mock te
                   <div class="md-source-date">
                     <small>
                       
-                        Last update: 2019-12-13
+                        Last update: 2021-05-18
                       
                     </small>
                   </div>
@@ -661,7 +648,7 @@ You can take the <a href="user_guide/#test-suite-folder-layout">embedded mock te
           </div>
 
 
-Updated 2019-12-13
+Updated 2021-05-18
 
 
         
@@ -670,11 +657,11 @@ Updated 2019-12-13
   <div class="md-footer-social">
     <link rel="stylesheet" href="assets/fonts/font-awesome.css">
     
-      <a href="https://zaleos.net" class="md-footer-social__link fa fa-globe"></a>
+      <a href="https://zaleos.net" target="_blank" rel="noopener" title="globe" class="md-footer-social__link fa fa-globe"></a>
     
-      <a href="https://github.com/zaleos" class="md-footer-social__link fa fa-github"></a>
+      <a href="https://github.com/zaleos" target="_blank" rel="noopener" title="github" class="md-footer-social__link fa fa-github"></a>
     
-      <a href="http://linkedin.com/company/zaleos" class="md-footer-social__link fa fa-linkedin"></a>
+      <a href="http://linkedin.com/company/zaleos" target="_blank" rel="noopener" title="linkedin" class="md-footer-social__link fa fa-linkedin"></a>
     
   </div>
 
@@ -684,9 +671,9 @@ Updated 2019-12-13
       
     </div>
     
-      <script src="assets/javascripts/application.808e90bb.js"></script>
+      <script src="assets/javascripts/application.c33a9706.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      <script>app.initialize({version:"1.1.2",url:{base:"."}})</script>
       
     
   </body>
