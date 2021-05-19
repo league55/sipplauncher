@@ -2,7 +2,7 @@ wheel>=0.22
 # https://github.com/pyca/cryptography/issues/5753
 cryptography==3.2
 ipaddress
-pyroute2
+pyroute2==0.5.9
 scapy==2.4.4
 git+http://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
 git+git://github.com/SIPp/pysipp.git@b734f39#egg=pysipp
