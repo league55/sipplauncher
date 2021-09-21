@@ -306,6 +306,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3pcc-extended-configuration-file" class="md-nav__link">
+    3PCC Extended configuration file
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -496,6 +503,13 @@
         <li class="md-nav__item">
   <a href="#log-files" class="md-nav__link">
     Log files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3pcc-extended" class="md-nav__link">
+    3PCC Extended
   </a>
   
 </li>
@@ -609,6 +623,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#3pcc-extended-configuration-file" class="md-nav__link">
+    3PCC Extended configuration file
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -799,6 +820,13 @@
         <li class="md-nav__item">
   <a href="#log-files" class="md-nav__link">
     Log files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3pcc-extended" class="md-nav__link">
+    3PCC Extended
   </a>
   
 </li>
@@ -992,6 +1020,16 @@ _sip._tls.example.com.         SRV <span class="o">[</span><span class="m">10</s
 
 <span class="c1"># SIPS SRV records</span>
 _sips._tcp.example.com.         SRV <span class="o">[</span><span class="m">10</span>, <span class="m">60</span>, <span class="m">5061</span>, <span class="s2">&quot;ep1.example.com.&quot;</span><span class="o">]</span>
+</code></pre></div>
+
+<h4 id="3pcc-extended-configuration-file">3PCC Extended configuration file<a class="headerlink" href="#3pcc-extended-configuration-file" title="Permanent link">&para;</a></h4>
+<p>A file named <code>3pcc.txt</code>, will be interpreted to adjust the SIPp call parameters. This file provides support for
+the functionality <a href="http://sipp.sourceforge.net/doc/reference.html#3PCC+Extended'">3PCC Extended</a> defined in SIPp.</p>
+<p>When preparing a test to run, the keywords inside this file are <a href="#keyword-replacement">replaced</a>. Each entry in the file
+might match one identifier, one IP address, and a random port for a given UA.</p>
+<p>An example of a <code>3pcc.txt</code> contents:</p>
+<div class="codehilite"><pre><span></span><code>m<span class="p">;</span><span class="o">{{</span> ua0.host <span class="o">}}</span>:8880
+ua1<span class="p">;</span><span class="o">{{</span> ua1.host <span class="o">}}</span>:8881
 </code></pre></div>
 
 <h3 id="injection-file">Injection file<a class="headerlink" href="#injection-file" title="Permanent link">&para;</a></h3>
@@ -1370,6 +1408,41 @@ Then this file could be used to decrypt the packet exchange in Wireshark.</p>
 <li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/tls_premaster_keys.txt</code> - log of captured <a href="#decrypting-tls-traffic">TLS Pre-master keys</a>.</li>
 <li><code>/var/tmp/sipplauncher/&lt;test_name&gt;/&lt;test_run_id&gt;/ua[0-9]..</code> - varios <a href="#sipp-scenario">SIPp scenario</a> <code>ua[0-9]</code> logs, which were produced by SIPp.</li>
 </ul>
+<h2 id="3pcc-extended">3PCC Extended<a class="headerlink" href="#3pcc-extended" title="Permanent link">&para;</a></h2>
+<p>Sipplauncher provides support for SIPp's <a href="http://sipp.sourceforge.net/doc/reference.html#3PCC+Extended'">3PCC Extended</a>,
+where different instances can communicate independently not sending/receiving SIP messages.
+This is helpful when <strong>you want to synchronize two (or more) scenarios</strong>, or in fact, you just want to emulate a 3PCC controller.</p>
+<p>This functionality is based on a configuration file <a href="#3PCC Extended configuration file">3pcc.txt</a>. Please check the details of that file in that section.</p>
+<p>Then you might configure the master and slaves instances. There must be just one master instance and one or multiple slaves.
+Master instance will be identified as <strong>m</strong> and is the one sending the first <code>&lt;sendCmd&gt;</code>. It's the last one to be started so it will connect to the remote slaves.
+Slaves can have any identifier.</p>
+<p>Notice that SIPp will check the scenarios at runtime, and may fail if the master instance doesn't have a <code>&lt;sendCmd&gt;</code> tag or slaves don't have a <code>&lt;recvCmd&gt;</code>.
+If one of your UA scenarios doesn't have any of these tags, just don't add it to <a href="#3PCC Extended configuration file">3pcc.txt</a> file.</p>
+<p>Then in your scenarios you will be able to use SIPp <code>&lt;sendCmd&gt;</code> and <code>&lt;recvCmd&gt;</code>.</p>
+<div class="codehilite"><pre><span></span><code>&lt;sendCmd <span class="nv">dest</span><span class="o">=</span><span class="s2">&quot;ua01&quot;</span>&gt;
+  &lt;!<span class="o">[</span>CDATA<span class="o">[</span>
+    Call-ID: <span class="o">[</span>call_id<span class="o">]</span>
+    From: m
+  <span class="o">]]</span>&gt;
+&lt;/sendCmd&gt;
+</code></pre></div>
+
+<p>Note that on <code>&lt;sendCmd&gt;</code> it's mandatory to add a <code>From:</code> header with the id of the sender and also set the <strong>dest</strong> attribute to set the destination
+of the UA you want to send the message.</p>
+<p>On the other side we have <code>&lt;recvCmd&gt;</code>:</p>
+<div class="codehilite"><pre><span></span><code>&lt;recvCmd <span class="nv">src</span><span class="o">=</span><span class="s2">&quot;m&quot;</span>&gt;
+  &lt;action&gt;
+     &lt;ereg <span class="nv">regexp</span><span class="o">=</span><span class="s2">&quot;Content-Type:.*&quot;</span>
+           <span class="nv">search_in</span><span class="o">=</span><span class="s2">&quot;msg&quot;</span>
+           <span class="nv">assign_to</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span>/&gt;
+  &lt;/action&gt;
+&lt;/recvCmd&gt;
+
+&lt;Reference <span class="nv">variables</span><span class="o">=</span><span class="s2">&quot;dummy&quot;</span> /&gt;
+</code></pre></div>
+
+<p>Here we can specify optionally the source of the message in order to validate it. Additionally, we can extract values from
+the message using <code>&lt;ereg&gt;</code> actions.</p>
                 
                   
                 
@@ -1379,7 +1452,7 @@ Then this file could be used to decrypt the packet exchange in Wireshark.</p>
                   <div class="md-source-date">
                     <small>
                       
-                        Last update: 2021-05-18
+                        Last update: 2021-09-21
                       
                     </small>
                   </div>
@@ -1442,7 +1515,7 @@ Then this file could be used to decrypt the packet exchange in Wireshark.</p>
           </div>
 
 
-Updated 2021-05-18
+Updated 2021-09-21
 
 
         
