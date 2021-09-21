@@ -199,6 +199,23 @@ _sip._tls.example.com.         SRV [10, 60, 5061, "ep1.example.com."]
 _sips._tcp.example.com.         SRV [10, 60, 5061, "ep1.example.com."]
 ```
 
+#### 3PCC Extended configuration file
+
+A file named `3pcc.txt`, will be interpreted to adjust the SIPp call parameters. This file provides support for
+the functionality [3PCC Extended](http://sipp.sourceforge.net/doc/reference.html#3PCC+Extended') defined in SIPp.
+
+When preparing a test to run, the keywords inside this file are [replaced](#keyword-replacement). Each entry in the file
+might match one identifier, one IP address, and a random port for a given UA.
+
+An example of a `3pcc.txt` contents:
+
+```bash
+m;{{ ua0.host }}:8880
+ua1;{{ ua1.host }}:8881
+
+```
+
+
 ### Injection file
 
 Injection file is passed to Sipplauncher with `--sipp-info-file` command-line option.
@@ -514,3 +531,52 @@ By default, Sipplauncher logs to following files:
 * `/var/tmp/sipplauncher/<test_name>/<test_run_id>/pysipp.launch.log` - log, that contains information regarding running SIPp instances of test `test_name`.
 * `/var/tmp/sipplauncher/<test_name>/<test_run_id>/tls_premaster_keys.txt` - log of captured [TLS Pre-master keys](#decrypting-tls-traffic).
 * `/var/tmp/sipplauncher/<test_name>/<test_run_id>/ua[0-9]..` - varios [SIPp scenario](#sipp-scenario) `ua[0-9]` logs, which were produced by SIPp.
+
+
+## 3PCC Extended
+
+Sipplauncher provides support for SIPp's [3PCC Extended](http://sipp.sourceforge.net/doc/reference.html#3PCC+Extended'),
+where different instances can communicate independently not sending/receiving SIP messages.
+This is helpful when **you want to synchronize two (or more) scenarios**, or in fact, you just want to emulate a 3PCC controller.
+
+This functionality is based on a configuration file [3pcc.txt](#3PCC Extended configuration file). Please check the details of that file in that section.
+
+Then you might configure the master and slaves instances. There must be just one master instance and one or multiple slaves.
+Master instance will be identified as **m** and is the one sending the first `<sendCmd>`. It's the last one to be started so it will connect to the remote slaves.
+Slaves can have any identifier.
+
+Notice that SIPp will check the scenarios at runtime, and may fail if the master instance doesn't have a `<sendCmd>` tag or slaves don't have a `<recvCmd>`.
+If one of your UA scenarios doesn't have any of these tags, just don't add it to [3pcc.txt](#3PCC Extended configuration file) file.
+
+
+Then in your scenarios you will be able to use SIPp `<sendCmd>` and `<recvCmd>`.
+
+```bash
+<sendCmd dest="ua01">
+  <![CDATA[
+    Call-ID: [call_id]
+    From: m
+  ]]>
+</sendCmd>
+```
+
+Note that on `<sendCmd>` it's mandatory to add a `From:` header with the id of the sender and also set the **dest** attribute to set the destination
+of the UA you want to send the message.
+
+On the other side we have `<recvCmd>`:
+
+```bash
+<recvCmd src="m">
+  <action>
+     <ereg regexp="Content-Type:.*"
+           search_in="msg"
+           assign_to="dummy"/>
+  </action>
+</recvCmd>
+
+<Reference variables="dummy" />
+```
+
+Here we can specify optionally the source of the message in order to validate it. Additionally, we can extract values from
+the message using `<ereg>` actions.
+

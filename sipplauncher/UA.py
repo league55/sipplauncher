@@ -10,6 +10,7 @@
 from enum import Enum
 import os
 from . import Scenario
+from sipplauncher.utils.Exceptions import ScenarioException
 
 class UA:
     class DuplicateScenarioException(Exception):
@@ -18,7 +19,7 @@ class UA:
         """
         pass
 
-    def __init__(self, name, part_id, scenario):
+    def __init__(self, name, part_id, scenario, three_pcc_file):
         """
         :param part_id: alphanumeric Run ID, on which the scenario should be run (in case of multiple files scenarios for same UA)
         :type part_id: str
@@ -31,6 +32,7 @@ class UA:
         self.ip = ""
         self.__tls_cert = None
         self.__tls_key = None
+        self.__3pcc_file = three_pcc_file
 
     def __eq__(self, other):
         return self.__name == other.__name
@@ -124,8 +126,24 @@ class UA:
         return self.__tls_key
 
 
+    def get_3pcc_file(self):
+        return self.__3pcc_file
+
     def is_uac(self):
         """
         :return: bool
         """
         return next(iter(self.__part_id_map.values())).is_uac()
+
+    def get_3pcc_id(self):
+        result = None
+        if len(self.ip) < 8:
+            raise ScenarioException("Programming error. get_3pcc_id must be called after pre_initialization.")
+        if self.get_3pcc_file() is not None:
+            with open(self.get_3pcc_file()) as cfgfile:
+                for line in cfgfile:
+                    if ";" + self.ip + ":" in line:
+                        result, _ = line.split(';', 1)
+
+        return result
+

@@ -34,7 +34,8 @@ from sipplauncher.utils.Defaults import (DEFAULT_TEMP_FOLDER,
                                          DEFAULT_SCENARIO_FILENAME_REGEX,
                                          DEFAULT_SCENARIO_PART_FILENAME_REGEX,
                                          DEFAULT_SCRIPT_TIMEOUT,
-                                         DEFAULT_DNS_FILE)
+                                         DEFAULT_DNS_FILE,
+                                         DEFAULT_3PCC_FILE)
 from .UA import UA
 from .PysippProcess import PysippProcess
 from .Scenario import Scenario
@@ -77,6 +78,9 @@ class SIPpTest(object):
         self._successful = False
         self.__folder = folder
         self.__dns_server = None
+        self.__3pcc_file = None
+        if os.path.exists(os.path.join(self.__folder, DEFAULT_3PCC_FILE)):
+            self.__3pcc_file = DEFAULT_3PCC_FILE
         self.__uas = self._get_uas()
 
         logging.debug('Created SIPpTest "{0}"'.format(self.key))
@@ -112,7 +116,7 @@ class SIPpTest(object):
                     ua.set_scenario(part_id, scen)
                     break
             else:
-                uas.add(UA(ua_name, part_id, scen))
+                uas.add(UA(ua_name, part_id, scen, self.__3pcc_file))
 
         uas = sorted(uas, key = lambda x: x.get_name())
         if not uas:
@@ -231,6 +235,8 @@ class SIPpTest(object):
             files |= ua.get_filenames()
         if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_DNS_FILE)):
             files.add(DEFAULT_DNS_FILE)
+        if os.path.exists(os.path.join(self.__temp_folder, DEFAULT_3PCC_FILE)):
+            files.add(DEFAULT_3PCC_FILE)
 
         # loop over files and perform replacement
         for file in files:

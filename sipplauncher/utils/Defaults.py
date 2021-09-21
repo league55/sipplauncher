@@ -59,3 +59,4 @@ DEFAULT_SSL_KEY_LOG_LIB = "/usr/local/lib/libsslkeylog.so"
 DEFAULT_TLS_PREMASTER_KEYS_FILE = "tls_libsslkeylog_premaster_keys.txt"
 
 DEFAULT_DNS_FILE = "dns.txt"
+DEFAULT_3PCC_FILE = "3pcc.txt"

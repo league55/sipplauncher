@@ -154,6 +154,12 @@ class PysippProcess(Process):
         add_arg(' -stf {trace_file}')
         add_arg(' -fd {trace_frequency}')
 
+        # 3pcc Extended support
+        add_arg(' -master {master_no}')
+        add_arg(' -slave {slave_no}')
+        add_arg(' -slave_cfg {slave_cfg}')
+
+
     def __run_scenario(self, run_id, call_count):
         """
         Run all UAs, which support given Run ID
@@ -166,6 +172,7 @@ class PysippProcess(Process):
         """
         agents = []
         for ua in self.__uas:
+            delayed_uac_start = False
             scen = ua.get_scenario(run_id)
             if not scen:
                # This UA doesn't have scenario for this Run ID.
@@ -210,6 +217,18 @@ class PysippProcess(Process):
             if self.__args.default_behaviors:
                 kwargs["default_behaviors"] = self.__args.default_behaviors
 
+            # 3pcc Extended support
+            _3pcc_id = ua.get_3pcc_id()
+            if _3pcc_id is not None:
+                self.__pysipp_logger.debug('Current ua {0} is using 3pcc extended mode with id {1}'.format(ua.get_scenario, _3pcc_id))
+                kwargs["slave_cfg"] = ua.get_3pcc_file()
+                if _3pcc_id == 'm':
+                    kwargs["master_no"] = _3pcc_id
+                else:
+                    kwargs["slave_no"] = _3pcc_id
+                    delayed_uac_start = True
+
+
             # TLS
             if ua.get_tls_cert():
                 kwargs["tls_cert"] = ua.get_tls_cert()
@@ -224,7 +243,11 @@ class PysippProcess(Process):
 
             if scen.get_role() == Scenario.Role.uac:
                 client = pysipp.agent.client(**kwargs)
-                agents.append(client)
+                if delayed_uac_start:
+                    # It's a uac, but there might be a 3PCC master uac that must be the last one started
+                    agents.insert(-1, client)
+                else:
+                    agents.append(client)
             elif scen.get_role() == Scenario.Role.uas:
                 server = pysipp.agent.server(**kwargs)
                 agents.insert(0, server)  # servers are always launched first

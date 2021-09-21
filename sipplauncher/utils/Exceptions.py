@@ -14,6 +14,12 @@ class ErrorInitLog(Exception):
     pass
 
 
+class ScenarioException(Exception):
+    """Error rendering the scenario.
+    """
+    pass
+
+
 if __name__ == '__main__':
     pass
 
